@@ -1,0 +1,2322 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Каталог фильмов — KinoScore | КиноРейтинг</title>
+  <meta name="description" content="Интерактивный каталог фильмов мирового кинематографа. Поиск, фильтры, рейтинги Кинопоиска, подборки Топ-250 и Оскар, рандомайзер на вечер." />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Tailwind Configuration matching film_435.html -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brandDark: '#121212',
+            brandGray: '#E5E7EB',
+            cardBg: '#E9ECEF',
+            starYellow: '#FBBF24',
+            emeraldScore: '#16a34a',
+            amberScore: '#d97706',
+          },
+          fontFamily: {
+            sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+            serif: ['Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Early Theme Init Script (Synchronized with film pages) -->
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('kinoscore_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      if (savedTheme === 'dark' || savedTheme === 'cinematic') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+
+  <!-- Custom Styles matching film_435.html -->
+  <style data-purpose="custom-scrollbar">
+    /* Горизонтальный скроллбар */
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #e2e8f0;
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+  </style>
+
+  <style data-purpose="animations-and-effects">
+    .modal-active {
+      display: flex !important;
+    }
+    .transition-custom {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* === РАСКРЫВАЮЩИЙСЯ ТРЕЙЛЕР В ШАПКЕ (КАК В film_435.html) === */
+    .trailer-section {
+      background-color: #111;
+      height: 380px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      transition: height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    @media (min-width: 768px) {
+      .trailer-section { height: 420px; }
+    }
+
+    .video-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .video-container video, .video-container iframe {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .trailer-overlay-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.62);
+      backdrop-filter: blur(5px);
+      z-index: 2;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .trailer-overlay {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 3;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+
+    /* Плееры онлайн-просмотра (как в film_435.html) */
+    .watch-cards {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .watch-card {
+      height: 52px;
+      width: 155px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s;
+      flex-shrink: 0;
+      padding: 6px 14px;
+    }
+    .watch-card:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+      border-color: #d1d5db;
+    }
+    .watch-card-img {
+      max-height: 28px;
+      max-width: 110px;
+      object-fit: contain;
+      transition: transform 0.2s;
+    }
+    .watch-card:hover .watch-card-img {
+      transform: scale(1.08);
+    }
+
+    /* Поддержка тем оформления */
+    html[data-theme="dark"] body {
+      background-color: #121212 !important;
+      color: #f3f4f6 !important;
+    }
+    html[data-theme="dark"] .bg-white {
+      background-color: #1c1e24 !important;
+      color: #f3f4f6 !important;
+      border-color: rgba(255, 255, 255, 0.09) !important;
+    }
+    html[data-theme="dark"] .bg-\[\#F8F9FA\] {
+      background-color: #121212 !important;
+    }
+    html[data-theme="dark"] .bg-\[\#E9ECEF\]\/60 {
+      background-color: #242832 !important;
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    html[data-theme="dark"] .watch-card {
+      background: #1c1e24 !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    html[data-theme="dark"] .text-gray-900 {
+      color: #ffffff !important;
+    }
+    html[data-theme="dark"] .text-gray-700 {
+      color: #d1d5db !important;
+    }
+    html[data-theme="dark"] .text-gray-500 {
+      color: #9ca3af !important;
+    }
+    html[data-theme="dark"] .border-gray-200 {
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    html[data-theme="cinematic"] body {
+      background-color: #07090e !important;
+      color: #ffffff !important;
+    }
+    html[data-theme="cinematic"] .bg-white {
+      background-color: #0d121c !important;
+      color: #ffffff !important;
+      border-color: rgba(0, 242, 254, 0.22) !important;
+      box-shadow: 0 8px 24px -4px rgba(0, 242, 254, 0.12) !important;
+    }
+    html[data-theme="cinematic"] .bg-\[\#F8F9FA\] {
+      background-color: #07090e !important;
+    }
+    html[data-theme="cinematic"] .bg-\[\#E9ECEF\]\/60 {
+      background-color: #121824 !important;
+      border-color: rgba(0, 242, 254, 0.15) !important;
+    }
+    html[data-theme="cinematic"] .watch-card {
+      background: #0d121c !important;
+      border-color: rgba(0, 242, 254, 0.2) !important;
+    }
+
+    /* Модальные окна */
+    .modal-backdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-card {
+      transform: scale(0.95) translateY(12px);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .modal-backdrop.active .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    /* Анимация рулетки */
+    @keyframes roulettePulse {
+      0% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.03); filter: brightness(1.18); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+    .roulette-anim {
+      animation: roulettePulse 0.35s ease infinite;
+    }
+
+    /* Стили и анимации для вкладки 'Фильм дня' */
+    .film-day-card {
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transform-style: preserve-3d;
+    }
+    .film-day-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.5), 0 0 45px rgba(16, 185, 129, 0.25);
+    }
+    .film-day-overlay {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      transform: translateY(10px);
+    }
+    .film-day-card:hover .film-day-overlay {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .play-pulse {
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6);
+      animation: playPulseAnim 2s infinite;
+    }
+    @keyframes playPulseAnim {
+      0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6); }
+      70% { box-shadow: 0 0 0 14px rgba(255, 255, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+    }
+  </style>
+</head>
+
+<body class="bg-[#F8F9FA] text-gray-900 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-gray-800 selection:text-white transition-colors duration-300">
+
+  <!-- BEGIN: TopBarNav (Полная гармония с film_435.html) -->
+  <header class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 sm:px-6 py-5">
+    <div class="flex items-center gap-3">
+      <!-- Логотип / Название сайта -->
+      <a aria-label="KinoScore"
+        class="flex items-center gap-2.5 px-4 py-2 rounded-full text-white/95 hover:text-white bg-black/45 hover:bg-black/65 backdrop-blur-md border border-white/20 transition-all shadow-lg"
+        href="index.html" title="Главная страница">
+        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M4 6h16M4 12h16M4 18h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+        </svg>
+        <span class="text-xs font-black uppercase tracking-wider">Kino<span class="text-amber-400">Score</span></span>
+      </a>
+
+      <!-- Навигация по вкладкам: Каталог / Фильм дня -->
+      <nav class="inline-flex items-center p-1 rounded-full bg-black/45 backdrop-blur-md border border-white/20 shadow-lg" role="tablist">
+        <button 
+          id="tab-btn-catalog"
+          role="tab"
+          aria-selected="true"
+          onclick="switchMainTab('catalog')" 
+          class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-white bg-white/20 transition-all shadow-sm"
+          title="Смотреть каталог фильмов">
+          <span class="tab-indicator w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]"></span>
+          <span>Каталог</span>
+        </button>
+        <button 
+          id="tab-btn-filmoftheday"
+          role="tab"
+          aria-selected="false"
+          onclick="switchMainTab('filmoftheday')" 
+          class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-gray-300 hover:text-white transition-all"
+          title="Смотреть фильм дня">
+          <span class="tab-indicator hidden w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_#f59e0b]"></span>
+          <span>✨ Фильм дня</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Правые элементы управления: Рандомайзер, Темы, Вход -->
+    <div class="flex items-center gap-2.5">
+      <!-- Кнопка: Случайный фильм -->
+      <button 
+        onclick="openRandomizerModal()"
+        class="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold text-black bg-gradient-to-r from-amber-400 to-yellow-300 hover:from-amber-300 shadow-lg transition-transform active:scale-95"
+        title="Случайный фильм на вечер">
+        <span>🎲</span>
+        <span class="hidden md:inline">Случайный фильм</span>
+      </button>
+
+      <!-- Переключатель тем (Тёмная / Светлая / Синематик) -->
+      <button 
+        id="theme-quick-toggle"
+        onclick="cyclePageTheme()"
+        class="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold text-white bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 transition-colors shadow-lg"
+        title="Сменить тему (Светлая / Тёмная / Синематик)">
+        <span id="theme-indicator-icon">☀️</span>
+        <span class="hidden lg:inline text-[11px]" id="theme-indicator-label">Тема</span>
+      </button>
+
+      <!-- Авторизация -->
+      <div id="auth-header-btn-wrap">
+        <button 
+          onclick="openAuthModal()"
+          class="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold text-white bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 transition-all shadow-lg hover:border-white/40"
+          title="Войти в личный кабинет">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+          <span class="hidden sm:inline">Войти</span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <!-- END: TopBarNav -->
+
+  <!-- BEGIN: CinematicHeroBanner (1-в-1 в стилистике film_435.html) -->
+  <section class="trailer-section select-none" id="catalog-hero" style="background-image: url('https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/35975f3e-11e5-483f-9895-be2689f99a0d/orig'); background-size: cover; background-position: center;">
+    <div class="video-container">
+      <video id="hero-ambient-video" src="trailers/film_435.mp4" autoplay loop muted playsinline onerror="this.style.display='none';"></video>
+    </div>
+    <div class="trailer-overlay-bg"></div>
+
+    <!-- Заголовок и интро каталога -->
+    <div class="trailer-overlay text-center px-4 max-w-4xl pt-8">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-semibold tracking-widest uppercase mb-4 backdrop-blur-md">
+        <span>🎬 Кинотека мирового кинематографа</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-wider uppercase mb-3 drop-shadow-2xl font-serif">
+        Каталог фильмов
+      </h1>
+      <p class="text-xs sm:text-sm text-gray-200/90 font-normal max-w-2xl mx-auto leading-relaxed mb-6 drop-shadow">
+        Исследуйте культовые шедевры, фильмы из списка Топ-250 Кинопоиска и оскароносные картины с детальными рейтингами, кадрами и видео-трейлерами
+      </p>
+
+      <!-- Быстрые экшены в баннере -->
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <button onclick="scrollToFilter('top250')" class="px-4 py-2 rounded-full text-xs font-bold text-white bg-black/50 hover:bg-black/80 backdrop-blur-md border border-amber-400/40 hover:border-amber-400 transition-all shadow-lg flex items-center gap-1.5">
+          <span class="text-amber-400">🔥</span>
+          <span>Топ-250 Кинопоиска</span>
+        </button>
+        <button onclick="scrollToFilter('oscar')" class="px-4 py-2 rounded-full text-xs font-bold text-white bg-black/50 hover:bg-black/80 backdrop-blur-md border border-yellow-400/40 hover:border-yellow-400 transition-all shadow-lg flex items-center gap-1.5">
+          <span>🏆</span>
+          <span>Фильмы с Оскаром</span>
+        </button>
+        <button onclick="openRandomizerModal()" class="px-4 py-2 rounded-full text-xs font-bold text-black bg-gradient-to-r from-amber-400 to-yellow-300 hover:from-amber-300 transition-all shadow-lg flex items-center gap-1.5">
+          <span>🎲</span>
+          <span>Рандомайзер на вечер</span>
+        </button>
+      </div>
+    </div>
+  </section>
+  <!-- END: CinematicHeroBanner -->
+
+  <!-- BEGIN: MainContent (Точно как в film_435.html: -mt-6 relative z-10) -->
+  <main id="catalog-main-content" class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-10 py-6 flex-grow">
+
+    <!-- ================= 1. ПАНЕЛЬ ПОИСКА И ФИЛЬТРОВ ================= -->
+    <section class="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200/80 shadow-sm mb-8 transition-colors duration-300" id="filter-panel" data-purpose="search-and-filters">
+      <div class="flex flex-col gap-4">
+        
+        <!-- Верхняя строка: Поиск и переключатель вида -->
+        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3.5">
+          <!-- Строка живого поиска -->
+          <div class="relative flex-1">
+            <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input 
+              type="text" 
+              id="search-input"
+              placeholder="Поиск по названию фильма, режиссеру, актеру или жанру... (нажмите /)"
+              class="w-full pl-10 pr-10 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-xs sm:text-sm font-medium outline-none focus:border-gray-900 focus:bg-white transition-all text-gray-900"
+            />
+            <button id="clear-search-btn" class="hidden absolute right-3.5 top-2.5 text-gray-400 hover:text-gray-700 text-xs">✕</button>
+          </div>
+
+          <!-- Режим отображения: Сетка / Список -->
+          <div class="flex items-center gap-1 bg-[#E9ECEF]/70 p-1 rounded-xl self-end md:self-auto shrink-0">
+            <button id="view-grid-btn" title="Сетка постеров" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-gray-900 shadow-sm transition-all flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+              </svg>
+              <span>Сетка</span>
+            </button>
+            <button id="view-list-btn" title="Список фильмов" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-900 transition-all flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+              </svg>
+              <span>Список</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Нижняя строка: Кнопки-подборки и выпадающие фильтры -->
+        <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pt-2 border-t border-gray-100">
+          
+          <!-- Кнопки-подборки -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none" id="collection-buttons">
+            <button onclick="setCollection('all')" id="btn-col-all" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-white shadow-sm transition-all shrink-0">
+              Все фильмы
+            </button>
+            <button onclick="setCollection('top250')" id="btn-col-top250" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all shrink-0 flex items-center gap-1">
+              <span class="text-amber-500">★</span>
+              <span>Топ-250 Кинопоиска</span>
+            </button>
+            <button onclick="setCollection('oscar')" id="btn-col-oscar" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all shrink-0 flex items-center gap-1">
+              <span>🏆</span>
+              <span>Фильмы с Оскаром</span>
+            </button>
+          </div>
+
+          <!-- Выпадающие списки (Жанр, Год, Рейтинг, Сортировка) -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 shrink-0">
+            <!-- Жанр -->
+            <select id="genre-filter" aria-label="Жанр" class="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-800 outline-none cursor-pointer hover:border-gray-400 transition-colors">
+              <option value="all">Все жанры</option>
+              <option value="драма">Драма</option>
+              <option value="фантастика">Фантастика</option>
+              <option value="криминал">Криминал</option>
+              <option value="приключения">Приключения</option>
+              <option value="фэнтези">Фэнтези</option>
+            </select>
+
+            <!-- Год выпуска -->
+            <select id="year-filter" aria-label="Год выпуска" class="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-800 outline-none cursor-pointer hover:border-gray-400 transition-colors">
+              <option value="all">Все года</option>
+              <option value="2010s">2010 — 2024</option>
+              <option value="2000s">2000 — 2009</option>
+              <option value="1990s">1990 — 1999</option>
+            </select>
+
+            <!-- Мин. рейтинг -->
+            <select id="rating-filter" aria-label="Минимальный рейтинг" class="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-800 outline-none cursor-pointer hover:border-gray-400 transition-colors">
+              <option value="0">Рейтинг: Любой</option>
+              <option value="9.0">★ 9.0+ (Шедевры)</option>
+              <option value="8.5">★ 8.5+ (Топ)</option>
+              <option value="8.0">★ 8.0+ (Высокий)</option>
+            </select>
+
+            <!-- Сортировка -->
+            <select id="sort-filter" aria-label="Сортировка" class="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-800 outline-none cursor-pointer hover:border-gray-400 transition-colors">
+              <option value="rating_desc">По рейтингу КП (убыв.)</option>
+              <option value="rating_asc">По рейтингу КП (возр.)</option>
+              <option value="year_desc">По году (новые)</option>
+              <option value="year_asc">По году (классика)</option>
+              <option value="title_asc">По алфавиту (А–Я)</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Статусная строка: количество и активные фильтры -->
+        <div class="flex items-center justify-between text-xs text-gray-500 pt-1">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Найдено фильмов: <strong id="catalog-count" class="font-bold text-gray-900">3</strong></span>
+            <span id="active-tag-badge" class="hidden px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"></span>
+          </div>
+          <button id="reset-filters-btn" onclick="resetFilters()" class="hidden text-emerald-600 hover:text-emerald-700 font-bold">
+            Сбросить фильтры ✕
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= 2. СЕТКА И СПИСОК КАРТОЧЕК ФИЛЬМОВ ================= -->
+    <section data-purpose="movies-catalog-grid" class="mb-14">
+      
+      <!-- Пустое состояние -->
+      <div id="no-movies-found" class="hidden flex-col items-center justify-center p-12 bg-white rounded-2xl border border-gray-200/80 shadow-sm text-center">
+        <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center text-2xl mb-3">🔍</div>
+        <h3 class="text-base font-bold text-gray-800 mb-1">Ничего не найдено</h3>
+        <p class="text-xs text-gray-500 max-w-sm mb-4">Попробуйте изменить запрос или сбросить активные фильтры жанра и рейтинга.</p>
+        <button onclick="resetFilters()" class="px-4 py-2 bg-gray-900 text-white rounded-xl text-xs font-semibold hover:bg-black transition-colors">
+          Сбросить все фильтры
+        </button>
+      </div>
+
+      <!-- Контейнер для карточек (динамически рендерится JS) -->
+      <div id="catalog-cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <!-- КАРТОЧКИ ФИЛЬМОВ -->
+      </div>
+    </section>
+
+    <!-- ================= 3. СЕКЦИЯ: ГДЕ ПОСМОТРЕТЬ (ИЗ film_435.html) ================= -->
+    <section class="mb-14" data-purpose="where-to-watch">
+      <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <span>Онлайн-кинотеатры и плееры:</span>
+      </h2>
+      <div class="watch-cards">
+        <a class="watch-card" href="https://rutube.ru" rel="noopener noreferrer" target="_blank" title="Смотреть на Рутуб">
+          <img src="assets/rutube.png" alt="Рутуб" class="watch-card-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <div class="watch-card-fallback" style="display:none; font-size:16px; font-weight:700;">Рутуб</div>
+        </a>
+        <a class="watch-card" href="https://vk.com/video" rel="noopener noreferrer" target="_blank" title="Смотреть на ВК Видео">
+          <img src="assets/vk.png" alt="ВК Видео" class="watch-card-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <div class="watch-card-fallback" style="display:none; font-size:16px; font-weight:700;">ВК Видео</div>
+        </a>
+        <a class="watch-card" href="https://www.kinopoisk.ru" rel="noopener noreferrer" target="_blank" title="Смотреть на Кинопоиск">
+          <img src="assets/kinopoisk.png" alt="Кинопоиск" class="watch-card-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <div class="watch-card-fallback" style="display:none; font-size:16px; font-weight:700;">Кинопоиск</div>
+        </a>
+      </div>
+    </section>
+
+  </main>
+  <!-- END: MainContent -->
+
+  <!-- ================= SECTION: ФИЛЬМ ДНЯ (1-в-1 ПО ДИЗАЙН-РЕФЕРЕНСУ) ================= -->
+  <section id="filmoftheday-view" class="hidden relative min-h-[92vh] w-full overflow-hidden pt-28 pb-16 flex flex-col justify-between select-none">
+    
+    <!-- 1. ФОНОВОЕ ВИДЕО (ОСТАВЛЕНО ПУСТЫМ src="" ПО ТРЕБОВАНИЮ) + КИНЕМАТОГРАФИЧНЫЙ ГРАДИЕНТ -->
+    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+      <video 
+        id="filmoftheday-bg-video" 
+        src="" 
+        autoplay 
+        loop 
+        muted 
+        playsinline 
+        class="w-full h-full object-cover opacity-25 dark:opacity-35 scale-105"
+      ></video>
+      <!-- Запасной мягкий световой градиент и виньетка -->
+      <div class="absolute inset-0 bg-gradient-to-b from-[#F8F9FA]/85 via-transparent to-[#F8F9FA] dark:from-[#07090e]/90 dark:via-[#07090e]/65 dark:to-[#07090e]"></div>
+      <!-- Неоновый спотлайт позади центрального фильма -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[720px] bg-emerald-500/10 dark:bg-emerald-400/15 rounded-full blur-3xl pointer-events-none"></div>
+    </div>
+
+    <!-- 2. ГИГАНТСКАЯ ТИПОГРАФИКА СЗАДИ: 'ФИЛЬМ' СЛЕВА И 'ДНЯ' СПРАВА (КАК В РЕФЕРЕНСЕ 'HARNESS NATURE'S') -->
+    <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 z-0 flex items-center justify-between pointer-events-none select-none px-4 sm:px-10 lg:px-16 overflow-hidden">
+      <span class="text-[13vw] font-black uppercase tracking-tighter text-black/[0.04] dark:text-white/[0.07] leading-none font-serif">
+        ФИЛЬМ
+      </span>
+      <span class="text-[13vw] font-black uppercase tracking-tighter text-black/[0.04] dark:text-white/[0.07] leading-none font-serif">
+        ДНЯ
+      </span>
+    </div>
+
+    <!-- 3. ОСНОВНОЙ КОНТЕНТНЫЙ СЛОЙ (BENTO GRID В ПОЛНОЙ ГАРМОНИИ С РЕФЕРЕНСОМ) -->
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col flex-1 justify-between gap-8 sm:gap-12">
+      
+      <!-- ВЕРХНИЙ РЯД: Левый бейдж редакции + Правая карточка трейлера с кнопкой Play ▶ -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
+        
+        <!-- Левый плавающий бейдж (как значок с листиками и SINCE-2013 в референсе) -->
+        <div class="flex items-center gap-3.5 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-gray-200/80 dark:border-white/10 shadow-lg">
+          <div class="w-10 h-10 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-lg shadow-inner">
+            🎬
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">ВЫБОР РЕДАКЦИИ</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-600 dark:text-amber-300">ТОП-250 #1</span>
+            </div>
+            <p class="text-xs font-semibold text-gray-800 dark:text-gray-200 mt-0.5" id="filmoftheday-quote-head">
+              Главный шедевр мирового кинематографа
+            </p>
+          </div>
+        </div>
+
+        <!-- Правая плавающая карточка трейлера с кнопкой Play ▶ (как фото в верхнем правом углу референса) -->
+        <div 
+          onclick="openDayMovieTrailer()"
+          class="group cursor-pointer relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-2 rounded-2xl border border-gray-200/80 dark:border-white/10 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] flex items-center gap-3.5 pr-5"
+          title="Смотреть трейлер фильма"
+        >
+          <!-- Миниатюра кадра с кнопкой Play ▶ -->
+          <div class="relative w-20 h-20 rounded-xl overflow-hidden bg-black shrink-0 shadow-md">
+            <img 
+              id="filmoftheday-trailer-thumb" 
+              src="https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/35975f3e-11e5-483f-9895-be2689f99a0d/orig" 
+              alt="Кадр трейлера" 
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            />
+            <div class="absolute inset-0 bg-black/35 group-hover:bg-black/15 transition-colors"></div>
+            <!-- Круглая кнопка Play с пульсацией (точно как в референсе) -->
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-8 h-8 rounded-full bg-white text-gray-900 flex items-center justify-center text-xs shadow-lg play-pulse group-hover:scale-110 transition-transform">
+                ▶
+              </div>
+            </div>
+          </div>
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+              Официальный трейлер
+            </span>
+            <h4 class="text-xs sm:text-sm font-bold text-gray-900 dark:text-white mt-0.5 group-hover:text-emerald-600 transition-colors">
+              Смотреть в Full HD
+            </h4>
+            <span class="text-[11px] text-gray-500 dark:text-gray-400">Нажмите для запуска видео</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ЦЕНТРАЛЬНЫЙ ЭЛЕМЕНТ: САМ ФИЛЬМ (КАК VELORA В РЕФЕРЕНСЕ) С ХОВЕРОМ РЕЙТИНГА И ПРОСМОТРОВ -->
+      <div class="relative flex flex-col items-center justify-center my-3 sm:my-6 z-10">
+        
+        <!-- Контейнер постера с 3D перспективой и интерактивным оверлеем при наведении курсора -->
+        <div 
+          id="filmoftheday-poster-card" 
+          class="film-day-card relative w-[260px] sm:w-[320px] md:w-[360px] aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-800 bg-black cursor-pointer group"
+          onclick="openDayMovieDetails()"
+        >
+          <!-- Основной постер фильма -->
+          <img 
+            id="filmoftheday-poster-img"
+            src="https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/443e111e-f714-4954-83d0-3e0acca2a561/orig" 
+            alt="Фильм дня" 
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          />
+
+          <!-- Базовый градиент снизу с названием (исчезает при ховере) -->
+          <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-black via-black/60 to-transparent group-hover:opacity-0 transition-opacity duration-300">
+            <span class="text-[11px] font-bold tracking-widest text-amber-400 uppercase" id="filmoftheday-base-year">1999 • Драма</span>
+            <h2 class="text-xl sm:text-2xl font-black text-white font-serif uppercase tracking-wide truncate" id="filmoftheday-base-title">
+              Зеленая миля
+            </h2>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="text-amber-400 text-xs font-bold">★ 9.1 Кинопоиск</span>
+              <span class="text-gray-300 text-xs">• Наведите курсор</span>
+            </div>
+          </div>
+
+          <!-- ================= ХОВЕР-ОФЕРЛЕЙ (ТРЕБОВАНИЕ ПОЛЬЗОВАТЕЛЯ): =================
+               "чтобы когда пользователь проводил мышкой там показывался его рейтинг кол во просмотров" -->
+          <div class="film-day-overlay absolute inset-0 bg-black/85 backdrop-blur-md p-6 flex flex-col justify-between text-white transition-all duration-300">
+            
+            <!-- Верхняя часть оверлея: Бейджи и статус -->
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold uppercase tracking-wider">
+                  ★ Фильм дня
+                </span>
+                <span class="text-xs text-gray-300 font-semibold px-2 py-0.5 rounded bg-white/10" id="filmoftheday-hover-age">16+</span>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-black font-serif uppercase tracking-wide leading-tight" id="filmoftheday-hover-title">
+                Зеленая миля
+              </h3>
+              <p class="text-xs text-emerald-400 font-semibold mt-1" id="filmoftheday-hover-director">
+                Фрэнк Дарабонт • 1999 • 189 мин
+              </p>
+            </div>
+
+            <!-- Центральная часть оверлея: РЕЙТИНГ И КОЛИЧЕСТВО ПРОСМОТРОВ -->
+            <div class="space-y-3.5 my-auto py-2 border-y border-white/10">
+              
+              <!-- Рейтинги КП и KinoScore -->
+              <div class="grid grid-cols-2 gap-2 text-center">
+                <div class="p-2.5 rounded-xl bg-white/10 border border-white/10">
+                  <span class="block text-[10px] text-gray-300 uppercase font-bold tracking-wider">Кинопоиск</span>
+                  <div class="flex items-center justify-center gap-1 mt-0.5">
+                    <span class="text-amber-400 text-base">★</span>
+                    <span class="text-lg font-black text-white" id="filmoftheday-hover-rating">9.1</span>
+                  </div>
+                  <span class="text-[10px] text-emerald-400 font-medium">Топ-250: #1</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-white/10 border border-white/10">
+                  <span class="block text-[10px] text-gray-300 uppercase font-bold tracking-wider">KinoScore</span>
+                  <div class="flex items-center justify-center gap-1 mt-0.5">
+                    <span class="text-emerald-400 text-base">★</span>
+                    <span class="text-lg font-black text-white" id="filmoftheday-hover-site-rating">9.2</span>
+                  </div>
+                  <span class="text-[10px] text-gray-300 font-medium">98% свежести</span>
+                </div>
+              </div>
+
+              <!-- КОЛИЧЕСТВО ПРОСМОТРОВ И ОЦЕНОК (по референсу) -->
+              <div class="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl">👁️</span>
+                  <div>
+                    <span class="block text-[10px] uppercase tracking-wider text-gray-300 font-bold">Просмотров</span>
+                    <span class="text-xs font-black text-white" id="filmoftheday-hover-views">2,480,000+</span>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="block text-[10px] uppercase tracking-wider text-gray-300 font-bold">Оценок КП</span>
+                  <span class="text-xs font-black text-amber-400" id="filmoftheday-hover-votes">1,120,450</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Нижняя часть оверлея: Кнопка перехода к картине -->
+            <div class="pt-2">
+              <a 
+                id="filmoftheday-hover-btn"
+                href="film_435.html" 
+                class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-black text-xs uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-lg hover:shadow-emerald-500/30 transition-all"
+                onclick="event.stopPropagation();"
+              >
+                <span>Перейти к фильму</span>
+                <span>➔</span>
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Подсказка под постером -->
+        <div class="mt-4 text-center">
+          <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/10 dark:bg-white/10 text-[11px] font-semibold text-gray-700 dark:text-gray-300 backdrop-blur-sm">
+            <span>💡</span>
+            <span>Наведите курсор на постер для отображения рейтингов и статистики просмотров</span>
+          </span>
+        </div>
+
+      </div>
+
+      <!-- НИЖНИЙ РЯД: 3 БЕНТО-КАРТОЧКИ (ПОЛНОЕ СООТВЕТСТВИЕ СТРУКТУРЕ РЕФЕРЕНСА) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 pb-2">
+        
+        <!-- Карточка 1 (Нижняя левая, как 'PLANT BASE ENERGY' в референсе): Награды и культовый статус -->
+        <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-5 rounded-2xl border border-gray-200/80 dark:border-white/10 shadow-lg flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-widest text-amber-500 flex items-center gap-1.5">
+              <span>🏆</span>
+              <span>ПРИЗНАНИЕ КИНЕМАТОГРАФА</span>
+            </span>
+            <h3 class="text-base sm:text-lg font-black text-gray-900 dark:text-white uppercase font-serif mt-2 leading-tight">
+              4 Номинации на Оскар
+            </h3>
+            <p class="text-xs text-gray-600 dark:text-gray-300 mt-2 leading-relaxed">
+              Лучший фильм года, Лучшая мужская роль второго плана (Майкл Кларк Дункан), Лучший звук, Лучший адаптированный сценарий.
+            </p>
+          </div>
+          <div class="pt-3 mt-3 border-t border-gray-100 dark:border-white/10 flex items-center justify-between text-xs font-semibold text-gray-500 dark:text-gray-400">
+            <span>3 премии «Сатурн»</span>
+            <span class="text-emerald-500 font-bold">100% Шедевр</span>
+          </div>
+        </div>
+
+        <!-- Карточка 2 (Нижняя центр, как 'Support Daily Energy ↗' в референсе): Онлайн стриминг с иконкой стрелки -->
+        <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-5 rounded-2xl border border-gray-200/80 dark:border-white/10 shadow-lg flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+                ГДЕ СМОТРЕТЬ
+              </span>
+              <a id="filmoftheday-watch-direct" href="film_435.html" class="text-gray-900 dark:text-white hover:text-emerald-500 font-bold text-sm">
+                ↗
+              </a>
+            </div>
+            <h3 class="text-base sm:text-lg font-black text-gray-900 dark:text-white font-serif mt-2 leading-tight">
+              Смотреть онлайн
+            </h3>
+            <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">
+              Доступен в безупречном 4K Ultra HD качестве с официальным дубляжом.
+            </p>
+          </div>
+          <!-- Платформы -->
+          <div class="pt-3 mt-3 border-t border-gray-100 dark:border-white/10 flex flex-wrap items-center gap-2">
+            <span class="px-2.5 py-1 rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 text-[11px] font-bold">Кинопоиск HD</span>
+            <span class="px-2.5 py-1 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 text-[11px] font-bold">Иви</span>
+            <span class="px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[11px] font-bold">Okko</span>
+          </div>
+        </div>
+
+        <!-- Карточка 3 (Нижняя правая, как 'Support focus... EXPLORE MORE >' в референсе): Синопсис и переход -->
+        <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-5 rounded-2xl border border-gray-200/80 dark:border-white/10 shadow-lg flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-1.5 text-emerald-500 text-xs font-semibold mb-1">
+              <span>🌿</span>
+              <span class="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">СИНОПСИС</span>
+            </div>
+            <p class="text-xs text-gray-700 dark:text-gray-200 leading-relaxed font-normal italic" id="filmoftheday-tagline">
+              «Они нашли друг друга в самом безнадежном месте...»
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-3 leading-relaxed" id="filmoftheday-synopsis">
+              Пол Эджкомб — начальник блока смертников тюрьмы «Холодная гора», каждый из узников которого однажды проходит «зеленую милю» по пути к электрическому стулу.
+            </p>
+          </div>
+          <div class="pt-3 mt-3 border-t border-gray-100 dark:border-white/10">
+            <a 
+              id="filmoftheday-more-link"
+              href="film_435.html" 
+              class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 flex items-center gap-1 transition-colors"
+            >
+              <span>Подробнее о картине</span>
+              <span>➔</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+  <!-- END: SECTION ФИЛЬМ ДНЯ -->
+
+  <!-- BEGIN: Footer -->
+  <footer class="bg-white border-t border-gray-200/80 py-8 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-lg bg-gray-900 text-white font-bold flex items-center justify-center text-xs">
+          K
+        </div>
+        <p class="font-medium text-gray-700">KinoScore © 2026 • Интерактивный киногид и каталог фильмов</p>
+      </div>
+      <div class="flex items-center gap-4 font-semibold text-gray-600">
+        <button onclick="setTheme('light')" class="hover:text-gray-900">☀️ Светлая</button>
+        <button onclick="setTheme('dark')" class="hover:text-gray-900">🌙 Тёмная</button>
+        <button onclick="setTheme('cinematic')" class="hover:text-gray-900">🎬 Синематик</button>
+        <button onclick="openRandomizerModal()" class="text-amber-600 hover:text-amber-700">🎲 Рандомайзер</button>
+      </div>
+    </div>
+  </footer>
+  <!-- END: Footer -->
+
+  <!-- ================= 4. МОДАЛЬНОЕ ОКНО: РАНДОМАЙЗЕР ================= -->
+  <div id="randomizer-modal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+    <div class="modal-card bg-white rounded-2xl border border-gray-200 shadow-2xl p-6 sm:p-7 max-w-lg w-full relative overflow-hidden transition-colors">
+      <button onclick="closeRandomizerModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center text-xs font-bold transition-colors">
+        ✕
+      </button>
+
+      <div class="text-center mb-5">
+        <span class="text-3xl">🎲</span>
+        <h3 class="font-serif text-xl sm:text-2xl font-black text-gray-900 uppercase tracking-wide mt-1">Случайный фильм на вечер</h3>
+        <p class="text-xs text-gray-500 mt-1">Не знаете, что посмотреть? Наш кино-рандомайзер выберет идеальную картину!</p>
+      </div>
+
+      <!-- Карточка выбранного фильма -->
+      <div id="roulette-box" class="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-[#E9ECEF]/60 border border-gray-200 mb-5 transition-all duration-300">
+        <img id="roulette-poster" src="" alt="Постер" class="w-28 aspect-[2/3] object-cover rounded-lg shadow-md shrink-0">
+        <div class="flex flex-col justify-center text-center sm:text-left">
+          <div class="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 mb-1">
+            <span id="roulette-year-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-900 text-white">1999</span>
+            <span id="roulette-score" class="text-xs font-bold text-amber-600">★ 9.1</span>
+          </div>
+          <h4 id="roulette-title" class="font-serif font-black text-base text-gray-900 leading-tight uppercase mb-1">...</h4>
+          <p id="roulette-slogan" class="text-[11px] italic text-amber-700 mb-1.5 line-clamp-1"></p>
+          <p id="roulette-desc" class="text-xs text-gray-600 line-clamp-3 leading-relaxed"></p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="roulette-spin-again" onclick="spinRandomizer()" class="flex-1 py-2.5 rounded-xl border border-gray-300 hover:bg-gray-100 text-gray-800 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors">
+          <span>🎲</span>
+          <span>Крутить ещё раз</span>
+        </button>
+        <a id="roulette-open-btn" href="#" class="flex-1 py-2.5 rounded-xl bg-gray-900 hover:bg-black text-white font-bold text-xs text-center shadow-lg transition-all flex items-center justify-center gap-1">
+          <span>Смотреть фильм</span>
+          <span>➔</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 5. МОДАЛЬНОЕ ОКНО: АВТОРИЗАЦИЯ ================= -->
+  <div id="auth-modal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+    <div class="modal-card bg-white rounded-2xl border border-gray-200 shadow-2xl p-6 sm:p-8 max-w-md w-full relative transition-colors">
+      <button onclick="closeAuthModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center text-xs font-bold transition-colors">
+        ✕
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="w-11 h-11 mx-auto mb-3 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </div>
+        <h3 class="font-serif text-xl font-black text-gray-900 uppercase tracking-wide">Вход в личный кабинет</h3>
+        <p class="text-xs text-gray-500 mt-1">Войдите, чтобы оставлять отзывы и оценивать картины</p>
+      </div>
+
+      <!-- Вкладки: Вход / Регистрация -->
+      <div class="flex rounded-xl bg-gray-100 p-1 mb-5">
+        <button id="auth-tab-btn-login" onclick="toggleAuthTab('login')" class="flex-1 py-1.5 rounded-lg text-xs font-bold bg-white text-gray-900 shadow-sm transition-all">
+          Вход
+        </button>
+        <button id="auth-tab-btn-reg" onclick="toggleAuthTab('reg')" class="flex-1 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-900 transition-all">
+          Регистрация
+        </button>
+      </div>
+
+      <form id="auth-form-submit" onsubmit="handleAuthLogin(event)" class="flex flex-col gap-3.5">
+        <div id="auth-field-name" class="hidden flex-col gap-1">
+          <label class="text-xs font-semibold text-gray-700">Ваше имя</label>
+          <input type="text" id="auth-input-name" placeholder="Александр" class="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none focus:border-gray-900 focus:bg-white text-gray-900">
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold text-gray-700">Электронная почта</label>
+          <input type="email" id="auth-input-email" required placeholder="critic@kinoscore.ru" value="critic@cinema.ru" class="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none focus:border-gray-900 focus:bg-white text-gray-900">
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold text-gray-700">Пароль</label>
+          <input type="password" id="auth-input-pass" required placeholder="••••••••" value="password123" class="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none focus:border-gray-900 focus:bg-white text-gray-900">
+        </div>
+
+        <button type="submit" id="auth-submit-caption" class="w-full py-2.5 px-4 bg-gray-900 hover:bg-black text-white text-xs font-semibold rounded-xl shadow hover:shadow-lg transition-all tracking-wide mt-1">
+          Войти в профиль
+        </button>
+
+        <!-- Быстрый демо-вход -->
+        <button type="button" onclick="loginDemoCritic()" class="w-full py-2 rounded-xl border border-gray-300 hover:bg-gray-50 text-gray-800 text-xs font-semibold transition-colors flex items-center justify-center gap-1.5">
+          <span>⚡</span>
+          <span>Войти в 1 клик как Кинокритик</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= МОДАЛЬНОЕ ОКНО: ТРЕЙЛЕР ФИЛЬМА ================= -->
+  <div id="trailer-modal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+    <div class="modal-card bg-black border border-white/20 rounded-2xl max-w-4xl w-full overflow-hidden shadow-2xl relative">
+      <div class="flex items-center justify-between p-4 border-b border-white/10 bg-zinc-900/90">
+        <div class="flex items-center gap-2">
+          <span class="text-emerald-400">▶</span>
+          <h3 id="trailer-modal-title" class="text-sm font-bold text-white font-serif tracking-wide">Трейлер: Зеленая миля</h3>
+        </div>
+        <button onclick="closeTrailerModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs font-bold transition-colors">
+          ✕
+        </button>
+      </div>
+      <div class="aspect-video w-full bg-black flex items-center justify-center relative">
+        <video id="trailer-modal-video" controls class="w-full h-full object-contain" src="trailers/film_435.mp4" poster="https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/35975f3e-11e5-483f-9895-be2689f99a0d/orig"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 6. БАЗА ДАННЫХ И СКРИПТ КАТАЛОГА ================= -->
+  <!-- Безопасный блок данных application/json: исключает синтаксические ошибки в IDE и линтерах -->
+  <script id="raw-movies-json" type="application/json">
+[
+    {
+        "id": "258687",
+        "title": "Интерстеллар",
+        "year": "2014",
+        "slogan": "Следующий шаг человечества станет величайшим",
+        "description": "Когда засуха, пыльные бури и вымирание растений приводят человечество к продовольственному кризису, коллектив исследователей и учёных отправляется сквозь червоточину (которая предположительно соединяет области пространства-времени через большое расстояние) в путешествие, чтобы превзойти прежние ограничения для космических путешествий человека и найти планету с подходящими для человечества условиями.",
+        "poster": "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/78c36c0f-aefd-4102-bc3b-bac0dd4314d8/orig",
+        "posters": [
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/78c36c0f-aefd-4102-bc3b-bac0dd4314d8/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/d270debf-1e96-4ffe-b232-43070136398f/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/d19d2ddd-210f-4c38-b6ee-f0347f394373/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/7ae40b66-ebda-4570-8676-980344d81bc1/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/1fd57053-4045-4919-922f-9dd600be4b83/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/907fcc87-872b-4658-8258-8cbdb879a3fe/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/57db3d42-9db6-42f6-8201-60c1f9f853e3/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/f01c4b73-91b6-4e3c-91d2-7df2a929dfde/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/603f775a-ab7e-413d-83d7-839ed828cdf4/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/8e5c6653-af5a-4f32-a78b-fa02c66bacf4/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/d2c029b3-5581-4297-ad99-96af01e1e6df/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/0d133cb8-aadf-432f-b8dd-ddc8a99b3ad4/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1704946/60b1db7e-767f-45fd-a428-6d13f9f151c6/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/635d7f90-a68b-4010-8825-3eb972c897ac/orig"
+        ],
+        "duration": "2 ч 49 мин",
+        "genre": "фантастика, драма, приключения",
+        "age": "18+",
+        "country": "США, Великобритания, Канада",
+        "director": "Кристофер Нолан",
+        "budget": "$165 000 000",
+        "boxoffice": "$773 889 028",
+        "ratingKP": "8.7",
+        "ratingSite": "8.7",
+        "trailer": "trailers/film_258687.mp4",
+        "watch_kp": "https://www.kinopoisk.ru/film/258687/",
+        "watch_rutube": "https://rutube.ru/video/854ce20ade387f87041ca1e29e002448/",
+        "watch_vk": "https://vkvideo.ru/video-220018529_456243270",
+        "gallery": [
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/2f2c287c-3018-4754-b7da-6872325421b7/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/fd24f0f8-c7dd-403b-ae09-be91bd702a57/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/17cac41d-1b17-479d-83c0-ee6cbc079215/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/a00ca897-4746-4e96-92e5-458220136797/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/c408904c-af93-429d-87b8-5cd9bf57380d/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/f777de0e-dec6-4349-a595-c60c7d7c6f13/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/2b3184ed-5e1b-49d6-ba7d-722585f693fd/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/6b735bfb-8301-40cc-a5a0-6e593a09560b/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/2a196190-254b-4639-9913-9e7fc4d0249c/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/9f3913b2-cf46-49a6-b05b-1054c4686092/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/4b3b3e4d-0bbb-4525-9752-19e4b8d3c23e/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/0a497587-2d49-47a0-a3c1-4afae329a3dd/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1704946/bf54f9f9-382f-4a9b-b5ca-762ebfd5f1f5/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/06be5f1b-e2ed-44a9-a7d1-58d3f861d373/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/feb8c536-423c-4d03-90a0-d1843d18d70f/orig"
+        ],
+        "actors": [
+            [
+                "Кристофер Нолан",
+                "41477"
+            ],
+            [
+                "Мэттью Макконахи",
+                "797"
+            ],
+            [
+                "Василий Дахненко",
+                "1078858"
+            ],
+            [
+                "Энн Хэтэуэй",
+                "38703"
+            ],
+            [
+                "Марьяна Спивак",
+                "1663494"
+            ],
+            [
+                "Джессика Честейн",
+                "1111242"
+            ],
+            [
+                "Наталья Грачёва",
+                "1824212"
+            ],
+            [
+                "Маккензи Фой",
+                "2007922"
+            ],
+            [
+                "Анна Драгилева",
+                "2531039"
+            ],
+            [
+                "Майкл Кейн",
+                "3711"
+            ]
+        ],
+        "awards": [
+            {
+                "name": "Оскар",
+                "year": "2015",
+                "nomination": "• Лучшие визуальные эффекты<br>• Лучший звук<br>• Лучший монтаж звука"
+            },
+            {
+                "name": "Золотой глобус",
+                "year": "2015",
+                "nomination": "• Лучший саундтрек"
+            },
+            {
+                "name": "Британская академия",
+                "year": "2015",
+                "nomination": "• Лучшие визуальные эффекты<br>• Лучшая работа оператора (Хойте Ван Хойтема)<br>• Лучший саундтрек"
+            },
+            {
+                "name": "Сатурн",
+                "year": "2015",
+                "nomination": "• Лучший научно-фантастический фильм<br>• Лучший молодой актер/актриса<br>• Лучший сценарий"
+            }
+        ]
+    },
+    {
+        "id": "326",
+        "title": "Побег из Шоушенка",
+        "year": "1994",
+        "slogan": "Страх - это кандалы. Надежда - это свобода",
+        "description": "Бухгалтер Энди Дюфрейн обвинён в убийстве собственной жены и её любовника. Оказавшись в тюрьме под названием Шоушенк, он сталкивается с жестокостью и беззаконием, царящими по обе стороны решётки. Каждый, кто попадает в эти стены, становится их рабом до конца жизни. Но Энди, обладающий живым умом и доброй душой, находит подход как к заключённым, так и к охранникам, добиваясь их особого к себе расположения.",
+        "poster": "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/eae33fc1-bcb5-450e-89bf-9ba077b24cdf/orig",
+        "posters": [
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/eae33fc1-bcb5-450e-89bf-9ba077b24cdf/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/e26044e5-2d5a-4b38-a133-a776ad93366f/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/76cd135e-4e8c-4204-93b4-d018b137e8e4/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/4e30a0a5-9f5b-43c4-b437-7d82f65da948/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/4c1260ea-1f87-4e17-ae2d-030f5571f02c/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/17793dcb-8c17-4326-a43e-efc4c6adf06d/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/2fbb9b8d-4f86-45fb-b42c-8c7b0e7ac7a5/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/e66a3396-239b-4871-af63-86b520439f22/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/63807524-c931-460e-b7a7-75079c07daa0/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/eae5a8b3-9d8f-4eca-b498-9a30ce3c277a/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/7d8aa10d-99e2-4845-bf08-e407d55f6dbc/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/75949783-87fd-4421-98e4-8ba12b5706bc/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/e3248cc4-97a1-408e-8361-9354ffba254d/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/d972e04d-0266-467a-a147-73cb19c6dce6/orig"
+        ],
+        "duration": "2 ч 22 мин",
+        "genre": "драма",
+        "age": "18+",
+        "country": "США",
+        "director": "Фрэнк Дарабонт",
+        "budget": "$25 000 000",
+        "boxoffice": "$28 418 687",
+        "ratingKP": "9.1",
+        "ratingSite": "9.1",
+        "trailer": "trailers/film_326.mp4",
+        "watch_kp": "https://www.kinopoisk.ru/film/326/",
+        "watch_rutube": "https://rutube.ru/video/cae96c24f81419ccd444ed151a169985/",
+        "watch_vk": "https://vkvideo.ru/video-220018529_456243258",
+        "gallery": [
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/a9b7373f-8165-4d2f-a960-8caa2fb38cc1/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/92cb6b5c-aaa5-4d7c-aed9-c9939518204e/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/a28e01da-fc3a-4561-968b-493b59c4af8b/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/1cb90622-458c-4bae-bfb1-f477e177c139/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/b7fa3690-400b-4386-bf63-0181bfa47aa6/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/11b832e7-2e6e-4db1-8077-46d4b807a6b5/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/9e5b639b-4c6f-443e-8b95-911673258725/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/522a7440-c128-4f8b-bce0-78e5015085bc/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/b42d3573-d32c-4172-985a-185f4de9a88f/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/bb74dca7-d662-409b-9d32-b1422b7acb2e/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/3f4af917-1cc2-41f8-9c5f-992a7172f632/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/41864b7f-996d-4fa6-a988-d9dab27de2b9/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/4f032173-d0c8-41e7-a2a8-233f3b9e9cb6/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/4f0f0e31-4f8d-43cf-9c95-1a4d42606ba1/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/55d72401-ba33-4cf5-924f-822c45486261/orig"
+        ],
+        "actors": [
+            [
+                "Фрэнк Дарабонт",
+                "24262"
+            ],
+            [
+                "Тим Роббинс",
+                "7987"
+            ],
+            [
+                "Иван Литвиненко",
+                "1826342"
+            ],
+            [
+                "Диомид Виноградов",
+                "1781077"
+            ],
+            [
+                "Морган Фриман",
+                "6750"
+            ],
+            [
+                "Александр Носков",
+                "1608429"
+            ],
+            [
+                "Игорь Старосельцев",
+                "701366"
+            ],
+            [
+                "Боб Гантон",
+                "23481"
+            ],
+            [
+                "Юрий Маляров",
+                "280829"
+            ],
+            [
+                "Никита Прозоровский",
+                "273180"
+            ]
+        ],
+        "awards": [
+            {
+                "name": "Оскар",
+                "year": "1995",
+                "nomination": "• Лучший фильм<br>• Лучшая мужская роль (Морган Фриман)<br>• Лучший адаптированный сценарий"
+            },
+            {
+                "name": "Золотой глобус",
+                "year": "1995",
+                "nomination": "• Лучшая мужская роль (драма) (Морган Фриман)<br>• Лучший сценарий"
+            },
+            {
+                "name": "Сатурн",
+                "year": "1995",
+                "nomination": "• Лучший сценарий<br>• Лучший приключенческий фильм, боевик или триллер"
+            },
+            {
+                "name": "Премия Гильдии актеров",
+                "year": "1995",
+                "nomination": "• Лучшая мужская роль (Тим Роббинс)<br>• Лучшая мужская роль (Морган Фриман)<br>• Лучшие фильмы Кинопоиска: Топ-250 >> >>"
+            }
+        ]
+    },
+    {
+        "id": "435",
+        "title": "Зеленая миля",
+        "year": "1999",
+        "slogan": "Пол Эджкомб не верил в чудеса. Пока не столкнулся с одним из них",
+        "description": "Пол Эджкомб — начальник блока смертников в тюрьме «Холодная гора», каждый из узников которого однажды проходит «зеленую милю» по пути к месту казни. Пол повидал много заключённых и надзирателей за время работы. Однако гигант Джон Коффи, обвинённый в страшном преступлении, стал одним из самых необычных обитателей блока.",
+        "poster": "https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/443e111e-f714-4954-83d0-3e0acca2a561/orig",
+        "posters": [
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/443e111e-f714-4954-83d0-3e0acca2a561/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/acb932eb-c7d0-42de-92df-f5f306c4c48e/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/560a8955-9c4a-46f0-a291-185b521a0e49/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/20110bfe-0324-440d-b4d9-4358773b38b9/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/5dc6cbbd-cef2-452b-bad1-4ab6a87ba10d/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/b3ada917-54d4-4150-b148-16ca4543b3fb/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/dc6fa0d7-98d6-4822-8e24-5e22be7bbf5b/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/2ac4b295-bdd0-423b-8799-4c3736dfd92e/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/8746e5d4-eb35-4cd5-b5f4-777782c9dd17/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/90d04ba1-e9c7-4835-ba43-2e70171a509c/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/3861d308-a3b4-4bd4-857d-519d26de7287/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/962a4ff3-6477-47d1-b8c3-2bad0c41cdcf/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/ed070d82-5bcf-4a8c-9268-18fbb9c12e15/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/94e71573-5d6f-4c42-a552-cab23951fce4/orig"
+        ],
+        "duration": "3 ч 9 мин",
+        "genre": "драма, фэнтези, криминал",
+        "age": "18+",
+        "country": "США",
+        "director": "Фрэнк Дарабонт",
+        "budget": "$60 000 000",
+        "boxoffice": "$286 801 374",
+        "ratingKP": "9.1",
+        "ratingSite": "9.1",
+        "trailer": "trailers/film_435.mp4",
+        "watch_kp": "https://www.kinopoisk.ru/film/435/",
+        "watch_rutube": "https://rutube.ru/video/55798f675920950add8082a2e8174794/",
+        "watch_vk": "https://vkvideo.ru/video-230698619_456239779",
+        "gallery": [
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/35975f3e-11e5-483f-9895-be2689f99a0d/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/c4c5ab16-01e4-416c-abbe-c512f1d45697/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/77a4eeb5-38c2-4720-b252-715c6a7e0a93/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/6c27c30c-d0fd-4601-8608-e93d83af4b78/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/1f2dd4c0-b687-45b9-8f1a-24cc61c9eb0f/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/9e954218-9173-43ee-aeeb-9e2e3527a3ae/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/b8735074-4878-48bb-a532-d8c49510a0f6/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/6e2b95c4-9ee5-48dd-9211-ca784030fbfa/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/5c020550-2e0f-495a-a2d6-fd6b70da3567/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/5ab8a6c2-888c-4bec-97d5-55e42ecb4c96/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/956908ae-b855-4ea4-ae2f-86f33ebf9955/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/caaf02e9-4473-473c-a5d6-643a51fa9d53/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/499746a9-8600-4036-828b-30c4cc2e7a7b/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/f0a45ae4-0cfd-4135-9abe-2e6823646036/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/e0f8f189-917c-429d-9f43-eab80d96bf9e/orig"
+        ],
+        "actors": [
+            [
+                "Фрэнк Дарабонт",
+                "24262"
+            ],
+            [
+                "Том Хэнкс",
+                "9144"
+            ],
+            [
+                "Всеволод Кузнецов",
+                "1616407"
+            ],
+            [
+                "Дэвид Морс",
+                "12759"
+            ],
+            [
+                "Владимир Антоник",
+                "261729"
+            ],
+            [
+                "Бонни Хант",
+                "22527"
+            ],
+            [
+                "Любовь Германова",
+                "269650"
+            ],
+            [
+                "Майкл Кларк Дункан",
+                "677"
+            ],
+            [
+                "Валентин Голубенко",
+                "231569"
+            ],
+            [
+                "Джеймс Кромуэлл",
+                "20664"
+            ]
+        ],
+        "awards": [
+            {
+                "name": "Оскар",
+                "year": "2000",
+                "nomination": "• Лучший фильм<br>• Лучшая мужская роль второго плана (Майкл Кларк Дункан)<br>• Лучший адаптированный сценарий"
+            },
+            {
+                "name": "Золотой глобус",
+                "year": "2000",
+                "nomination": "• Лучшая мужская роль второго плана (Майкл Кларк Дункан)"
+            },
+            {
+                "name": "Сатурн",
+                "year": "2000",
+                "nomination": "• Лучший актер второго плана ( Майкл Кларк Дункан )<br>• Лучшая актриса второго плана ( Патриша Кларксон )<br>• Лучший приключенческий фильм, боевик или триллер"
+            },
+            {
+                "name": "Премия Гильдии актеров",
+                "year": "2000",
+                "nomination": "• Лучший актерский состав<br>• Лучшая мужская роль второго плана (Майкл Кларк Дункан)<br>• Лучшие фильмы Кинопоиска: Топ-250 >> >>"
+            },
+            {
+                "name": "MTV",
+                "year": "2000",
+                "nomination": "• Победитель / Лучший фильм"
+            }
+        ]
+    },
+    {
+        "id": "3498",
+        "title": "Властелин колец: Возвращение короля",
+        "year": "2003",
+        "slogan": "There can be no triumph without loss. No victory without suffering. No freedom without sacrifice",
+        "description": "Повелитель сил тьмы Саурон направляет свою бесчисленную армию под стены Минас-Тирита, крепости Последней Надежды. Он предвкушает близкую победу, но именно это мешает ему заметить две крохотные фигурки — хоббитов, приближающихся к Роковой Горе, где им предстоит уничтожить Кольцо Всевластья.",
+        "poster": "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/ceb647c8-f7ac-4a3e-bbf3-e6551ea9013e/orig",
+        "posters": [
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/ceb647c8-f7ac-4a3e-bbf3-e6551ea9013e/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/4716873/452e487e-4c7e-46eb-84e3-bf4e6946a71d/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/c54449b0-5db6-4bb8-b4ee-55961adac176/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/612ee1af-4dc2-49aa-9dd8-cc09b5293303/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/a89088b7-99cf-4c55-ad78-0adc10e61b87/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/7dfa6dbd-15ea-41e9-b869-63dd33ffdb0d/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/f6013a2a-b5fc-442d-b0b3-4e06fde7727f/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/3389efa7-7dca-41ee-8173-89ade400f4bd/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/37b7f921-a24a-4611-a3e5-981137224e90/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/cb15a34b-829b-423c-ba3d-3e0de2f2854a/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/57a60e43-271c-417a-be1e-fff34cb27f18/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/7af20d3f-aa1b-4c39-8999-1d57ec278739/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/43ed66a9-8589-4283-b8b4-b50eca7f303c/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/f805d018-5f04-4aca-be94-f5a86985c742/orig"
+        ],
+        "duration": "3 ч 21 мин",
+        "genre": "фэнтези, приключения, драма",
+        "age": "18+",
+        "country": "Новая Зеландия, США",
+        "director": "Питер Джексон",
+        "budget": "$94 000 000",
+        "boxoffice": "$1 156 194 180",
+        "ratingKP": "8.7",
+        "ratingSite": "8.7",
+        "trailer": "https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+        "watch_kp": "https://www.kinopoisk.ru/film/3498/",
+        "watch_rutube": "https://rutube.ru/video/29580aaffc922753ccd8133b619e9d7e/",
+        "watch_vk": "https://vk.com/video?q=%D0%92%D0%BB%D0%B0%D1%81%D1%82%D0%B5%D0%BB%D0%B8%D0%BD%20%D0%BA%D0%BE%D0%BB%D0%B5%D1%86%3A%20%D0%92%D0%BE%D0%B7%D0%B2%D1%80%D0%B0%D1%89%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BA%D0%BE%D1%80%D0%BE%D0%BB%D1%8F%202003",
+        "gallery": [
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/22280454-b3be-45ac-88d5-8fa48f06a539/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/715cb6bc-b909-44e7-a7bb-a9abd705bac0/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/7e1091b1-20ef-4555-822c-c2fcd26bbdb1/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/7a842a64-f274-48b8-9365-3d7c9f9f572f/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/84a37eba-3eef-455c-a269-ae21571c8ced/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/0c73d5d7-ce56-4ba2-a805-cdaa45ecc304/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/4b7f32f3-8b61-4e70-a435-13b3e9dcffaa/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/004a9a56-f49b-45a0-b203-41f5a96f1d09/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/0255c46a-0556-4ae6-ba7e-18d4238e527a/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/b1e99655-7841-47e9-b9fa-26e66cc3ecfb/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/5679fa74-d6b5-4f7f-b832-d293e40df81e/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/6e363b75-85e3-45b2-9008-c58915a19cc7/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/8077f2f3-283d-41f5-bd3d-cf030222f6ed/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/96372d70-37c6-447f-9880-1625a302e0ce/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/e6ec1ddf-ac21-485c-86e4-43b6cf5dcb74/orig"
+        ],
+        "actors": [
+            [
+                "Питер Джексон",
+                "32383"
+            ],
+            [
+                "Элайджа Вуд",
+                "20287"
+            ],
+            [
+                "Григорий Анашкин",
+                "1041049"
+            ],
+            [
+                "Вигго Мортенсен",
+                "10779"
+            ],
+            [
+                "Алексей Рязанцев",
+                "1616606"
+            ],
+            [
+                "Шон Эстин",
+                "28426"
+            ],
+            [
+                "Андрей Бархударов",
+                "1079073"
+            ],
+            [
+                "Иэн Маккеллен",
+                "8215"
+            ],
+            [
+                "Рогволд Суховерко",
+                "318217"
+            ],
+            [
+                "Орландо Блум",
+                "30875"
+            ]
+        ],
+        "awards": [
+            {
+                "name": "Оскар",
+                "year": "2004",
+                "nomination": "• Лучший фильм<br>• Лучший режиссер ( Питер Джексон )<br>• Лучший адаптированный сценарий"
+            },
+            {
+                "name": "Золотой глобус",
+                "year": "2004",
+                "nomination": "• Лучший фильм (драма)<br>• Лучший режиссер ( Питер Джексон )<br>• Лучшая песня  — «Into the West"
+            },
+            {
+                "name": "Британская академия",
+                "year": "2004",
+                "nomination": "• Лучший фильм<br>• Лучший адаптированный сценарий<br>• Лучшая работа оператора"
+            },
+            {
+                "name": "Сатурн",
+                "year": "2005",
+                "nomination": "• Лучшее специальное DVD-издание"
+            },
+            {
+                "name": "Премия Гильдии актеров",
+                "year": "2004",
+                "nomination": "• Лучший актерский состав<br>• Лучшие фильмы Кинопоиска: Топ-250 >> >>"
+            },
+            {
+                "name": "MTV",
+                "year": "2004",
+                "nomination": "• Победитель / Лучший фильм"
+            }
+        ]
+    },
+    {
+        "id": "1143242",
+        "title": "Джентльмены",
+        "year": "2019",
+        "slogan": "Criminal. Class",
+        "description": "Гангстеры всех мастей делят нелегальный бизнес. Закрученная экшен-комедия Гая Ричи с Мэттью Макконахи. Смотрите онлайн фильм Джентльмены на Кинопоиске.",
+        "poster": "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/34b02ab9-9ecd-4b72-b2ff-72a0875060a5/orig",
+        "posters": [
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/34b02ab9-9ecd-4b72-b2ff-72a0875060a5/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/b88f4392-526e-4747-868d-0773a3ad8246/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/5432fdc2-043d-43b3-9fe4-6bb83de2758e/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/570cfc7e-2ae9-4fd9-8193-1070b530879a/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/e3391701-0b2c-4635-bfcf-15c180f32bb6/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/7ef9bcba-4728-4950-8b88-147745c91bdc/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/1f2117e8-fbd0-48ef-b5e4-f8a8295ff1ff/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/c4783768-9a0e-406f-bf1e-457f73fd9a85/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/83a23a45-fd32-4dca-8a86-17c462943d41/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/4f8662b3-a177-4e0c-a40a-084f07a31040/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/acc1a9a1-b88c-45fe-98de-84c6333eac02/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/088f2433-7e66-4494-91f9-8fbb8d27b7f5/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/4c28fc6e-3eb8-4e16-bb24-f3663c4ea3e4/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/6ca8cbb8-cec4-4ba3-8e7a-daa3c65aa381/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/dad62acf-3a9d-412a-be30-9a3515677bb4/orig"
+        ],
+        "duration": "1 ч 53 мин",
+        "genre": "криминал, комедия, боевик",
+        "age": "18+",
+        "country": "США, Великобритания",
+        "director": "Гай Ричи",
+        "budget": "$22 000 000",
+        "boxoffice": "$115 171 795",
+        "ratingKP": "8.7",
+        "ratingSite": "8.7",
+        "trailer": "https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+        "watch_kp": "https://www.kinopoisk.ru/film/1143242/",
+        "watch_rutube": "https://rutube.ru/video/117b02b35df581b9e0d6884355b64336/",
+        "watch_vk": "https://vkvideo.ru/video-233305176_456242322",
+        "gallery": [
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/a03cad41-5338-4e97-997a-619f130f50d7/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/55c21dd3-036c-451e-b350-41f89cb9045b/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/d5cc31da-ec0c-4e4f-9282-614da6a5dbf2/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/bf89f1c6-ee08-40ec-a8d8-5dead13790d9/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/7cff709c-f933-4761-b1ab-b861b25c47c7/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/644865c1-44ef-47b3-8e00-1e5c2ffaf104/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/cc8753d5-2cb7-4b6c-a376-804b45171402/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/5ccc71df-6840-47da-b24c-05b74dd2d94e/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1704946/1e0ad1bd-a510-48cc-afe8-bd1b05e74bab/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/550f2c0e-9d26-42c3-a7df-d5d5f2eedd85/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/e9b96afc-d2e3-4358-8a46-76ee8eec3a4a/orig",
+            "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/9b095a6b-7c28-4324-8349-23a54b74a6fd/orig"
+        ],
+        "actors": [
+            [
+                "Гай Ричи",
+                "45159"
+            ],
+            [
+                "Мэттью Макконахи",
+                "797"
+            ],
+            [
+                "Василий Дахненко",
+                "1078858"
+            ],
+            [
+                "Чарли Ханнэм",
+                "38702"
+            ],
+            [
+                "Сергей Смирнов",
+                "2340955"
+            ],
+            [
+                "Генри Голдинг",
+                "4950097"
+            ],
+            [
+                "Филипп Бледный",
+                "1646082"
+            ],
+            [
+                "Хью Грант",
+                "8090"
+            ],
+            [
+                "Алексей Иващенко",
+                "304577"
+            ],
+            [
+                "Мишель Докери",
+                "1067193"
+            ]
+        ],
+        "awards": [
+            {
+                "name": "Сатурн",
+                "year": "2021",
+                "nomination": "• Лучший приключенческий фильм или боевик<br>• Лучшие фильмы Кинопоиска: Топ-250 >> >>"
+            }
+        ]
+    }
+]
+  </script>
+
+  <script>
+    // Безопасная инициализация базы фильмов
+    let MOVIES_DATABASE = [];
+    try {
+      const rawMoviesEl = document.getElementById('raw-movies-json');
+      const rawContent = rawMoviesEl ? rawMoviesEl.textContent.trim() : '';
+      if (rawContent && !rawContent.startsWith('{{')) {
+        MOVIES_DATABASE = JSON.parse(rawContent);
+      }
+    } catch (err) {
+      console.warn('Не удалось распарсить встроенный JSON фильмов:', err);
+      MOVIES_DATABASE = [];
+    }
+    // ================= СОСТОЯНИЕ КАТАЛОГА =================
+    let activeView = 'grid'; // 'grid' | 'list'
+    let selectedCollection = 'all'; // 'all' | 'top250' | 'oscar'
+    let searchQuery = '';
+    let selectedGenre = 'all';
+    let selectedYear = 'all';
+    let selectedMinRating = 0;
+    let selectedSort = 'rating_desc';
+
+    // Локальные оценки пользователя
+    let userMovieScores = JSON.parse(localStorage.getItem('kinoscore_user_ratings') || '{}');
+    let loggedUser = JSON.parse(localStorage.getItem('kinoscore_user') || 'null');
+
+    // ================= ПЕРЕКЛЮЧЕНИЕ ТЕМ =================
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('kinoscore_theme', theme);
+
+      const icon = document.getElementById('theme-indicator-icon');
+      const label = document.getElementById('theme-indicator-label');
+
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        if (icon) icon.textContent = '🌙';
+        if (label) label.textContent = 'Тёмная';
+      } else if (theme === 'cinematic') {
+        document.documentElement.classList.add('dark');
+        if (icon) icon.textContent = '🎬';
+        if (label) label.textContent = 'Синематик';
+      } else {
+        document.documentElement.classList.remove('dark');
+        if (icon) icon.textContent = '☀️';
+        if (label) label.textContent = 'Светлая';
+      }
+    }
+
+    function cyclePageTheme() {
+      const cur = localStorage.getItem('kinoscore_theme') || 'light';
+      const nextTheme = (cur === 'light') ? 'dark' : (cur === 'dark' ? 'cinematic' : 'light');
+      setTheme(nextTheme);
+    }
+
+    // ================= ФИЛЬТРАЦИЯ И СОРТИРОВКА =================
+    function checkOscar(m) {
+      if (!m.awards || !Array.isArray(m.awards)) return false;
+      return m.awards.some(a => (a.name && a.name.toLowerCase().includes('оскар')));
+    }
+
+    function checkTop250(m) {
+      const kp = parseFloat(String(m.ratingKP).replace(',', '.')) || 0;
+      return kp >= 8.5;
+    }
+
+    function getFilteredList() {
+      return MOVIES_DATABASE.filter(m => {
+        // 1. Поиск по тексту
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase().trim();
+          const title = (m.title || '').toLowerCase();
+          const director = (m.director || '').toLowerCase();
+          const genre = (m.genre || '').toLowerCase();
+          const actors = Array.isArray(m.actors) ? m.actors.map(a => a[0]).join(' ').toLowerCase() : '';
+          if (!title.includes(q) && !director.includes(q) && !genre.includes(q) && !actors.includes(q)) {
+            return false;
+          }
+        }
+
+        // 2. Коллекция
+        if (selectedCollection === 'top250' && !checkTop250(m)) return false;
+        if (selectedCollection === 'oscar' && !checkOscar(m)) return false;
+
+        // 3. Жанр
+        if (selectedGenre !== 'all') {
+          const g = (m.genre || '').toLowerCase();
+          if (!g.includes(selectedGenre.toLowerCase())) return false;
+        }
+
+        // 4. Год
+        if (selectedYear !== 'all') {
+          const y = parseInt(m.year) || 0;
+          if (selectedYear === '2010s' && (y < 2010 || y > 2024)) return false;
+          if (selectedYear === '2000s' && (y < 2000 || y > 2009)) return false;
+          if (selectedYear === '1990s' && (y < 1990 || y > 1999)) return false;
+        }
+
+        // 5. Минимальный рейтинг
+        if (selectedMinRating > 0) {
+          const r = parseFloat(String(m.ratingKP).replace(',', '.')) || 0;
+          if (r < selectedMinRating) return false;
+        }
+
+        return true;
+      }).sort((a, b) => {
+        const rA = parseFloat(String(a.ratingKP).replace(',', '.')) || 0;
+        const rB = parseFloat(String(b.ratingKP).replace(',', '.')) || 0;
+        const yA = parseInt(a.year) || 0;
+        const yB = parseInt(b.year) || 0;
+
+        if (selectedSort === 'rating_desc') return rB - rA;
+        if (selectedSort === 'rating_asc') return rA - rB;
+        if (selectedSort === 'year_desc') return yB - yA;
+        if (selectedSort === 'year_asc') return yA - yB;
+        if (selectedSort === 'title_asc') return (a.title || '').localeCompare(b.title || '');
+        return 0;
+      });
+    }
+
+    // ================= РЕНДЕР КАРТОЧЕК =================
+    function renderCatalog() {
+      const container = document.getElementById('catalog-cards-container');
+      const emptyState = document.getElementById('no-movies-found');
+      const countLabel = document.getElementById('catalog-count');
+      const resetBtn = document.getElementById('reset-filters-btn');
+      const activeTag = document.getElementById('active-tag-badge');
+
+      const filtered = getFilteredList();
+      countLabel.textContent = filtered.length;
+
+      // Индикатор активных фильтров
+      const hasFilter = (selectedCollection !== 'all' || selectedGenre !== 'all' || selectedYear !== 'all' || selectedMinRating > 0 || searchQuery !== '');
+      if (hasFilter) {
+        resetBtn.classList.remove('hidden');
+        activeTag.classList.remove('hidden');
+        let tags = [];
+        if (selectedCollection === 'top250') tags.push('Топ-250');
+        if (selectedCollection === 'oscar') tags.push('Оскар');
+        if (selectedGenre !== 'all') tags.push(selectedGenre);
+        if (selectedMinRating > 0) tags.push(`★ ${selectedMinRating}+`);
+        if (searchQuery) tags.push(`"${searchQuery}"`);
+        activeTag.textContent = tags.join(' • ');
+      } else {
+        resetBtn.classList.add('hidden');
+        activeTag.classList.add('hidden');
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      emptyState.classList.remove('flex');
+
+      if (activeView === 'grid') {
+        container.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8";
+        container.innerHTML = filtered.map(m => createGridCardHtml(m)).join('');
+      } else {
+        container.className = "flex flex-col gap-4";
+        container.innerHTML = filtered.map(m => createListCardHtml(m)).join('');
+      }
+    }
+
+    // Генерация HTML карточки в стиле film_435.html
+    function createGridCardHtml(m) {
+      const cleanTitle = (m.title || '').replace(/\s*\(\d{4}\)\s*$/, '').trim();
+      const kp = String(m.ratingKP || '9.0');
+      const siteScore = String(m.ratingSite || m.ratingKP || '9.0');
+      const hasOscarTag = checkOscar(m);
+      const userRating = userMovieScores[m.id] || 4.5;
+
+      return `
+        <div class="bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group" onclick="window.location.href='film_${m.id}.html'">
+          
+          <!-- Постер 2:3 в стилистике film_435.html -->
+          <div class="relative aspect-[2/3] w-full overflow-hidden bg-zinc-900 cursor-pointer">
+            <img 
+              src="${m.poster}" 
+              alt="${cleanTitle}" 
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+              loading="lazy"
+              onerror="this.src='https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d645e7f1-bc93-4a0b-93aa-7e3f8469ad5f/orig';"
+            />
+            
+            <!-- Нижний градиент и заголовок из film_435.html -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-emerald-950/40 opacity-85 flex flex-col justify-end p-4 pointer-events-none group-hover:opacity-40 transition-opacity duration-300">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400">${m.year}</span>
+              <h3 class="text-base sm:text-lg font-black text-white leading-tight font-serif uppercase tracking-wide drop-shadow truncate">
+                ${cleanTitle}
+              </h3>
+              <p class="text-[11px] text-gray-300 line-clamp-1 mt-0.5">${m.director || ''}</p>
+            </div>
+
+            <!-- Верхний бейдж рейтинга Кинопоиска -->
+            <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white text-[11px] font-semibold px-2.5 py-1 rounded-full border border-white/20 flex items-center gap-1 shadow-md">
+              <span class="text-amber-400">★</span>
+              <span>${kp}</span>
+            </div>
+
+            <!-- Бейдж Оскара -->
+            ${hasOscarTag ? `
+              <div class="absolute top-3 left-3 bg-amber-500/90 text-black text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md">
+                🏆 Оскар
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Нижняя панель карточки из film_435.html -->
+          <div class="p-4 sm:p-5 flex flex-col justify-between flex-1 gap-3.5" onclick="event.stopPropagation();">
+            <div>
+              <div class="flex items-center justify-between text-xs font-semibold text-gray-500 mb-2">
+                <span class="truncate max-w-[170px]">${m.genre || ''}</span>
+                <span class="text-gray-700 shrink-0 font-medium">${m.duration || ''}</span>
+              </div>
+
+              <!-- Табличка рейтингов -->
+              <div class="flex items-center justify-between py-2 border-y border-gray-100 text-xs">
+                <div class="flex items-center gap-1">
+                  <span class="text-gray-500 font-normal">Кинопоиск:</span>
+                  <span class="text-amber-600 font-bold">${kp} ★</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="text-gray-500 font-normal">KinoScore:</span>
+                  <span class="text-emerald-600 font-bold">${siteScore} ★</span>
+                </div>
+              </div>
+
+              <!-- Интерактивная плашка рейтинга с шагом 0.5 -->
+              <div class="flex items-center justify-between gap-1 mt-3 text-xs select-none">
+                <div class="flex items-center gap-0.5 text-amber-400" id="card-stars-${m.id}">
+                  ${[1, 2, 3, 4, 5].map(st => `
+                    <span 
+                      onclick="rateCardMovie('${m.id}', ${st})" 
+                      title="Оценить на ${st} из 5"
+                      class="cursor-pointer hover:scale-125 transition-transform text-xs ${userRating >= st ? 'opacity-100 font-bold' : 'opacity-25'}"
+                    >★</span>
+                  `).join('')}
+                </div>
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600">
+                  ${userRating.toFixed(1)} / 5
+                </span>
+              </div>
+            </div>
+
+            <!-- Кнопка перехода на страницу фильма -->
+            <a 
+              href="film_${m.id}.html" 
+              class="w-full py-2.5 px-4 bg-gray-900 hover:bg-black text-white text-xs font-semibold rounded-xl shadow hover:shadow-lg transition-all tracking-wide text-center flex items-center justify-center gap-2"
+            >
+              <span>Подробнее о фильме</span>
+              <svg class="w-3.5 h-3.5 stroke-current" fill="none" stroke-width="2.5" viewBox="0 0 24 24">
+                <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </a>
+          </div>
+
+        </div>
+      `;
+    }
+
+    // HTML карточки в режиме списка
+    function createListCardHtml(m) {
+      const cleanTitle = (m.title || '').replace(/\s*\(\d{4}\)\s*$/, '').trim();
+      const kp = String(m.ratingKP || '9.0');
+      const siteScore = String(m.ratingSite || m.ratingKP || '9.0');
+      const hasOscarTag = checkOscar(m);
+      const userRating = userMovieScores[m.id] || 4.5;
+
+      return `
+        <div class="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start gap-5 hover:shadow-lg transition-all">
+          <img 
+            src="${m.poster}" 
+            alt="${cleanTitle}" 
+            class="w-24 sm:w-28 aspect-[2/3] object-cover rounded-xl shadow-md shrink-0 cursor-pointer"
+            onclick="window.location.href='film_${m.id}.html'"
+          />
+          <div class="flex-1 flex flex-col justify-between w-full h-full">
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                <div class="flex items-center gap-2">
+                  <h3 class="font-serif font-black text-lg text-gray-900 uppercase cursor-pointer hover:text-emerald-700 transition-colors" onclick="window.location.href='film_${m.id}.html'">
+                    ${cleanTitle}
+                  </h3>
+                  <span class="text-xs font-semibold px-2 py-0.5 rounded-lg bg-gray-100 text-gray-700">${m.year}</span>
+                  ${hasOscarTag ? `<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-amber-500 text-black">🏆 Оскар</span>` : ''}
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">${kp} ★ КП</span>
+                  <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">${siteScore} ★ KS</span>
+                </div>
+              </div>
+
+              <p class="text-xs text-gray-500 font-medium mb-1.5">${m.genre} • Режиссер: ${m.director} • ${m.duration}</p>
+              <p class="text-xs text-gray-700 line-clamp-2 leading-relaxed font-normal">${m.description || ''}</p>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-3 mt-3 border-t border-gray-100">
+              <div class="flex items-center gap-2 text-xs">
+                <span class="text-gray-500 font-normal">Оценка:</span>
+                <span class="text-xs font-bold text-emerald-600">${userRating.toFixed(1)} / 5</span>
+              </div>
+
+              <a href="film_${m.id}.html" class="px-4 py-2 bg-gray-900 hover:bg-black text-white text-xs font-semibold rounded-xl shadow transition-colors">
+                Перейти к фильму ➔
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function rateCardMovie(id, starVal) {
+      if (!loggedUser) {
+        openAuthModal();
+        return;
+      }
+      userMovieScores[id] = starVal;
+      localStorage.setItem('kinoscore_user_ratings', JSON.stringify(userMovieScores));
+      renderCatalog();
+    }
+
+    // ================= РАНДОМАЙЗЕР =================
+    function openRandomizerModal() {
+      document.getElementById('randomizer-modal').classList.add('active');
+      spinRandomizer();
+    }
+
+    function closeRandomizerModal() {
+      document.getElementById('randomizer-modal').classList.remove('active');
+    }
+
+    let isSpinningRoulette = false;
+    function spinRandomizer() {
+      if (isSpinningRoulette || !MOVIES_DATABASE.length) return;
+      isSpinningRoulette = true;
+
+      const box = document.getElementById('roulette-box');
+      box.classList.add('roulette-anim');
+
+      let tick = 0;
+      const interval = setInterval(() => {
+        const randM = MOVIES_DATABASE[Math.floor(Math.random() * MOVIES_DATABASE.length)];
+        const cleanT = (randM.title || '').replace(/\s*\(\d{4}\)\s*$/, '');
+        document.getElementById('roulette-title').textContent = cleanT;
+        document.getElementById('roulette-poster').src = randM.poster || '';
+        tick++;
+
+        if (tick >= 10) {
+          clearInterval(interval);
+          box.classList.remove('roulette-anim');
+          isSpinningRoulette = false;
+
+          const chosen = MOVIES_DATABASE[Math.floor(Math.random() * MOVIES_DATABASE.length)];
+          const chosenClean = (chosen.title || '').replace(/\s*\(\d{4}\)\s*$/, '');
+          document.getElementById('roulette-title').textContent = chosenClean;
+          document.getElementById('roulette-poster').src = chosen.poster || '';
+          document.getElementById('roulette-score').textContent = `★ ${chosen.ratingKP}`;
+          document.getElementById('roulette-year-badge').textContent = chosen.year;
+          document.getElementById('roulette-slogan').textContent = chosen.slogan ? `«${chosen.slogan}»` : '';
+          document.getElementById('roulette-desc').textContent = chosen.description || '';
+          document.getElementById('roulette-open-btn').href = `film_${chosen.id}.html`;
+        }
+      }, 85);
+    }
+
+    // ================= АВТОРИЗАЦИЯ =================
+    function openAuthModal() {
+      document.getElementById('auth-modal').classList.add('active');
+    }
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.remove('active');
+    }
+
+    function toggleAuthTab(mode) {
+      const loginTab = document.getElementById('auth-tab-btn-login');
+      const regTab = document.getElementById('auth-tab-btn-reg');
+      const nameBox = document.getElementById('auth-field-name');
+      const subBtn = document.getElementById('auth-submit-caption');
+
+      if (mode === 'reg') {
+        regTab.className = "flex-1 py-1.5 rounded-lg text-xs font-bold bg-white text-gray-900 shadow-sm transition-all";
+        loginTab.className = "flex-1 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-900 transition-all";
+        nameBox.classList.remove('hidden');
+        nameBox.classList.add('flex');
+        subBtn.textContent = "Зарегистрироваться";
+      } else {
+        loginTab.className = "flex-1 py-1.5 rounded-lg text-xs font-bold bg-white text-gray-900 shadow-sm transition-all";
+        regTab.className = "flex-1 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-900 transition-all";
+        nameBox.classList.add('hidden');
+        nameBox.classList.remove('flex');
+        subBtn.textContent = "Войти в профиль";
+      }
+    }
+
+    function handleAuthLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-input-email').value;
+      const name = document.getElementById('auth-input-name').value || email.split('@')[0];
+      loggedUser = { name: name, email: email, role: 'Кинокритик' };
+      localStorage.setItem('kinoscore_user', JSON.stringify(loggedUser));
+      updateAuthUI();
+      closeAuthModal();
+      renderCatalog();
+    }
+
+    function loginDemoCritic() {
+      loggedUser = { name: 'Александр', email: 'critic@cinema.ru', role: 'Кинокритик' };
+      localStorage.setItem('kinoscore_user', JSON.stringify(loggedUser));
+      updateAuthUI();
+      closeAuthModal();
+      renderCatalog();
+    }
+
+    function logoutUser() {
+      loggedUser = null;
+      localStorage.removeItem('kinoscore_user');
+      updateAuthUI();
+      renderCatalog();
+    }
+
+    function updateAuthUI() {
+      const wrap = document.getElementById('auth-header-btn-wrap');
+      if (!wrap) return;
+
+      if (loggedUser) {
+        wrap.innerHTML = `
+          <div class="relative group">
+            <button class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold text-white bg-black/45 backdrop-blur-md border border-emerald-400/40 shadow-lg">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>${loggedUser.name}</span>
+            </button>
+            <div class="hidden group-hover:block absolute right-0 mt-1 w-32 rounded-xl bg-white text-gray-900 border border-gray-200 p-1 shadow-2xl z-50">
+              <button onclick="logoutUser()" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold text-red-600 hover:bg-red-50">
+                Выйти
+              </button>
+            </div>
+          </div>
+        `;
+      } else {
+        wrap.innerHTML = `
+          <button 
+            onclick="openAuthModal()"
+            class="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold text-white bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 transition-all shadow-lg hover:border-white/40">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            <span class="hidden sm:inline">Войти</span>
+          </button>
+        `;
+      }
+    }
+
+    // ================= ОБРАБОТЧИКИ СОБЫТИЙ =================
+    function setCollection(col) {
+      selectedCollection = col;
+
+      const allBtn = document.getElementById('btn-col-all');
+      const topBtn = document.getElementById('btn-col-top250');
+      const oscarBtn = document.getElementById('btn-col-oscar');
+
+      [allBtn, topBtn, oscarBtn].forEach(b => {
+        b.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all shrink-0";
+      });
+
+      if (col === 'top250') {
+        topBtn.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-white shadow-sm transition-all shrink-0 flex items-center gap-1";
+      } else if (col === 'oscar') {
+        oscarBtn.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-white shadow-sm transition-all shrink-0 flex items-center gap-1";
+      } else {
+        allBtn.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-white shadow-sm transition-all shrink-0";
+      }
+
+      renderCatalog();
+    }
+
+    function scrollToFilter(col) {
+      setCollection(col);
+      document.getElementById('filter-panel')?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Поиск
+    const searchInput = document.getElementById('search-input');
+    const clearBtn = document.getElementById('clear-search-btn');
+
+    searchInput?.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      if (searchQuery) clearBtn.classList.remove('hidden');
+      else clearBtn.classList.add('hidden');
+      renderCatalog();
+    });
+
+    clearBtn?.addEventListener('click', () => {
+      searchQuery = '';
+      searchInput.value = '';
+      clearBtn.classList.add('hidden');
+      renderCatalog();
+    });
+
+    // Горячая клавиша '/'
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== searchInput) {
+        e.preventDefault();
+        searchInput?.focus();
+      }
+      if (e.key === 'Escape') {
+        closeRandomizerModal();
+        closeAuthModal();
+        closeTrailerModal();
+      }
+    });
+
+    // Выпадающие фильтры
+    document.getElementById('genre-filter')?.addEventListener('change', (e) => {
+      selectedGenre = e.target.value;
+      renderCatalog();
+    });
+    document.getElementById('year-filter')?.addEventListener('change', (e) => {
+      selectedYear = e.target.value;
+      renderCatalog();
+    });
+    document.getElementById('rating-filter')?.addEventListener('change', (e) => {
+      selectedMinRating = parseFloat(e.target.value) || 0;
+      renderCatalog();
+    });
+    document.getElementById('sort-filter')?.addEventListener('change', (e) => {
+      selectedSort = e.target.value;
+      renderCatalog();
+    });
+
+    // Переключение вида
+    const vGrid = document.getElementById('view-grid-btn');
+    const vList = document.getElementById('view-list-btn');
+
+    vGrid?.addEventListener('click', () => {
+      activeView = 'grid';
+      vGrid.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-gray-900 shadow-sm transition-all flex items-center gap-1.5";
+      vList.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-900 transition-all flex items-center gap-1.5";
+      renderCatalog();
+    });
+
+    vList?.addEventListener('click', () => {
+      activeView = 'list';
+      vList.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-gray-900 shadow-sm transition-all flex items-center gap-1.5";
+      vGrid.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-900 transition-all flex items-center gap-1.5";
+      renderCatalog();
+    });
+
+    function resetFilters() {
+      searchQuery = '';
+      selectedGenre = 'all';
+      selectedYear = 'all';
+      selectedMinRating = 0;
+      selectedSort = 'rating_desc';
+      selectedCollection = 'all';
+
+      if (searchInput) searchInput.value = '';
+      if (clearBtn) clearBtn.classList.add('hidden');
+
+      const gFilter = document.getElementById('genre-filter');
+      const yFilter = document.getElementById('year-filter');
+      const rFilter = document.getElementById('rating-filter');
+      const sFilter = document.getElementById('sort-filter');
+      if (gFilter) gFilter.value = 'all';
+      if (yFilter) yFilter.value = 'all';
+      if (rFilter) rFilter.value = '0';
+      if (sFilter) sFilter.value = 'rating_desc';
+
+      setCollection('all');
+    }
+
+    // ================= ВКЛАДКА 'ФИЛЬМ ДНЯ' =================
+    let currentDayMovie = null;
+
+    function switchMainTab(tab) {
+      const catalogBtn = document.getElementById('tab-btn-catalog');
+      const filmDayBtn = document.getElementById('tab-btn-filmoftheday');
+      const hero = document.getElementById('catalog-hero');
+      const catalogMain = document.getElementById('catalog-main-content');
+      const filmDayView = document.getElementById('filmoftheday-view');
+
+      if (tab === 'filmoftheday') {
+        if (hero) hero.classList.add('hidden');
+        if (catalogMain) catalogMain.classList.add('hidden');
+        if (filmDayView) {
+          filmDayView.classList.remove('hidden');
+          filmDayView.classList.add('flex');
+        }
+
+        if (catalogBtn) {
+          catalogBtn.className = "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-gray-300 hover:text-white transition-all";
+          catalogBtn.setAttribute('aria-selected', 'false');
+          catalogBtn.querySelector('.tab-indicator')?.classList.add('hidden');
+        }
+        if (filmDayBtn) {
+          filmDayBtn.className = "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-white bg-white/20 transition-all shadow-sm";
+          filmDayBtn.setAttribute('aria-selected', 'true');
+          filmDayBtn.querySelector('.tab-indicator')?.classList.remove('hidden');
+        }
+
+        setupFilmOfTheDay();
+        try { history.replaceState(null, '', '#filmoftheday'); } catch (_) {}
+      } else {
+        if (hero) hero.classList.remove('hidden');
+        if (catalogMain) catalogMain.classList.remove('hidden');
+        if (filmDayView) {
+          filmDayView.classList.add('hidden');
+          filmDayView.classList.remove('flex');
+        }
+
+        if (catalogBtn) {
+          catalogBtn.className = "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-white bg-white/20 transition-all shadow-sm";
+          catalogBtn.setAttribute('aria-selected', 'true');
+          catalogBtn.querySelector('.tab-indicator')?.classList.remove('hidden');
+        }
+        if (filmDayBtn) {
+          filmDayBtn.className = "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-gray-300 hover:text-white transition-all";
+          filmDayBtn.setAttribute('aria-selected', 'false');
+          filmDayBtn.querySelector('.tab-indicator')?.classList.add('hidden');
+        }
+        try { history.replaceState(null, '', '#catalog'); } catch (_) {}
+      }
+    }
+
+    function setupFilmOfTheDay() {
+      // Ищем фильм дня: предпочитаем '435' (Зеленая миля) или фильм с наивысшим рейтингом
+      let movie = null;
+      if (Array.isArray(MOVIES_DATABASE) && MOVIES_DATABASE.length > 0) {
+        movie = MOVIES_DATABASE.find(m => String(m.id) === '435') || MOVIES_DATABASE[0];
+      }
+
+      // Дефолтные данные для фильма дня (если база пустая или оффлайн)
+      if (!movie) {
+        movie = {
+          id: '435',
+          title: 'Зеленая миля',
+          year: '1999',
+          director: 'Фрэнк Дарабонт',
+          duration: '3 ч 9 мин',
+          genre: 'драма, фэнтези, криминал',
+          ratingKP: '9.1',
+          ratingSite: '9.2',
+          poster: 'https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/443e111e-f714-4954-83d0-3e0acca2a561/orig',
+          trailer: 'trailers/film_435.mp4',
+          description: 'Пол Эджкомб — начальник блока смертников в тюрьме «Холодная гора», каждый из узников которого однажды проходит «зеленую милю» по пути к электрическому стулу.',
+          slogan: 'Пол Эджкомб не верил в чудеса. Пока не столкнулся с одним из них'
+        };
+      }
+
+      currentDayMovie = movie;
+
+      // Обновляем DOM элементы
+      const baseTitle = document.getElementById('filmoftheday-base-title');
+      const baseYear = document.getElementById('filmoftheday-base-year');
+      const posterImg = document.getElementById('filmoftheday-poster-img');
+      const hoverTitle = document.getElementById('filmoftheday-hover-title');
+      const hoverDirector = document.getElementById('filmoftheday-hover-director');
+      const hoverRating = document.getElementById('filmoftheday-hover-rating');
+      const hoverSiteRating = document.getElementById('filmoftheday-hover-site-rating');
+      const hoverBtn = document.getElementById('filmoftheday-hover-btn');
+      const watchDirect = document.getElementById('filmoftheday-watch-direct');
+      const moreLink = document.getElementById('filmoftheday-more-link');
+      const tagline = document.getElementById('filmoftheday-tagline');
+      const synopsis = document.getElementById('filmoftheday-synopsis');
+
+      const cleanTitle = (movie.title || '').replace(/\s*\(\d{4}\)\s*$/, '').trim();
+      const targetUrl = `film_${movie.id}.html`;
+
+      if (baseTitle) baseTitle.textContent = cleanTitle;
+      if (baseYear) baseYear.textContent = `${movie.year || '1999'} • ${movie.genre ? movie.genre.split(',')[0] : 'Драма'}`;
+      if (posterImg && movie.poster) posterImg.src = movie.poster;
+
+      if (hoverTitle) hoverTitle.textContent = cleanTitle;
+      if (hoverDirector) hoverDirector.textContent = `${movie.director || 'Режиссер'} • ${movie.year || ''} • ${movie.duration || ''}`;
+      if (hoverRating) hoverRating.textContent = movie.ratingKP || '9.1';
+      if (hoverSiteRating) hoverSiteRating.textContent = movie.ratingSite || movie.ratingKP || '9.2';
+
+      if (hoverBtn) hoverBtn.href = targetUrl;
+      if (watchDirect) watchDirect.href = targetUrl;
+      if (moreLink) moreLink.href = targetUrl;
+
+      if (tagline && movie.slogan) tagline.textContent = `«${movie.slogan}»`;
+      if (synopsis && movie.description) synopsis.textContent = movie.description;
+    }
+
+    function openDayMovieDetails() {
+      if (currentDayMovie && currentDayMovie.id) {
+        window.location.href = `film_${currentDayMovie.id}.html`;
+      } else {
+        window.location.href = `film_435.html`;
+      }
+    }
+
+    function openDayMovieTrailer() {
+      const modal = document.getElementById('trailer-modal');
+      const video = document.getElementById('trailer-modal-video');
+      const title = document.getElementById('trailer-modal-title');
+
+      const trailerSrc = (currentDayMovie && currentDayMovie.trailer) ? currentDayMovie.trailer : 'trailers/film_435.mp4';
+      const cleanTitle = currentDayMovie ? (currentDayMovie.title || '').replace(/\s*\(\d{4}\)\s*$/, '').trim() : 'Зеленая миля';
+
+      if (title) title.textContent = `Трейлер: ${cleanTitle}`;
+      if (video) {
+        video.src = trailerSrc;
+        video.play().catch(() => {});
+      }
+      if (modal) modal.classList.add('active');
+    }
+
+    function closeTrailerModal() {
+      const modal = document.getElementById('trailer-modal');
+      const video = document.getElementById('trailer-modal-video');
+      if (video) {
+        video.pause();
+        video.currentTime = 0;
+      }
+      if (modal) modal.classList.remove('active');
+    }
+
+    // Закрытие модалок по клику на оверлей
+    ['randomizer-modal', 'auth-modal', 'trailer-modal'].forEach(id => {
+      const el = document.getElementById(id);
+      el?.addEventListener('click', (e) => {
+        if (e.target === el) {
+          el.classList.remove('active');
+          if (id === 'trailer-modal') closeTrailerModal();
+        }
+      });
+    });
+
+    // ================= СТАРТ =================
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('kinoscore_theme') || 'light';
+      setTheme(savedTheme);
+      updateAuthUI();
+      renderCatalog();
+      setupFilmOfTheDay();
+
+      // Проверка прямого хэша на вкладку #filmoftheday
+      if (window.location.hash === '#filmoftheday') {
+        switchMainTab('filmoftheday');
+      }
+    });
+
+    window.addEventListener('hashchange', () => {
+      if (window.location.hash === '#filmoftheday') {
+        switchMainTab('filmoftheday');
+      } else if (window.location.hash === '#catalog' || !window.location.hash) {
+        switchMainTab('catalog');
+      }
+    });
+  </script>
+</body>
+</html>

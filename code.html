@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+
+<html lang="ru" style="">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Зеленая миля (1999) — Информация о фильме</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandDark: '#121212',
+            brandGray: '#E5E7EB',
+            cardBg: '#E9ECEF',
+            starYellow: '#FBBF24'
+          },
+          fontFamily: {
+            sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <!-- BEGIN: Custom Styles -->
+  <style data-purpose="custom-scrollbar">
+    /* Горизонтальный скроллбар кадров */
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #e2e8f0;
+      border-radius: 9999px;
+    }
+
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 9999px;
+    }
+
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+  </style>
+  <style data-purpose="animations-and-effects">
+    .modal-active {
+      display: flex !important;
+    }
+
+    /* Плавные переходы */
+    .transition-custom {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+  <!-- END: Custom Styles -->
+</head>
+
+<body
+  class="bg-[#F8F9FA] text-gray-900 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-gray-800 selection:text-white">
+  <!-- BEGIN: TopBarNav -->
+  <!-- Верхняя навигационная панель -->
+  <header class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-6 py-5">
+    <!-- Кнопка назад -->
+    <a aria-label="Назад"
+      class="flex items-center gap-2 px-3.5 py-2 rounded-full text-white/90 hover:text-white bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/10 transition-colors shadow-lg"
+      href="#" title="Назад">
+      <svg class="w-5 h-5 stroke-current" fill="none" stroke-width="2.5" viewbox="0 0 24 24">
+        <path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <span class="text-xs font-semibold uppercase tracking-wider hidden sm:inline">Назад</span>
+    </a>
+    <!-- Кнопка перехода в Каталог фильмов -->
+    <button
+      class="flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold tracking-wide text-white bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full border border-white/20 transition-all shadow-lg hover:border-white/40"
+      id="open-catalog-btn" title="Открыть каталог фильмов">
+      <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+        <path d="M4 6h16M4 12h16M4 18h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+      </svg>
+      <span class="">Каталог всех фильмов</span>
+    </button>
+  </header>
+  <!-- END: TopBarNav -->
+  <!-- BEGIN: CinematicHeroBanner -->
+  <!-- Полноэкранный темный кинематографичный баннер с возможностью воспроизведения трейлера прямо на месте -->
+  <section
+    class="relative w-full h-[380px] md:h-[460px] bg-black overflow-hidden flex flex-col items-center justify-center select-none"
+    data-purpose="movie-hero" id="hero-banner">
+    <!-- Атмосферный фон (кадр из фильма с зеленым свечением и блоком смертников) -->
+    <div class="absolute inset-0 bg-cover bg-center opacity-60 scale-105" id="hero-bg"
+      style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB4KLKNiGJYPmEep5SDilW_-BwB7ewYQKnPyE49OF99OqcUZ-0IA4to5LGZybOpzKAb0v1MfVLkQG7BevzExbhnJBEzt290YNOo9lH3hyglzUt81QWHIgTUEpncJsT0pLwDHAZ-PqAoRQOJE4GHPFzVvYIdI-ClxRL1jxqN3mFgufvofRkRgl6vxvQnfx6TFzPNr0ybFwGB1CIbwmjiXvfWY2Q8M80ryI_TYLbL4u1pxeF-uPnpgdK7DQ'); filter: brightness(0.55) contrast(1.15);">
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-t from-[#F8F9FA] via-black/40 to-black/85"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-emerald-950/40 via-transparent to-black/50 pointer-events-none">
+    </div>
+    <!-- Заголовок и кнопка запуска трейлера -->
+    <div class="relative z-10 text-center text-white px-4 flex flex-col items-center" id="hero-cta-container">
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-medium tracking-widest uppercase mb-4 backdrop-blur-md">
+        Культовая драма Фрэнка Дарабонта
+      </div>
+      <h1 class="text-3xl sm:text-4xl md:text-6xl font-black tracking-wider uppercase mb-5 drop-shadow-xl font-serif">
+        ЗЕЛЕНАЯ МИЛЯ (1999)
+      </h1>
+      <button aria-label="Смотреть трейлер"
+        class="group flex flex-col items-center gap-2 cursor-pointer focus:outline-none" id="play-trailer-btn">
+        <div
+          class="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 border-white/80 bg-white/10 backdrop-blur-md flex items-center justify-center text-white transition-all duration-300 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:border-emerald-400 group-hover:text-black shadow-2xl shadow-emerald-900/50">
+          <svg class="w-6 h-6 fill-current ml-1" viewbox="0 0 24 24">
+            <path d="M8 5v14l11-7z"></path>
+          </svg>
+        </div>
+        <span
+          class="text-xs sm:text-sm font-semibold tracking-widest uppercase text-gray-200 group-hover:text-white transition-colors drop-shadow">
+          смотреть трейлер
+        </span>
+      </button>
+    </div>
+    <!-- Встроенный интерактивный видеоплеер (разворачивается прямо в шапке) -->
+    <div class="absolute inset-0 z-20 hidden bg-black flex flex-col items-center justify-center p-4"
+      id="inline-trailer-player">
+      <div
+        class="relative w-full max-w-4xl aspect-video bg-zinc-950 rounded-xl overflow-hidden border border-zinc-800 shadow-2xl flex flex-col items-center justify-center">
+        <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen="" class="w-full h-full" id="trailer-iframe" src="" title="Трейлер Зеленая миля"></iframe>
+        <button
+          class="absolute top-3 right-3 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/80 hover:bg-red-600 text-white text-xs font-semibold transition-colors border border-white/20"
+          id="close-inline-trailer">
+          <span class="">Закрыть плеер</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+            <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+  <!-- END: CinematicHeroBanner -->
+  <!-- BEGIN: MainContent -->
+  <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-10 py-6 flex-grow">
+    <!-- Сетка: Постер | Описание и параметры | Отзывы/Вход -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-14" data-purpose="movie-primary-details">
+      <!-- 1. Левая колонка: Слоган, Постер и Оценка -->
+      <div class="lg:col-span-3 flex flex-col items-center sm:items-start w-full max-w-[280px] mx-auto lg:mx-0">
+        <p class="text-xs text-gray-500 font-medium mb-2.5 italic tracking-tight line-clamp-1 w-full text-left">
+          «Пол Эджкомб не верил в чудеса. Пока...»
+        </p>
+        <!-- Вертикальный постер фильма (чистый, реалистичный арт) -->
+        <div
+          class="w-full aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border border-gray-300/80 bg-zinc-900 relative group cursor-pointer"
+          onclick="openLightbox('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&amp;w=1000&amp;auto=format&amp;fit=crop', 'Зеленая миля — Постер')">
+          <img alt="Постер фильма Зеленая миля"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmfLXGjvIS-i491i_DLMMX9vDAZAbRtziGWBwmDfVMdbNBCXiayY0RaU9lbkttoBSxsoaUqSVTZkgze-QLk8krgsiHHTO_MzgjWzA7VM3mM9SDBjWhIo-Z_PdmCm8rfo3Hmr6YP_09q08gThBdNwAm44tI2n41cRPhFxmbOmNF92-z_EUBZPdFsDXEBeTDjnC-0j45TLl35KUaRlttJTNaBpjP-Hp4pZA7oKxLlne1F9kcZACXbDapuQ" />
+          <!-- Стилизованная типографика постера с мистическим зеленым отливом -->
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-emerald-950/40 opacity-80 flex flex-col justify-end p-4">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400">The Green Mile</span>
+            <h2 class="text-lg font-black text-white leading-tight font-serif uppercase tracking-wide drop-shadow">
+              Зеленая миля</h2>
+            <p class="text-[11px] text-gray-300">Том Хэнкс • Майкл Кларк Дункан</p>
+          </div>
+        </div>
+        <!-- Интерактивная плашка рейтинга под постером с полузвёздами и нейтральными кнопками - / + -->
+        <div class="w-full flex items-center justify-between gap-1.5 mt-3.5 px-0.5 text-sm select-none"
+          id="rating-widget-container">
+          <!-- Звёздный рейтинг (поддерживает шаг 0.5) -->
+          <div class="flex items-center space-x-0.5" id="star-rating" title="Поставить оценку (шаг 0.5)">
+            <!-- Звезда 1 -->
+            <div class="relative w-4 h-4 cursor-pointer star-item group" data-star="1">
+              <svg class="absolute inset-0 w-4 h-4 text-gray-300 fill-current" viewbox="0 0 20 20">
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                </path>
+              </svg>
+              <div class="star-fill-clip absolute inset-0 overflow-hidden w-full transition-all duration-150">
+                <svg class="w-4 h-4 text-amber-400 fill-current" viewbox="0 0 20 20">
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                  </path>
+                </svg>
+              </div>
+              <div class="absolute inset-y-0 left-0 w-1/2 z-10" data-half="left"></div>
+              <div class="absolute inset-y-0 right-0 w-1/2 z-10" data-half="right"></div>
+            </div>
+            <!-- Звезда 2 -->
+            <div class="relative w-4 h-4 cursor-pointer star-item group" data-star="2">
+              <svg class="absolute inset-0 w-4 h-4 text-gray-300 fill-current" viewbox="0 0 20 20">
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                </path>
+              </svg>
+              <div class="star-fill-clip absolute inset-0 overflow-hidden w-full transition-all duration-150">
+                <svg class="w-4 h-4 text-amber-400 fill-current" viewbox="0 0 20 20">
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                  </path>
+                </svg>
+              </div>
+              <div class="absolute inset-y-0 left-0 w-1/2 z-10" data-half="left"></div>
+              <div class="absolute inset-y-0 right-0 w-1/2 z-10" data-half="right"></div>
+            </div>
+            <!-- Звезда 3 -->
+            <div class="relative w-4 h-4 cursor-pointer star-item group" data-star="3">
+              <svg class="absolute inset-0 w-4 h-4 text-gray-300 fill-current" viewbox="0 0 20 20">
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                </path>
+              </svg>
+              <div class="star-fill-clip absolute inset-0 overflow-hidden w-full transition-all duration-150">
+                <svg class="w-4 h-4 text-amber-400 fill-current" viewbox="0 0 20 20">
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                  </path>
+                </svg>
+              </div>
+              <div class="absolute inset-y-0 left-0 w-1/2 z-10" data-half="left"></div>
+              <div class="absolute inset-y-0 right-0 w-1/2 z-10" data-half="right"></div>
+            </div>
+            <!-- Звезда 4 -->
+            <div class="relative w-4 h-4 cursor-pointer star-item group" data-star="4">
+              <svg class="absolute inset-0 w-4 h-4 text-gray-300 fill-current" viewbox="0 0 20 20">
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                </path>
+              </svg>
+              <div class="star-fill-clip absolute inset-0 overflow-hidden w-full transition-all duration-150">
+                <svg class="w-4 h-4 text-amber-400 fill-current" viewbox="0 0 20 20">
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                  </path>
+                </svg>
+              </div>
+              <div class="absolute inset-y-0 left-0 w-1/2 z-10" data-half="left"></div>
+              <div class="absolute inset-y-0 right-0 w-1/2 z-10" data-half="right"></div>
+            </div>
+            <!-- Звезда 5 -->
+            <div class="relative w-4 h-4 cursor-pointer star-item group" data-star="5">
+              <svg class="absolute inset-0 w-4 h-4 text-gray-300 fill-current" viewbox="0 0 20 20">
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                </path>
+              </svg>
+              <div class="star-fill-clip absolute inset-0 overflow-hidden w-0 transition-all duration-150">
+                <svg class="w-4 h-4 text-amber-400 fill-current" viewbox="0 0 20 20">
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                  </path>
+                </svg>
+              </div>
+              <div class="absolute inset-y-0 left-0 w-1/2 z-10" data-half="left"></div>
+              <div class="absolute inset-y-0 right-0 w-1/2 z-10" data-half="right"></div>
+            </div>
+          </div>
+          <!-- Кнопки - и + вокруг оценки: нейтральные, без свечения и ярких акцентов -->
+          <div class="flex items-center gap-1.5">
+            <!-- Кнопка уменьшения (-) -->
+            <button aria-label="Уменьшить оценку"
+              class="w-5 h-5 rounded flex items-center justify-center text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-400 bg-transparent transition-colors focus:outline-none"
+              id="rating-decrease-btn" title="Уменьшить на 0.5">
+              <svg class="w-3 h-3 stroke-current" fill="none" stroke-width="2" viewbox="0 0 24 24">
+                <path d="M5 12h14" stroke-linecap="round"></path>
+              </svg>
+            </button>
+            <!-- Плашка рейтинга -->
+            <span class="text-xs font-bold px-2 py-0.5 rounded-full transition-colors duration-200"
+              id="rating-score-badge" style="background-color: rgba(34, 197, 94, 0.15); color: #16a34a;">4.0 / 5</span>
+            <!-- Кнопка увеличения (+) -->
+            <button aria-label="Увеличить оценку"
+              class="w-5 h-5 rounded flex items-center justify-center text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-400 bg-transparent transition-colors focus:outline-none"
+              id="rating-increase-btn" title="Увеличить на 0.5">
+              <svg class="w-3 h-3 stroke-current" fill="none" stroke-width="2" viewbox="0 0 24 24">
+                <path d="M12 5v14M5 12h14" stroke-linecap="round"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- 2. Центральная колонка: Описание и таблица характеристик -->
+      <div class="lg:col-span-6 flex flex-col pt-1">
+        <div class="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm mb-6">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">О фильме</h3>
+          <p class="text-gray-700 text-sm md:text-base leading-relaxed font-normal">
+            Пол Эджкомб — начальник блока смертников в тюрьме «Холодная гора», каждый из узников которого однажды
+            проходит «зеленую милю» по пути к месту казни. Пол повидал много заключённых и надзирателей за время работы.
+            Однако гигант Джон Коффи, обвинённый в страшном преступлении, стал одним из самых необычных обитателей
+            блока, обладающий поразительным даром исцеления.
+          </p>
+        </div>
+        <!-- Таблица характеристик -->
+        <div class="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm">
+          <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3.5 text-sm">
+            <div class="flex justify-between sm:contents border-b border-gray-100 sm:border-0 pb-1 sm:pb-0">
+              <dt class="text-gray-500 font-normal">продолжительность</dt>
+              <dd class="text-gray-900 font-semibold">3 ч 9 мин</dd>
+            </div>
+            <div class="flex justify-between sm:contents border-b border-gray-100 sm:border-0 pb-1 sm:pb-0">
+              <dt class="text-gray-500 font-normal">жанр</dt>
+              <dd class="text-gray-900 font-semibold">драма, фэнтези, криминал</dd>
+            </div>
+            <div class="flex justify-between sm:contents border-b border-gray-100 sm:border-0 pb-1 sm:pb-0">
+              <dt class="text-gray-500 font-normal">возраст</dt>
+              <dd class="text-gray-900 font-semibold">18+</dd>
+            </div>
+            <div class="flex justify-between sm:contents border-b border-gray-100 sm:border-0 pb-1 sm:pb-0">
+              <dt class="text-gray-500 font-normal">год производства</dt>
+              <dd class="text-gray-900 font-semibold">1999</dd>
+            </div>
+            <div class="flex justify-between sm:contents border-b border-gray-100 sm:border-0 pb-1 sm:pb-0">
+              <dt class="text-gray-500 font-normal">страна</dt>
+              <dd class="text-gray-900 font-semibold">США</dd>
+            </div>
+            <div class="flex justify-between sm:contents border-b border-gray-100 sm:border-0 pb-1 sm:pb-0">
+              <dt class="text-gray-500 font-normal">режиссер</dt>
+              <dd class="text-gray-900 font-semibold">Фрэнк Дарабонт</dd>
+            </div>
+            <div class="flex justify-between sm:contents border-b border-gray-100 sm:border-0 pb-1 sm:pb-0">
+              <dt class="text-gray-500 font-normal">бюджет</dt>
+              <dd class="text-gray-900 font-semibold">$60 000 000</dd>
+            </div>
+            <div class="flex justify-between sm:contents border-b border-gray-100 sm:border-0 pb-1 sm:pb-0">
+              <dt class="text-gray-500 font-normal">сборы</dt>
+              <dd class="text-gray-900 font-semibold">$286 801 374</dd>
+            </div>
+            <div class="flex justify-between sm:contents border-b border-gray-100 sm:border-0 pb-1 sm:pb-0">
+              <dt class="text-gray-500 font-normal">рейтинг кинопоиск</dt>
+              <dd class="text-amber-600 font-bold flex items-center gap-1">9.1 ★</dd>
+            </div>
+            <div class="flex justify-between sm:contents">
+              <dt class="text-gray-500 font-normal">рейтинг сайта</dt>
+              <dd class="text-emerald-600 font-bold flex items-center gap-1">9.1 ★</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+      <!-- 3. Правая колонка: Матовая карточка для отзывов с blur-эффектом и кнопкой входа -->
+      <div class="lg:col-span-3 w-full">
+        <aside
+          class="relative w-full h-[370px] bg-white/70 backdrop-blur-md rounded-2xl overflow-hidden p-6 flex flex-col items-center justify-center border border-gray-200/90 shadow-sm"
+          data-purpose="auth-placeholder-card">
+          <!-- Размытые силуэты реальных отзывов других людей на фоне -->
+          <div class="absolute inset-0 p-5 opacity-40 blur-[3px] pointer-events-none select-none flex flex-col gap-3.5">
+            <div class="bg-gray-200/80 p-3 rounded-lg flex flex-col gap-1.5">
+              <div class="h-3 bg-gray-400 rounded w-1/3"></div>
+              <div class="h-2 bg-gray-300 rounded w-5/6"></div>
+              <div class="h-2 bg-gray-300 rounded w-4/6"></div>
+            </div>
+            <div class="bg-gray-200/80 p-3 rounded-lg flex flex-col gap-1.5">
+              <div class="h-3 bg-gray-400 rounded w-1/2"></div>
+              <div class="h-2 bg-gray-300 rounded w-full"></div>
+              <div class="h-2 bg-gray-300 rounded w-3/4"></div>
+            </div>
+            <div class="bg-gray-200/80 p-3 rounded-lg flex flex-col gap-1.5">
+              <div class="h-3 bg-gray-400 rounded w-1/4"></div>
+              <div class="h-2 bg-gray-300 rounded w-2/3"></div>
+            </div>
+          </div>
+          <!-- Центральный оверлей с призывом авторизации -->
+          <div
+            class="relative z-10 text-center max-w-[210px] bg-white/90 p-5 rounded-xl border border-gray-200 shadow-md">
+            <div
+              class="w-10 h-10 mx-auto mb-3 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                <path
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </div>
+            <p class="text-xs font-semibold text-gray-800 leading-snug mb-4">
+              войдите чтобы просмотреть / оставить отзыв
+            </p>
+            <button
+              class="w-full py-2.5 px-4 bg-gray-900 hover:bg-black text-white text-xs font-semibold rounded-lg shadow hover:shadow-lg transition-all tracking-wide"
+              id="open-auth-modal-btn">
+              Войти
+            </button>
+          </div>
+        </aside>
+      </div>
+    </section>
+    <!-- BEGIN: TabsAndFramesGallery -->
+    <!-- Секция вкладок («Кадры с фильма», «Актеры», «Награды») и галереи кадров -->
+    <section class="mt-4 mb-14" data-purpose="media-tabs-section">
+      <!-- Навигация по табам -->
+      <div class="flex items-center justify-between border-b border-gray-200 mb-6">
+        <nav class="flex space-x-8 text-sm">
+          <button class="text-gray-950 font-bold border-b-2 border-black pb-3 focus:outline-none transition-colors"
+            id="tab-frames">
+            Кадры с фильма
+          </button>
+          <button
+            class="text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-3 font-medium focus:outline-none transition-colors"
+            id="tab-actors">
+            Актеры
+          </button>
+          <button
+            class="text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-3 font-medium focus:outline-none transition-colors"
+            id="tab-awards">
+            Награды
+          </button>
+        </nav>
+        <!-- Стрелки прокрутки для кадров -->
+        <div class="flex items-center space-x-2 pb-2" id="gallery-controls">
+          <button
+            class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-black transition-colors"
+            id="scroll-prev-btn" title="Предыдущие кадры">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+              <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+          </button>
+          <button
+            class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-black transition-colors"
+            id="scroll-next-btn" title="Следующие кадры">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+              <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <!-- Вкладка: 4 атмосферных кадра из фильма (без дубликатов скриншотов) -->
+      <div class="bg-[#E9ECEF]/60 p-5 rounded-2xl border border-gray-200 shadow-sm" id="frames-container">
+        <div class="flex gap-5 overflow-x-auto pb-3 custom-scroll scroll-smooth snap-x snap-mandatory"
+          id="gallery-scroller">
+          <!-- Кадр 1: Тюремный коридор смертников («Зеленая миля») -->
+          <figure
+            class="flex-shrink-0 w-64 md:w-80 aspect-video bg-zinc-900 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all cursor-pointer group relative snap-start"
+            onclick="openLightbox('https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&amp;w=1200&amp;auto=format&amp;fit=crop', 'Кадр 1: Коридор блока смертников')">
+            <img alt="Коридор тюрьмы Холодная гора"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_E_0Y3RYm2IDvx2AbkbqQ91TvOB7A_JrsSvcKL_B3fEbq0NvoTpq0msw5rW2oMd9_N6vMXd6nGZqtuFZZz5mnDo9hzfyJYKe_TgrCL2C5ouQqNMr57S64sVGAoG-F3xU5Q2MRY6JYJpe-LJO1j7E48gNps3NOGRQoSdv_D4QkpGoZo602GuOvDpV-qfTsyIOXiLnQjD0ig4AI2GpVu-V1OAsi1F1QeJSRSELnqsAJKER4sAkpHihbjw" />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+              <span class="text-xs text-white font-medium flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                  <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" stroke-linecap="round"
+                    stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+                Коридор смертников
+              </span>
+            </div>
+          </figure>
+          <!-- Кадр 2: Джон Коффи и руки в наручниках -->
+          <figure
+            class="flex-shrink-0 w-64 md:w-80 aspect-video bg-zinc-900 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all cursor-pointer group relative snap-start"
+            onclick="openLightbox('https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&amp;w=1200&amp;auto=format&amp;fit=crop', 'Кадр 2: Джон Коффи в камере')">
+            <img alt="Джон Коффи в тюрьме"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9z2lAIfKW4q93xY2Y82LCbg_zJqVmnwSyUbfB3WA0IyvDNMN9BoKsw71wxTygP0pETwi-Ciam3XvhyjM8kYJNGf2ozgwe9s1pfy5WW7CG5R4PunCHDflqo57ByN_N6nzHdMZnbGI6J6duc5cMZodAKElmSlVYb4lX-dMIY8IG1enlRjm42llxOvMrDHkqkEEym88ujC0Vn48a7YzQpvDeL8ikymS3y3BcGbVNY-KHetn-96nwBSCzng" />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+              <span class="text-xs text-white font-medium flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                  <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" stroke-linecap="round"
+                    stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+                Джон Коффи
+              </span>
+            </div>
+          </figure>
+          <!-- Кадр 3: Пол Эджкомб и охрана -->
+          <figure
+            class="flex-shrink-0 w-64 md:w-80 aspect-video bg-zinc-900 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all cursor-pointer group relative snap-start"
+            onclick="openLightbox('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&amp;w=1200&amp;auto=format&amp;fit=crop', 'Кадр 3: Пол Эджкомб и надзиратели')">
+            <img alt="Надзиратели блока смертников"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3P77rX2Pu7yIABrmW2R3iVJ0E4oaGfNOj8C_BUjywDEokt9mqs5QsJhnxqYGb5RteJdceKNIqB4ZIbCVWxvzqLquigBnGF_sEg1D7_Y3A_qr6zdaFpBYivfRFPlbnARt14FTHUqtx5u96B7vEPqjCulOMyMhyxR7jpP-zow1esRCgx9KQPbz8FT-RCGX1GusIp9ZpjkMyI3XvPko2wDcrhF9u5TQ59SENHBEhPaQwZ46-3eia72-R1A" />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+              <span class="text-xs text-white font-medium flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                  <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" stroke-linecap="round"
+                    stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+                Пол Эджкомб и охрана
+              </span>
+            </div>
+          </figure>
+          <!-- Кадр 4: Электрический стул («Старая замыкалка») -->
+          <figure
+            class="flex-shrink-0 w-64 md:w-80 aspect-video bg-zinc-900 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all cursor-pointer group relative snap-start"
+            onclick="openLightbox('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&amp;w=1200&amp;auto=format&amp;fit=crop', 'Кадр 4: Комната казни')">
+            <img alt="Комната казни Холодная гора"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWdpD06vEZHC8liWnI8A3PzjJaP3CBS5sTWeUKD4whkOXmyu84F6y0zBAMc3EdDW3X1jbw9yBOvbuk7174j1UViox6d-6y3JUWVVtUQr8sfpupAlVDu2PGhBj3uuxdW231776ibjh7vyONsuIA0P5n2Ilaquvo3Srd7sKwNiCZjcxePCAs7rQbkhpiF-alqKgKF-WxqOYjUproSDQJn4oqsML8-sxHHQi9zI6AuQtLtj4FQJqGAbYZrQ" />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+              <span class="text-xs text-white font-medium flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                  <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" stroke-linecap="round"
+                    stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+                Комната казни
+              </span>
+            </div>
+          </figure>
+        </div>
+      </div>
+      <!-- Вкладка: Актеры (скрыта по умолчанию) -->
+      <div class="hidden bg-[#E9ECEF]/60 p-6 rounded-2xl border border-gray-200" id="actors-container">
+        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
+          <div class="p-4 bg-white rounded-xl shadow-sm text-center">
+            <div class="w-16 h-16 rounded-full bg-gray-200 mx-auto mb-2 overflow-hidden">
+              <img alt="Том Хэнкс" class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9AW-mhUTaVTiCEpy7C0SaC-hdSYoxzYQkHX9mA9gcMv8YkD1ZL_XUFlEDRRWXmPbeFqNJxEnVPg0FHDjxpMzud1uMEJOXZcjqPpV8JhOyb2U8RumnF78_Qy2cq8zsxwMJekbc3MsextJJ9pYWi-R8852c_NE0Wh629SqVmvgvSMw_yfoIhthOw3-n1bhhv1owG98z4d53Tpj7doTnWFGpdq69CGr-TzPu1n3wPCgTwKb0XzTjItmh1g" />
+            </div>
+            <div class="font-bold text-sm text-gray-900">Том Хэнкс</div>
+            <div class="text-xs text-gray-500">Пол Эджкомб</div>
+          </div>
+          <div class="p-4 bg-white rounded-xl shadow-sm text-center">
+            <div class="w-16 h-16 rounded-full bg-gray-200 mx-auto mb-2 overflow-hidden">
+              <img alt="Майкл Кларк Дункан" class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYPdIpeKW1_OoyiMdLUNUEsL0FMavlB6WvMJHhC0hskingEIN1jo0IGMIc9mXS3l1QK8ikCU9_GQiMOOWs8VEE2AdPo9qoh-OBj1yXowX91M4vMc715z8FRihibzs3nALnm1zq34xYRUadMhARNQwtKNjMxaLbDb_HzZeko3nyU4xm7MDaKf397ePFIhZ2A2rRs9gz78PgjFoTq8GwGuzW4UTJnsQasNPYHRLvcTE_i12AsuDyvi5QbA" />
+            </div>
+            <div class="font-bold text-sm text-gray-900">М. Кларк Дункан</div>
+            <div class="text-xs text-gray-500">Джон Коффи</div>
+          </div>
+          <div class="p-4 bg-white rounded-xl shadow-sm text-center">
+            <div class="w-16 h-16 rounded-full bg-gray-200 mx-auto mb-2 overflow-hidden">
+              <img alt="Дэвид Морс" class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAre9WV00uByqHG8AmuWGDsz-oLdOjlgjXNHDJCe6KU-_U_aS_BBsPmZxe-Ih6W4o3DDFLKuDurnR1ejg6m-y0NVobYm1zMR69LEe6em_AxMCPKpvrpmhT1hZ1O8vGD6FJtG2KrWPTLI3UuF0i4jFbQ_Ew0MXBoqmBk5Q-kI5zS6HcTh4qgbbeboHKcbMeNbFkhdDfzHSs63gtc5my5qxql0XSxf1QyEnyPvbtvAqr4CFgQ8k4_-LVVog" />
+            </div>
+            <div class="font-bold text-sm text-gray-900">Дэвид Морс</div>
+            <div class="text-xs text-gray-500">Брутус Хауэлл</div>
+          </div>
+          <div class="p-4 bg-white rounded-xl shadow-sm text-center">
+            <div class="w-16 h-16 rounded-full bg-gray-200 mx-auto mb-2 overflow-hidden">
+              <img alt="Бонни Хант" class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpxM9cMrhUv5iMxNl2IFPgJXxciDbaYgSYdC8Zv4hkm6aiwkwz8spDwhAXos8-EpNcizRq1UPbQ5S6jUsVUD_O3cL2uEYrLgy4yS3gNj3Y8hj_GySTRR0VGQVCQhICcdLmLjh8IhR32iOh8UNcIfYTAD3OUVsSHXBhaLfeK3j4d5I5dEeUlTZ4B6u20UIWRXP6BJ2NcBfDH_RSrI6EaFj6unt-Be8AqDjI1AEAHgV4anvFV7sfkJCsvA" />
+            </div>
+            <div class="font-bold text-sm text-gray-900">Бонни Хант</div>
+            <div class="text-xs text-gray-500">Джен Эджкомб</div>
+          </div>
+          <div class="p-4 bg-white rounded-xl shadow-sm text-center">
+            <div class="w-16 h-16 rounded-full bg-gray-200 mx-auto mb-2 overflow-hidden">
+              <img alt="Сэм Рокуэлл" class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2l2M8-Q61hoLp6rXLeEhHBqdmLkMpYOWsUG6o4qRyE-FSfrENixf0kLYaGJmJ0yzrsp8QN9_hxJzbrkWB-XDqP2K-rgacSboO1ICHmNyc6ldmP8F-3jDu9C7ZbHXqR4iFZpmnNYuHjxfVGCvOWGniRNVSvJeFp4qwpXjOED6UVhQBvNV15EhyM2e82E1tjvwCj_8ljaUFzPYoE93qp_UC0joxNSJmWzgnAkRD0Fumk5aucsCr4bl44A" />
+            </div>
+            <div class="font-bold text-sm text-gray-900">Сэм Рокуэлл</div>
+            <div class="text-xs text-gray-500">Дикий Билл</div>
+          </div>
+        </div>
+      </div>
+      <!-- Вкладка: Награды (скрыта по умолчанию) -->
+      <div class="hidden bg-[#E9ECEF]/60 p-6 rounded-2xl border border-gray-200" id="awards-container">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-amber-500">
+            <h4 class="font-bold text-gray-900 text-sm mb-1">Оскар (2000)</h4>
+            <p class="text-xs text-gray-600">4 номинации: Лучший фильм, Лучшая мужская роль второго плана, Лучший
+              адаптированный сценарий, Лучший звук</p>
+          </div>
+          <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-amber-400">
+            <h4 class="font-bold text-gray-900 text-sm mb-1">Золотой глобус (2000)</h4>
+            <p class="text-xs text-gray-600">Номинация: Лучшая мужская роль второго плана (Майкл Кларк Дункан)</p>
+          </div>
+          <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-emerald-500">
+            <h4 class="font-bold text-gray-900 text-sm mb-1">Премия Сатурн (2000)</h4>
+            <p class="text-xs text-gray-600">Победа: Лучший приключенческий фильм, боевик или триллер, лучшая мужская
+              роль второго плана</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- END: TabsAndFramesGallery -->
+    <!-- BEGIN: WhereToWatchSection -->
+    <!-- Блок: Где посмотреть с брендовыми карточками -->
+    <section class="mb-14" data-purpose="where-to-watch">
+      <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+        <span class="">Где посмотреть:</span>
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <!-- 1. Рутуб -->
+        <a class="group relative flex flex-col items-center justify-center h-32 bg-white hover:bg-slate-900 rounded-2xl border border-gray-200 hover:border-slate-800 p-5 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1"
+          href="https://rutube.ru" rel="noopener noreferrer" target="_blank">
+          <div class="flex items-center gap-3 mb-2">
+            <!-- Иконка Rutube -->
+            <div
+              class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-lg shadow-md group-hover:scale-110 transition-transform">
+              R
+            </div>
+            <span class="text-lg font-bold text-gray-900 group-hover:text-white transition-colors">Рутуб</span>
+          </div>
+          <span
+            class="text-xs font-semibold text-gray-500 group-hover:text-blue-400 flex items-center gap-1 transition-colors">
+            Смотреть
+            <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none"
+              stroke="currentColor" viewbox="0 0 24 24">
+              <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+            </svg>
+          </span>
+        </a>
+        <!-- 2. ВК Видео -->
+        <a class="group relative flex flex-col items-center justify-center h-32 bg-white hover:bg-[#0077FF] rounded-2xl border border-gray-200 hover:border-[#0077FF] p-5 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1"
+          href="https://vk.com/video" rel="noopener noreferrer" target="_blank">
+          <div class="flex items-center gap-3 mb-2">
+            <!-- Иконка VK Video -->
+            <div
+              class="w-10 h-10 rounded-xl bg-[#0077FF] group-hover:bg-white text-white group-hover:text-[#0077FF] flex items-center justify-center font-black text-sm shadow-md group-hover:scale-110 transition-transform">
+              VK
+            </div>
+            <span class="text-lg font-bold text-gray-900 group-hover:text-white transition-colors">ВК Видео</span>
+          </div>
+          <span
+            class="text-xs font-semibold text-gray-500 group-hover:text-white flex items-center gap-1 transition-colors">
+            Смотреть
+            <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none"
+              stroke="currentColor" viewbox="0 0 24 24">
+              <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+            </svg>
+          </span>
+        </a>
+        <!-- 3. Кинопоиск -->
+        <a class="group relative flex flex-col items-center justify-center h-32 bg-white hover:bg-zinc-900 rounded-2xl border border-gray-200 hover:border-zinc-800 p-5 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1"
+          href="https://www.kinopoisk.ru" rel="noopener noreferrer" target="_blank">
+          <div class="flex items-center gap-3 mb-2">
+            <!-- Иконка Kinopoisk (фирменный оранжевый) -->
+            <div
+              class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-orange-500 flex items-center justify-center text-white font-black text-lg shadow-md group-hover:scale-110 transition-transform">
+              К
+            </div>
+            <span class="text-lg font-bold text-gray-900 group-hover:text-white transition-colors">Кинопоиск</span>
+          </div>
+          <span
+            class="text-xs font-semibold text-gray-500 group-hover:text-orange-400 flex items-center gap-1 transition-colors">
+            Смотреть в подписке
+            <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none"
+              stroke="currentColor" viewbox="0 0 24 24">
+              <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </section>
+    <!-- END: WhereToWatchSection -->
+  </main>
+  <!-- END: MainContent -->
+  <!-- BEGIN: CatalogModal -->
+  <!-- Полноэкранный каталог фильмов (открывается по кнопке в шапке) -->
+  <div class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md overflow-y-auto p-4 sm:p-8"
+    data-purpose="movies-catalog-grid" id="catalog-modal">
+    <div class="max-w-6xl mx-auto text-white">
+      <div class="flex items-center justify-between pb-6 border-b border-gray-800 mb-8">
+        <div>
+          <h3 class="text-2xl font-bold tracking-tight">Каталог всех фильмов</h3>
+          <p class="text-sm text-gray-400">Шедевры мирового кинематографа и фильмотека</p>
+        </div>
+        <button
+          class="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          id="close-catalog-btn">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+            <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </button>
+      </div>
+      <!-- Сетка карточек каталога -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        <!-- 1. Зеленая миля (текущий) -->
+        <div
+          class="group relative rounded-xl overflow-hidden bg-gray-900 border-2 border-emerald-500 shadow-xl cursor-pointer">
+          <img alt="Зеленая миля"
+            class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform duration-300"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKdNJVgdeCsm6Mks4C-YSdFPIe2Cs64NfoBNlvoossCtmbQBj0G3es4irAtqZq9K2R1sPbtiORj7rjcvB4dYG93OEf6Ub9lww-gohlBYyvGz4cXb2e2xnrvRalulAZ56nnh9AV08OUe0ZaUglL7EvwBSU5-JsEJ5iKTbnCilE09yVog0QPk-VUI-Xh2NZU-6n3vRrPMmjmIkxLuLBXwKbqUSmZL4ufl-tMa0iOdyj5GfyzL22tT-ihAw" />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-90 p-3.5 flex flex-col justify-end">
+            <span class="text-[10px] bg-emerald-500 text-black font-bold px-1.5 py-0.5 rounded w-max mb-1">Сейчас
+              открыт</span>
+            <h4 class="font-bold text-sm text-white leading-tight">Зеленая миля</h4>
+            <div class="text-xs text-amber-400 font-semibold mt-0.5">★ 9.1</div>
+          </div>
+        </div>
+        <!-- 2. Побег из Шоушенка -->
+        <div
+          class="group relative rounded-xl overflow-hidden bg-gray-900 border border-gray-800 shadow-xl cursor-pointer hover:border-gray-600 transition-colors">
+          <img alt="Побег из Шоушенка"
+            class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform duration-300"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQFAvroEYG2_sgA_Y1wER7mIB_PdSZdMfXnTUQr4GFrD_QAQllkXzKxFjFLWQiiTw7lisp4YlCxWyG---xmFyw1yD3LFLy1dAgFdM6wDppS4VVtw5dQBedTdrMm0xV-qUg66q-QusbomSbcKBtdsFA0bY65mhDNnQhMWO632Sx009cNGHLvX-ow2d7dS1hlO5TBWR9a3FWSsnAX-aUP-U-etQGzIWpl_mystPm8FOUnQLRsXr8hrz47g" />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-90 p-3.5 flex flex-col justify-end">
+            <h4 class="font-bold text-sm text-white leading-tight">Побег из Шоушенка</h4>
+            <div class="text-xs text-amber-400 font-semibold mt-0.5">★ 9.2</div>
+          </div>
+        </div>
+        <!-- 3. Форрест Гамп -->
+        <div
+          class="group relative rounded-xl overflow-hidden bg-gray-900 border border-gray-800 shadow-xl cursor-pointer hover:border-gray-600 transition-colors">
+          <img alt="Форрест Гамп"
+            class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform duration-300"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCumuC3tkt0US1NcZZP7U2t5aoZfXVtGL9DZu0_nPfekJpvfr-KtEINYOzJrpNjU7N70zdtS8RQbDvEUX2YdXK0JJFc6ISVPoD2xC_ZBhPHl5-YeJkGzNhvcECzkWI7_FKsTGQG_9XjU5qUQRECG199sT-lTYEsvKOdJ_57BJvYjU8KqNLBeSZDSI2dIgK_rjsQZIkejkTibm5TlxN_tAKmXU0fTbd1zWZJaErA0iOhz512G0-TCYUJOA" />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-90 p-3.5 flex flex-col justify-end">
+            <h4 class="font-bold text-sm text-white leading-tight">Форрест Гамп</h4>
+            <div class="text-xs text-amber-400 font-semibold mt-0.5">★ 8.9</div>
+          </div>
+        </div>
+        <!-- 4. Интерстеллар -->
+        <div
+          class="group relative rounded-xl overflow-hidden bg-gray-900 border border-gray-800 shadow-xl cursor-pointer hover:border-gray-600 transition-colors">
+          <img alt="Интерстеллар"
+            class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform duration-300"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8mwfrDlWE73miELayTaka1cAssOOscejyjgUrAOtsyKzof0-kbGbEkaU1bThAh-iyARyQfEy6-nYt0zKCez5s8nR0--kE2WFQQ2Hj_FYr1nu_W0elTlRCNCiqPGqL7Mi9234ge13f2WIUPtKklQ8q3vuqmkPNbL7507UhZLbqfAotbCRoWLdBB2LC4CbuP3I0aZWs2G4RsqVfatJIxTaaF9TLElcmILNkQs3_AklB0yc1y80wZmgE2w" />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-90 p-3.5 flex flex-col justify-end">
+            <h4 class="font-bold text-sm text-white leading-tight">Интерстеллар</h4>
+            <div class="text-xs text-amber-400 font-semibold mt-0.5">★ 8.6</div>
+          </div>
+        </div>
+        <!-- 5. Леон -->
+        <div
+          class="group relative rounded-xl overflow-hidden bg-gray-900 border border-gray-800 shadow-xl cursor-pointer hover:border-gray-600 transition-colors">
+          <img alt="Леон"
+            class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform duration-300"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBR1uGENQ31mmdioiYVMY2yUC09p7mFnqCNv_XFbYlqpQuWe3LTVoiR8LhjddsvIuOjTnNXaxj-7ivdLy8FCiOUTaLWCZjT3EzPhw6grk833utum94PvYjDycjjMGKvFpj05Wty4Tce-DZxZCGum-Js-TOtXDskw3b7xK1xWw8RrZGHJvbwAMw0YhFuca7vlynzpYJoryHgAjjSuNJzpE8j6YSGDxvs_OSMGPUxY9LrQNBE1yisWsW3ew" />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-90 p-3.5 flex flex-col justify-end">
+            <h4 class="font-bold text-sm text-white leading-tight">Леон</h4>
+            <div class="text-xs text-amber-400 font-semibold mt-0.5">★ 8.7</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- END: CatalogModal -->
+  <!-- BEGIN: AuthModal -->
+  <!-- Модальное окно авторизации/входа -->
+  <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+    data-purpose="auth-dialog" id="auth-modal">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-7 relative shadow-2xl">
+      <button
+        class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+        id="close-auth-modal-btn">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+      </button>
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round"
+              stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-black text-gray-900">Вход в аккаунт</h3>
+        <p class="text-xs text-gray-500 mt-1">Оставляйте рецензии, оценки и сохраняйте фильмы в личный список</p>
+      </div>
+      <form class="space-y-4"
+        onsubmit="event.preventDefault(); alert('Вы успешно вошли в аккаунт!'); document.getElementById('auth-modal').classList.remove('modal-active');">
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Электронная почта</label>
+          <input
+            class="w-full text-sm px-3.5 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black focus:outline-none"
+            placeholder="name@example.com" required="" type="email" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Пароль</label>
+          <input
+            class="w-full text-sm px-3.5 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black focus:outline-none"
+            placeholder="••••••••" required="" type="password" />
+        </div>
+        <button
+          class="w-full py-3 bg-black hover:bg-gray-800 text-white font-semibold text-sm rounded-xl shadow-lg transition-all"
+          type="submit">
+          Войти
+        </button>
+      </form>
+    </div>
+  </div>
+  <!-- END: AuthModal -->
+  <!-- BEGIN: LightboxModal -->
+  <!-- Полноразмерный лайтбокс для кадров -->
+  <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black/95 backdrop-blur-md p-4"
+    data-purpose="media-lightbox" id="media-modal">
+    <div class="relative max-w-5xl w-full flex flex-col items-center">
+      <button
+        class="absolute -top-12 right-0 text-white/80 hover:text-white flex items-center gap-1.5 text-sm font-semibold p-2"
+        id="close-media-modal-btn">
+        <span class="">Закрыть (ESC)</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+      </button>
+      <div
+        class="w-full max-h-[82vh] bg-black rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center"
+        id="media-modal-content">
+        <!-- Динамический кадр -->
+      </div>
+    </div>
+  </div>
+  <!-- END: LightboxModal -->
+  <!-- BEGIN: InteractiveScripts -->
+  <script data-purpose="interactive-actions">
+    // Переключение вкладок
+    const tabFrames = document.getElementById('tab-frames');
+    const tabActors = document.getElementById('tab-actors');
+    const tabAwards = document.getElementById('tab-awards');
+    const galleryControls = document.getElementById('gallery-controls');
+
+    const framesContainer = document.getElementById('frames-container');
+    const actorsContainer = document.getElementById('actors-container');
+    const awardsContainer = document.getElementById('awards-container');
+
+    function setActiveTab(activeBtn, activeBlock, isFrames = false) {
+      [tabFrames, tabActors, tabAwards].forEach(btn => {
+        btn.classList.remove('text-gray-950', 'font-bold', 'border-black');
+        btn.classList.add('text-gray-500', 'font-medium', 'border-transparent');
+      });
+      [framesContainer, actorsContainer, awardsContainer].forEach(block => block.classList.add('hidden'));
+
+      activeBtn.classList.remove('text-gray-500', 'font-medium', 'border-transparent');
+      activeBtn.classList.add('text-gray-950', 'font-bold', 'border-black');
+      activeBlock.classList.remove('hidden');
+
+      if (isFrames) {
+        galleryControls.style.display = 'flex';
+      } else {
+        galleryControls.style.display = 'none';
+      }
+    }
+
+    tabFrames.addEventListener('click', () => setActiveTab(tabFrames, framesContainer, true));
+    tabActors.addEventListener('click', () => setActiveTab(tabActors, actorsContainer, false));
+    tabAwards.addEventListener('click', () => setActiveTab(tabAwards, awardsContainer, false));
+
+    // Стрелки скролла для кадров
+    const galleryScroller = document.getElementById('gallery-scroller');
+    const scrollPrevBtn = document.getElementById('scroll-prev-btn');
+    const scrollNextBtn = document.getElementById('scroll-next-btn');
+
+    scrollPrevBtn.addEventListener('click', () => {
+      galleryScroller.scrollBy({ left: -340, behavior: 'smooth' });
+    });
+    scrollNextBtn.addEventListener('click', () => {
+      galleryScroller.scrollBy({ left: 340, behavior: 'smooth' });
+    });
+
+    // Интерактивный трейлер в шапке
+    const playTrailerBtn = document.getElementById('play-trailer-btn');
+    const inlineTrailerPlayer = document.getElementById('inline-trailer-player');
+    const closeInlineTrailer = document.getElementById('close-inline-trailer');
+    const trailerIframe = document.getElementById('trailer-iframe');
+
+    playTrailerBtn.addEventListener('click', () => {
+      inlineTrailerPlayer.classList.remove('hidden');
+      // Вставка официального трейлера
+      trailerIframe.src = "https://www.youtube.com/embed/Ki4haFrqSrw?autoplay=1";
+    });
+
+    closeInlineTrailer.addEventListener('click', () => {
+      inlineTrailerPlayer.classList.add('hidden');
+      trailerIframe.src = "";
+    });
+
+    // Лайтбокс для просмотра фото в полный экран
+    const mediaModal = document.getElementById('media-modal');
+    const mediaContent = document.getElementById('media-modal-content');
+    const closeMediaBtn = document.getElementById('close-media-modal-btn');
+
+    function openLightbox(imgSrc, title) {
+      mediaContent.innerHTML = `
+      <img src="${imgSrc}" alt="${title}" class="w-full max-h-[80vh] object-contain rounded-xl">
+    `;
+      mediaModal.classList.add('modal-active');
+    }
+
+    closeMediaBtn.addEventListener('click', () => {
+      mediaModal.classList.remove('modal-active');
+      mediaContent.innerHTML = '';
+    });
+
+    // Модалка авторизации
+    const openAuthBtn = document.getElementById('open-auth-modal-btn');
+    const closeAuthBtn = document.getElementById('close-auth-modal-btn');
+    const authModal = document.getElementById('auth-modal');
+
+    openAuthBtn.addEventListener('click', () => authModal.classList.add('modal-active'));
+    closeAuthBtn.addEventListener('click', () => authModal.classList.remove('modal-active'));
+
+    // Каталог
+    const openCatalogBtn = document.getElementById('open-catalog-btn');
+    const closeCatalogBtn = document.getElementById('close-catalog-btn');
+    const catalogModal = document.getElementById('catalog-modal');
+
+    openCatalogBtn.addEventListener('click', () => catalogModal.classList.remove('hidden'));
+    closeCatalogBtn.addEventListener('click', () => catalogModal.classList.add('hidden'));
+
+    // Логика рейтинга с поддержкой шага 0.5, звезд с заливкой и нейтральных кнопок - / +
+    let currentRating = 4.0;
+    const ratingBadge = document.getElementById('rating-score-badge');
+    const starItems = document.querySelectorAll('#star-rating .star-item');
+    const ratingDecreaseBtn = document.getElementById('rating-decrease-btn');
+    const ratingIncreaseBtn = document.getElementById('rating-increase-btn');
+
+    function renderStars(ratingValue) {
+      starItems.forEach(item => {
+        const starIdx = parseInt(item.getAttribute('data-star'));
+        const fillClip = item.querySelector('.star-fill-clip');
+        if (ratingValue >= starIdx) {
+          fillClip.style.width = '100%';
+        } else if (ratingValue === starIdx - 0.5) {
+          fillClip.style.width = '50%';
+        } else {
+          fillClip.style.width = '0%';
+        }
+      });
+    }
+
+    function updateRatingDisplay(val) {
+      currentRating = Math.max(0.5, Math.min(5.0, Math.round(val * 2) / 2));
+      ratingBadge.textContent = currentRating.toFixed(1) + ' / 5';
+
+      if (currentRating >= 4.0) {
+        ratingBadge.style.backgroundColor = 'rgba(34, 197, 94, 0.15)';
+        ratingBadge.style.color = '#16a34a';
+      } else if (currentRating >= 2.5) {
+        ratingBadge.style.backgroundColor = 'rgba(234, 179, 8, 0.15)';
+        ratingBadge.style.color = '#d97706';
+      } else {
+        ratingBadge.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
+        ratingBadge.style.color = '#dc2626';
+      }
+
+      renderStars(currentRating);
+    }
+
+    // Клик и ховер по половинкам звезд
+    starItems.forEach(item => {
+      const starIdx = parseInt(item.getAttribute('data-star'));
+      const leftHalf = item.querySelector('[data-half="left"]');
+      const rightHalf = item.querySelector('[data-half="right"]');
+
+      if (leftHalf) {
+        leftHalf.addEventListener('mouseenter', () => renderStars(starIdx - 0.5));
+        leftHalf.addEventListener('click', (e) => {
+          e.stopPropagation();
+          updateRatingDisplay(starIdx - 0.5);
+        });
+      }
+
+      if (rightHalf) {
+        rightHalf.addEventListener('mouseenter', () => renderStars(starIdx));
+        rightHalf.addEventListener('click', (e) => {
+          e.stopPropagation();
+          updateRatingDisplay(starIdx);
+        });
+      }
+    });
+
+    const starRatingContainer = document.getElementById('star-rating');
+    starRatingContainer.addEventListener('mouseleave', () => {
+      renderStars(currentRating);
+    });
+
+    // Логика кнопок - и +
+    if (ratingDecreaseBtn) {
+      ratingDecreaseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        updateRatingDisplay(currentRating - 0.5);
+      });
+    }
+
+    if (ratingIncreaseBtn) {
+      ratingIncreaseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        updateRatingDisplay(currentRating + 0.5);
+      });
+    }
+
+    // Первичная инициализация звезд
+    updateRatingDisplay(currentRating);
+
+    // Закрытие окон по клику на оверлей или по ESC
+    window.addEventListener('click', (e) => {
+      if (e.target === authModal) authModal.classList.remove('modal-active');
+      if (e.target === mediaModal) {
+        mediaModal.classList.remove('modal-active');
+        mediaContent.innerHTML = '';
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        authModal.classList.remove('modal-active');
+        catalogModal.classList.add('hidden');
+        mediaModal.classList.remove('modal-active');
+        mediaContent.innerHTML = '';
+        inlineTrailerPlayer.classList.add('hidden');
+        trailerIframe.src = "";
+      }
+    });
+  </script>
+  <!-- END: InteractiveScripts -->
+</body>
+
+</html>
