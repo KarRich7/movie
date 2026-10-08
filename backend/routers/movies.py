@@ -1,5 +1,8 @@
 """
 Movies router with advanced search, filtering, detailed view, and the 'Random movie for the evening' generator.
+Uses:
+- db_movies (movies.db) for Movie Catalog
+- db_users (users.db) for Reviews, Favorites, and Watch History
 """
 import json
 import random
@@ -8,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, or_, and_, desc, asc
 from sqlalchemy.orm import Session
 
-from backend.database import get_db
+from backend.database import get_movies_db, get_users_db
 from backend.models import (
     Movie, Genre, Actor, Director, Award, Review, Favorite, WatchHistory, User
 )
@@ -22,18 +25,20 @@ from backend.security import get_current_user_optional
 router = APIRouter(prefix="/api/movies", tags=["Фильмы и поиск"])
 
 
-def _calculate_user_rating(movie: Movie) -> tuple[Optional[float], int]:
-    """Calculates average user review rating and review count."""
-    reviews = movie.reviews or []
+def _calculate_user_rating(movie_id: int, db_users: Optional[Session] = None) -> tuple[Optional[float], int]:
+    """Calculates average user review rating and review count from users.db."""
+    if not db_users:
+        return None, 0
+    reviews = db_users.query(Review).filter(Review.movie_id == movie_id).all()
     if not reviews:
         return None, 0
     avg = sum(r.rating for r in reviews) / len(reviews)
     return round(avg, 1), len(reviews)
 
 
-def _movie_to_list_item(m: Movie) -> MovieListItemResponse:
+def _movie_to_list_item(m: Movie, db_users: Optional[Session] = None) -> MovieListItemResponse:
     """Helper to transform SQLAlchemy Movie model to MovieListItemResponse."""
-    user_avg, rev_count = _calculate_user_rating(m)
+    user_avg, rev_count = _calculate_user_rating(m.id, db_users)
     return MovieListItemResponse(
         id=m.id,
         kp_id=m.kp_id,
@@ -57,9 +62,14 @@ def _movie_to_list_item(m: Movie) -> MovieListItemResponse:
     )
 
 
-def _movie_to_detail(m: Movie, current_user: Optional[User], db: Session) -> MovieDetailResponse:
+def _movie_to_detail(
+    m: Movie,
+    current_user: Optional[User],
+    db_movies: Session,
+    db_users: Optional[Session] = None
+) -> MovieDetailResponse:
     """Helper to transform SQLAlchemy Movie model to full MovieDetailResponse."""
-    user_avg, rev_count = _calculate_user_rating(m)
+    user_avg, rev_count = _calculate_user_rating(m.id, db_users)
     
     posters = []
     if m.posters_json:
@@ -75,35 +85,37 @@ def _movie_to_detail(m: Movie, current_user: Optional[User], db: Session) -> Mov
         except Exception:
             pass
 
-    # Personal flags
+    # Personal flags & Reviews from users.db
     is_favorite = False
     in_watch_history = False
-    if current_user:
-        is_favorite = db.query(Favorite).filter(
-            Favorite.user_id == current_user.id,
-            Favorite.movie_id == m.id
-        ).first() is not None
-
-        in_watch_history = db.query(WatchHistory).filter(
-            WatchHistory.user_id == current_user.id,
-            WatchHistory.movie_id == m.id
-        ).first() is not None
-
-    # Reviews with user metadata
     review_responses = []
-    for r in (m.reviews or []):
-        review_responses.append(ReviewResponse(
-            id=r.id,
-            movie_id=r.movie_id,
-            user_id=r.user_id,
-            user_username=r.user.username if r.user else "Аноним",
-            user_avatar=r.user.avatar_url if r.user else None,
-            rating=r.rating,
-            title=r.title,
-            content=r.content,
-            created_at=r.created_at,
-            updated_at=r.updated_at
-        ))
+
+    if db_users:
+        if current_user:
+            is_favorite = db_users.query(Favorite).filter(
+                Favorite.user_id == current_user.id,
+                Favorite.movie_id == m.id
+            ).first() is not None
+
+            in_watch_history = db_users.query(WatchHistory).filter(
+                WatchHistory.user_id == current_user.id,
+                WatchHistory.movie_id == m.id
+            ).first() is not None
+
+        user_reviews = db_users.query(Review).filter(Review.movie_id == m.id).order_by(Review.created_at.desc()).all()
+        for r in user_reviews:
+            review_responses.append(ReviewResponse(
+                id=r.id,
+                movie_id=r.movie_id,
+                user_id=r.user_id,
+                user_username=r.user.username if r.user else "Аноним",
+                user_avatar=r.user.avatar_url if r.user else None,
+                rating=r.rating,
+                title=r.title,
+                content=r.content,
+                created_at=r.created_at,
+                updated_at=r.updated_at
+            ))
 
     return MovieDetailResponse(
         id=m.id,
@@ -155,10 +167,11 @@ def list_movies(
     sort_by: str = Query("rating_desc", pattern="^(rating_desc|rating_asc|year_desc|year_asc|title_asc|title_desc)$", description="Сортировка"),
     page: int = Query(1, ge=1, description="Номер страницы"),
     page_size: int = Query(12, ge=1, le=100, description="Количество фильмов на странице"),
-    db: Session = Depends(get_db)
+    db_movies: Session = Depends(get_movies_db),
+    db_users: Session = Depends(get_users_db)
 ):
     """
-    Продвинутая фильтрация и поиск фильмов:
+    Продвинутая фильтрация и поиск фильмов в movies.db:
     - Полнотекстовый поиск по названию, слогану и описанию
     - Фильтрация по жанрам, диапазону годов (year_from, year_to)
     - Фильтрация по рейтингу (rating_min, rating_max)
@@ -166,7 +179,7 @@ def list_movies(
     - Фильтрация по актерам и режиссерам
     - Пагинация и сортировки
     """
-    query = db.query(Movie).distinct()
+    query = db_movies.query(Movie).distinct()
 
     # Search query
     if q:
@@ -245,7 +258,7 @@ def list_movies(
     offset = (page - 1) * page_size
     movies = query.offset(offset).limit(page_size).all()
 
-    items = [_movie_to_list_item(m) for m in movies]
+    items = [_movie_to_list_item(m, db_users) for m in movies]
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
 
     return PaginatedMoviesResponse(
@@ -263,15 +276,16 @@ def get_random_movie(
     genre: Optional[str] = Query(None, description="Предпочтительный жанр"),
     min_rating: Optional[float] = Query(7.5, ge=0.0, le=10.0, description="Минимальный рейтинг"),
     year_from: Optional[int] = Query(None, ge=1900, description="Не старше года"),
-    db: Session = Depends(get_db),
+    db_movies: Session = Depends(get_movies_db),
+    db_users: Session = Depends(get_users_db),
     current_user: Optional[User] = Depends(get_current_user_optional)
 ):
     """
     Классная фича: Умный рандомайзер фильмов на вечер!
-    Подбирает идеальный фильм по настроению, минимальному рейтингу и жанру,
+    Подбирает идеальный фильм по настроению, минимальному рейтингу и жанру из movies.db,
     генерируя персональную причину для вечернего просмотра.
     """
-    query = db.query(Movie)
+    query = db_movies.query(Movie)
 
     if min_rating:
         query = query.filter(Movie.rating_kp >= min_rating)
@@ -311,9 +325,9 @@ def get_random_movie(
 
     if not candidates:
         # Fallback to any high-rated movie
-        candidates = db.query(Movie).filter(Movie.rating_kp >= 7.0).all()
+        candidates = db_movies.query(Movie).filter(Movie.rating_kp >= 7.0).all()
         if not candidates:
-            candidates = db.query(Movie).all()
+            candidates = db_movies.query(Movie).all()
 
     if not candidates:
         raise HTTPException(
@@ -324,7 +338,7 @@ def get_random_movie(
     chosen = random.choice(candidates)
     reason = mood_reasons.get(mood.lower(), f"Топ-рейтинг Кинопоиска {chosen.rating_kp} и признание миллионов зрителей!") if mood else f"Высокий рейтинг {chosen.rating_kp}, мощный сюжет и идеальный хронометраж для сегодняшнего вечера!"
 
-    movie_detail = _movie_to_detail(chosen, current_user, db)
+    movie_detail = _movie_to_detail(chosen, current_user, db_movies, db_users)
     return RandomMovieResponse(
         movie=movie_detail,
         reason=reason,
@@ -335,26 +349,21 @@ def get_random_movie(
 @router.get("/{movie_id}", response_model=MovieDetailResponse, summary="Детальная информация о фильме")
 def get_movie_detail(
     movie_id: str,
-    db: Session = Depends(get_db),
+    db_movies: Session = Depends(get_movies_db),
+    db_users: Session = Depends(get_users_db),
     current_user: Optional[User] = Depends(get_current_user_optional)
 ):
     """
-    Возвращает исчерпывающую информацию о фильме:
-    - Все постеры и кадры галереи
-    - Список актеров с ID Кинопоиска
-    - Режиссеры и полученные награды (Оскар, Сатурн и др.)
-    - Трейлеры и ссылки на онлайн-просмотр (Кинопоиск, Rutube, VK)
-    - Пользовательские отзывы и средний балл
-    - Персональные статусы: в избранном ли фильм у текущего пользователя и есть ли в истории
+    Возвращает исчерпывающую информацию о фильме из movies.db
+    и пользовательские отзывы/статусы из users.db.
     """
-    # Accept internal id or kp_id
     movie = None
     if movie_id.isdigit():
-        movie = db.query(Movie).filter(
+        movie = db_movies.query(Movie).filter(
             or_(Movie.id == int(movie_id), Movie.kp_id == movie_id)
         ).first()
     else:
-        movie = db.query(Movie).filter(Movie.kp_id == movie_id).first()
+        movie = db_movies.query(Movie).filter(Movie.kp_id == movie_id).first()
 
     if not movie:
         raise HTTPException(
@@ -362,4 +371,4 @@ def get_movie_detail(
             detail=f"Фильм с идентификатором '{movie_id}' не найден"
         )
 
-    return _movie_to_detail(movie, current_user, db)
+    return _movie_to_detail(movie, current_user, db_movies, db_users)

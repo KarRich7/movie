@@ -1,12 +1,13 @@
 """
 Metadata router: genres, actors, directors, awards, and catalog statistics.
+Uses db_movies (movies.db) for movie catalog entities and db_users (users.db) for user statistics.
 """
 from typing import List, Optional
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from backend.database import get_db
+from backend.database import get_movies_db, get_users_db
 from backend.models import Genre, Actor, Director, Award, Movie, User, Review
 from backend.schemas import (
     GenreResponse, ActorResponse, DirectorResponse, AwardResponse, CatalogStatsResponse
@@ -16,8 +17,8 @@ router = APIRouter(prefix="/api", tags=["Справочники и метада�
 
 
 @router.get("/genres", response_model=List[GenreResponse], summary="Список всех жанров с количеством фильмов")
-def get_genres(db: Session = Depends(get_db)):
-    """Возвращает список всех доступных жанров с подсчетом привязанных фильмов."""
+def get_genres(db: Session = Depends(get_movies_db)):
+    """Возвращает список всех доступных жанров с подсчетом привязанных фильмов из movies.db."""
     genres = db.query(Genre).order_by(Genre.name.asc()).all()
     result = []
     for g in genres:
@@ -34,7 +35,7 @@ def get_genres(db: Session = Depends(get_db)):
 def get_actors(
     q: Optional[str] = Query(None, description="Поиск по имени актера"),
     limit: int = Query(50, ge=1, le=100),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_movies_db)
 ):
     """Возвращает актеров с возможностью поиска по имени."""
     query = db.query(Actor)
@@ -48,7 +49,7 @@ def get_actors(
 def get_directors(
     q: Optional[str] = Query(None, description="Поиск по имени режиссера"),
     limit: int = Query(50, ge=1, le=100),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_movies_db)
 ):
     """Возвращает режиссеров с возможностью поиска."""
     query = db.query(Director)
@@ -59,24 +60,28 @@ def get_directors(
 
 
 @router.get("/awards", response_model=List[str], summary="Список категорий кинопремий")
-def get_awards_list(db: Session = Depends(get_db)):
+def get_awards_list(db: Session = Depends(get_movies_db)):
     """Возвращает уникальные названия кинопремий (Оскар, Золотой глобус и т.д.)."""
     awards = db.query(Award.name).distinct().order_by(Award.name.asc()).all()
     return [a[0] for a in awards if a[0]]
 
 
 @router.get("/stats", response_model=CatalogStatsResponse, summary="Общая статистика каталога")
-def get_catalog_stats(db: Session = Depends(get_db)):
-    """Возвращает аналитическую статистику по всей базе данных."""
-    total_movies = db.query(Movie).count()
-    total_actors = db.query(Actor).count()
-    total_directors = db.query(Director).count()
-    total_genres = db.query(Genre).count()
-    total_awards = db.query(Award).count()
-    total_users = db.query(User).count()
-    total_reviews = db.query(Review).count()
+def get_catalog_stats(
+    db_movies: Session = Depends(get_movies_db),
+    db_users: Session = Depends(get_users_db)
+):
+    """Возвращает аналитическую статистику из двух независимых баз данных (movies.db и users.db)."""
+    total_movies = db_movies.query(Movie).count()
+    total_actors = db_movies.query(Actor).count()
+    total_directors = db_movies.query(Director).count()
+    total_genres = db_movies.query(Genre).count()
+    total_awards = db_movies.query(Award).count()
 
-    avg_rating_row = db.query(func.avg(Movie.rating_kp)).first()
+    total_users = db_users.query(User).count()
+    total_reviews = db_users.query(Review).count()
+
+    avg_rating_row = db_movies.query(func.avg(Movie.rating_kp)).first()
     avg_rating = round(float(avg_rating_row[0]), 2) if avg_rating_row and avg_rating_row[0] else 0.0
 
     return CatalogStatsResponse(

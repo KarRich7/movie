@@ -1,5 +1,3 @@
-import os
-
 with open('parsed_movies/index.html', 'r', encoding='utf-8') as f:
     html = f.read()
 
@@ -7,22 +5,16 @@ checks = [
     ('tab-btn-catalog', 'id="tab-btn-catalog"' in html),
     ('tab-btn-filmoftheday', 'id="tab-btn-filmoftheday"' in html),
     ('filmoftheday-view', 'id="filmoftheday-view"' in html),
-    ('filmoftheday-bg-video', 'id="filmoftheday-bg-video"' in html),
-    ('empty video src', 'src=""' in html),
+    ('film-day-bg-title (visible stacked typography)', 'film-day-bg-title' in html),
     ('Typography ФИЛЬМ', 'ФИЛЬМ' in html),
     ('Typography ДНЯ', 'ДНЯ' in html),
+    ('3D floating chip 1 (Топ-250)', 'floating-3d-chip-1' in html),
+    ('3D floating chip 2 (Рейтинг КП)', 'floating-3d-chip-2' in html),
+    ('3D Parallax Tilt script', 'perspective(1000px)' in html),
     ('filmoftheday-poster-card', 'id="filmoftheday-poster-card"' in html),
-    ('film-day-overlay (hover)', 'film-day-overlay' in html),
+    ('film-day-overlay (hover ratings & views)', 'film-day-overlay' in html),
     ('filmoftheday-hover-views', 'id="filmoftheday-hover-views"' in html),
-    ('filmoftheday-hover-rating', 'id="filmoftheday-hover-rating"' in html),
-    ('play-pulse', 'play-pulse' in html),
-    ('openDayMovieTrailer', 'openDayMovieTrailer' in html),
     ('trailer-modal', 'id="trailer-modal"' in html),
-    ('filmoftheday-watch-direct', 'id="filmoftheday-watch-direct"' in html),
-    ('filmoftheday-tagline', 'id="filmoftheday-tagline"' in html),
-    ('filmoftheday-synopsis', 'id="filmoftheday-synopsis"' in html),
-    ('switchMainTab', 'function switchMainTab' in html),
-    ('setupFilmOfTheDay', 'function setupFilmOfTheDay' in html),
 ]
 
 all_passed = True

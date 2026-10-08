@@ -136,32 +136,38 @@
       padding-bottom: 8px;
     }
     .watch-card {
-      height: 52px;
-      width: 155px;
+      height: 80px;
+      width: 165px;
       border-radius: 12px;
-      background: #fff;
+      background: #111827;
       border: 1px solid #e5e7eb;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
       flex-shrink: 0;
-      padding: 6px 14px;
+      padding: 0 !important;
+      overflow: hidden !important;
+      position: relative;
     }
     .watch-card:hover {
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-      transform: translateY(-2px);
-      border-color: #d1d5db;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      transform: translateY(-3px);
+      border-color: #cbd5e1;
     }
     .watch-card-img {
-      max-height: 28px;
-      max-width: 110px;
-      object-fit: contain;
-      transition: transform 0.2s;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      object-fit: cover !important;
+      object-position: center !important;
+      display: block !important;
+      transition: transform 0.3s ease;
     }
     .watch-card:hover .watch-card-img {
-      transform: scale(1.08);
+      transform: scale(1.06);
     }
 
     /* Поддержка тем оформления */
@@ -185,16 +191,28 @@
       background: #1c1e24 !important;
       border-color: rgba(255, 255, 255, 0.1) !important;
     }
+    html[data-theme="dark"] .text-gray-950,
     html[data-theme="dark"] .text-gray-900 {
       color: #ffffff !important;
     }
+    html[data-theme="dark"] .text-gray-800 {
+      color: #f3f4f6 !important;
+    }
     html[data-theme="dark"] .text-gray-700 {
-      color: #d1d5db !important;
+      color: #e2e8f0 !important;
     }
-    html[data-theme="dark"] .text-gray-500 {
-      color: #9ca3af !important;
+    html[data-theme="dark"] .text-gray-600 {
+      color: #cbd5e1 !important;
     }
-    html[data-theme="dark"] .border-gray-200 {
+    html[data-theme="dark"] .text-gray-500,
+    html[data-theme="dark"] .text-gray-400 {
+      color: #94a3b8 !important;
+    }
+    html[data-theme="dark"] .text-black {
+      color: #ffffff !important;
+    }
+    html[data-theme="dark"] .border-gray-200,
+    html[data-theme="dark"] .border-gray-100 {
       border-color: rgba(255, 255, 255, 0.1) !important;
     }
 
@@ -211,13 +229,42 @@
     html[data-theme="cinematic"] .bg-\[\#F8F9FA\] {
       background-color: #07090e !important;
     }
-    html[data-theme="cinematic"] .bg-\[\#E9ECEF\]\/60 {
+    html[data-theme="cinematic"] .bg-\[\#E9ECEF\]\/60,
+    html[data-theme="cinematic"] .bg-\[\#E9ECEF\]\/70 {
       background-color: #121824 !important;
       border-color: rgba(0, 242, 254, 0.15) !important;
     }
     html[data-theme="cinematic"] .watch-card {
       background: #0d121c !important;
       border-color: rgba(0, 242, 254, 0.2) !important;
+    }
+    html[data-theme="cinematic"] .text-gray-900 {
+      color: #ffffff !important;
+    }
+    html[data-theme="cinematic"] .text-gray-800 {
+      color: #f1f5f9 !important;
+    }
+    html[data-theme="cinematic"] .text-gray-700 {
+      color: #e2e8f0 !important;
+    }
+    html[data-theme="cinematic"] .text-gray-600 {
+      color: #cbd5e1 !important;
+    }
+    html[data-theme="cinematic"] .text-gray-500 {
+      color: #94a3b8 !important;
+    }
+    html[data-theme="cinematic"] .text-gray-400 {
+      color: #94a3b8 !important;
+    }
+    html[data-theme="cinematic"] .border-gray-200,
+    html[data-theme="cinematic"] .border-gray-100 {
+      border-color: rgba(0, 242, 254, 0.15) !important;
+    }
+    html[data-theme="cinematic"] .bg-gray-50\/80,
+    html[data-theme="cinematic"] .bg-gray-50,
+    html[data-theme="cinematic"] .bg-gray-100 {
+      background-color: #111726 !important;
+      color: #e2e8f0 !important;
     }
 
     /* Модальные окна */
@@ -238,24 +285,144 @@
       transform: scale(1) translateY(0);
     }
 
-    /* Анимация рулетки */
-    @keyframes roulettePulse {
-      0% { transform: scale(1); filter: brightness(1); }
-      50% { transform: scale(1.03); filter: brightness(1.18); }
-      100% { transform: scale(1); filter: brightness(1); }
+    /* ================= CS:GO CASE OPENING ROULETTE ================= */
+    .csgo-roulette-container {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      background: radial-gradient(ellipse at center, #161e2a 0%, #0d121a 70%, #06090e 100%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.85), 0 10px 30px rgba(0, 0, 0, 0.4);
     }
-    .roulette-anim {
-      animation: roulettePulse 0.35s ease infinite;
+    .csgo-roulette-pointer {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 3px;
+      transform: translateX(-50%);
+      background: linear-gradient(to bottom, #f59e0b, #ef4444, #f59e0b);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.9), 0 0 20px rgba(239, 68, 68, 0.6);
+      z-index: 30;
+      pointer-events: none;
+    }
+    .csgo-roulette-pointer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 13px solid #f59e0b;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
+    }
+    .csgo-roulette-pointer::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-bottom: 13px solid #f59e0b;
+      filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.7));
+    }
+    .csgo-roulette-strip {
+      display: flex;
+      gap: 12px;
+      padding: 14px 0;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      will-change: transform;
+    }
+    .csgo-roulette-card {
+      width: 135px;
+      height: 190px;
+      flex-shrink: 0;
+      background: #0f141d;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+      user-select: none;
+      transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+    }
+    .csgo-roulette-card.winner-glow {
+      border: 2px solid #f59e0b !important;
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.8), 0 0 60px rgba(245, 158, 11, 0.4) !important;
+      transform: scale(1.05);
+      z-index: 25;
+    }
+    .csgo-card-rarity-bar {
+      height: 4px;
+      width: 100%;
+    }
+    .rarity-covert { background: linear-gradient(90deg, #ef4444, #dc2626); }
+    .rarity-classified { background: linear-gradient(90deg, #ec4899, #d946ef); }
+    .rarity-special { background: linear-gradient(90deg, #f59e0b, #eab308); }
+    .rarity-restricted { background: linear-gradient(90deg, #8b5cf6, #6366f1); }
+
+    /* ================= ДИНАМИЧЕСКИЕ СТИЛИ 'ФИЛЬМ ДНЯ' ================= */
+    .film-day-bg-title {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      transition: all 0.35s ease;
+      display: inline-block;
+      user-select: none;
+      white-space: nowrap;
+    }
+    /* Светлая тема */
+    html[data-theme="light"] .film-day-bg-title {
+      color: rgba(15, 23, 42, 0.22);
+      -webkit-text-stroke: 2px rgba(15, 23, 42, 0.40);
+      text-shadow: 0 4px 30px rgba(0, 0, 0, 0.06);
+    }
+    html[data-theme="light"] .film-day-bg-title-accent {
+      color: rgba(16, 185, 129, 0.32) !important;
+      -webkit-text-stroke: 2px rgba(16, 185, 129, 0.65) !important;
+      text-shadow: 0 4px 35px rgba(16, 185, 129, 0.25) !important;
+    }
+    /* Тёмная тема */
+    html.dark .film-day-bg-title,
+    html[data-theme="dark"] .film-day-bg-title {
+      color: rgba(255, 255, 255, 0.22);
+      -webkit-text-stroke: 2px rgba(255, 255, 255, 0.45);
+      text-shadow: 0 0 60px rgba(255, 255, 255, 0.15);
+    }
+    html.dark .film-day-bg-title-accent,
+    html[data-theme="dark"] .film-day-bg-title-accent {
+      color: rgba(0, 224, 84, 0.38) !important;
+      -webkit-text-stroke: 2px rgba(0, 224, 84, 0.75) !important;
+      text-shadow: 0 0 70px rgba(0, 224, 84, 0.45) !important;
+    }
+    /* Синематик тема */
+    html[data-theme="cinematic"] .film-day-bg-title {
+      color: rgba(0, 242, 254, 0.22) !important;
+      -webkit-text-stroke: 2px rgba(0, 242, 254, 0.55) !important;
+      text-shadow: 0 0 60px rgba(0, 242, 254, 0.45) !important;
+    }
+    html[data-theme="cinematic"] .film-day-bg-title-accent {
+      color: rgba(0, 242, 254, 0.42) !important;
+      -webkit-text-stroke: 2.5px rgba(0, 242, 254, 0.85) !important;
+      text-shadow: 0 0 80px rgba(0, 242, 254, 0.75) !important;
     }
 
-    /* Стили и анимации для вкладки 'Фильм дня' */
     .film-day-card {
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.15s ease-out, box-shadow 0.3s ease;
       transform-style: preserve-3d;
+      will-change: transform;
     }
     .film-day-card:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.5), 0 0 45px rgba(16, 185, 129, 0.25);
+      box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.6), 0 0 50px rgba(16, 185, 129, 0.3);
     }
     .film-day-overlay {
       opacity: 0;
@@ -268,21 +435,62 @@
       pointer-events: auto;
       transform: translateY(0);
     }
+    .floating-3d-chip-1 {
+      animation: float3dChip1 4.5s ease-in-out infinite;
+      transform-style: preserve-3d;
+    }
+    .floating-3d-chip-2 {
+      animation: float3dChip2 5s ease-in-out infinite 0.7s;
+      transform-style: preserve-3d;
+    }
+    @keyframes float3dChip1 {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-10px) rotate(1deg); }
+    }
+    @keyframes float3dChip2 {
+      0%, 100% { transform: translateY(0) rotate(2deg); }
+      50% { transform: translateY(10px) rotate(-1deg); }
+    }
     .play-pulse {
       box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6);
       animation: playPulseAnim 2s infinite;
     }
-    @keyframes playPulseAnim {
-      0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6); }
-      70% { box-shadow: 0 0 0 14px rgba(255, 255, 255, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+    /* ================= СТИЛИ В ДУХЕ LETTERBOXD ================= */
+    .lb-card {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease;
+      will-change: transform;
+    }
+    .lb-card:hover {
+      transform: translateY(-4px);
+    }
+    .lb-poster-box {
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      background: #1c2228;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.22s ease;
+    }
+    .lb-card:hover .lb-poster-box {
+      outline: 2px solid #00e054;
+      outline-offset: -1px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 0 18px rgba(0, 224, 84, 0.3);
+    }
+    .lb-stars {
+      color: #00e054;
+    }
+    .letterboxd-green {
+      background-color: #00e054;
+    }
+    .letterboxd-green-text {
+      color: #00e054;
     }
   </style>
 </head>
 
 <body class="bg-[#F8F9FA] text-gray-900 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-gray-800 selection:text-white transition-colors duration-300">
 
-  <!-- BEGIN: TopBarNav (Полная гармония с film_435.html) -->
+  <!-- BEGIN: TopBarNav (Letterboxd & Stitch Obsidian Design) -->
   <header class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 sm:px-6 py-5">
     <div class="flex items-center gap-3">
       <!-- Логотип / Название сайта -->
@@ -315,19 +523,28 @@
           class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-gray-300 hover:text-white transition-all"
           title="Смотреть фильм дня">
           <span class="tab-indicator hidden w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_#f59e0b]"></span>
-          <span>✨ Фильм дня</span>
+          <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2l2.4 7.4h7.6l-6.1 4.5 2.3 7.1-6.2-4.5-6.2 4.5 2.3-7.1-6.1-4.5h7.6z"/>
+          </svg>
+          <span>Фильм дня</span>
         </button>
       </nav>
     </div>
 
-    <!-- Правые элементы управления: Рандомайзер, Темы, Вход -->
+    <!-- Правые элементы управления: Рандомайзер (CS:GO), Темы, Вход -->
     <div class="flex items-center gap-2.5">
-      <!-- Кнопка: Случайный фильм -->
+      <!-- Кнопка: Случайный фильм (лаконичный быстрый переход без рулеток) -->
       <button 
-        onclick="openRandomizerModal()"
-        class="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold text-black bg-gradient-to-r from-amber-400 to-yellow-300 hover:from-amber-300 shadow-lg transition-transform active:scale-95"
-        title="Случайный фильм на вечер">
-        <span>🎲</span>
+        id="header-random-btn"
+        onclick="pickRandomMovieDirect()"
+        class="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold text-gray-950 bg-gradient-to-r from-amber-400 to-yellow-300 hover:from-amber-300 shadow-lg transition-transform active:scale-95"
+        title="Случайный фильм">
+        <svg class="w-3.5 h-3.5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2.2">
+          <rect x="3" y="3" width="18" height="18" rx="4"/>
+          <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+          <circle cx="15.5" cy="15.5" r="1.5" fill="currentColor"/>
+          <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+        </svg>
         <span class="hidden md:inline">Случайный фильм</span>
       </button>
 
@@ -357,17 +574,15 @@
   </header>
   <!-- END: TopBarNav -->
 
-  <!-- BEGIN: CinematicHeroBanner (1-в-1 в стилистике film_435.html) -->
-  <section class="trailer-section select-none" id="catalog-hero" style="background-image: url('https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/35975f3e-11e5-483f-9895-be2689f99a0d/orig'); background-size: cover; background-position: center;">
-    <div class="video-container">
-      <video id="hero-ambient-video" src="trailers/film_435.mp4" autoplay loop muted playsinline onerror="this.style.display='none';"></video>
-    </div>
-    <div class="trailer-overlay-bg"></div>
+  <!-- BEGIN: CinematicHeroBanner (Letterboxd & Stitch Obsidian) -->
+  <section class="trailer-section select-none" id="catalog-hero" style="background: radial-gradient(ellipse at 50% 20%, #1e2433 0%, #0d1117 60%, #07090e 100%);">
+    <div class="trailer-overlay-bg" style="background: radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.08) 0%, rgba(0, 0, 0, 0.5) 75%, rgba(7, 9, 14, 0.92) 100%);"></div>
 
     <!-- Заголовок и интро каталога -->
     <div class="trailer-overlay text-center px-4 max-w-4xl pt-8">
       <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-semibold tracking-widest uppercase mb-4 backdrop-blur-md">
-        <span>🎬 Кинотека мирового кинематографа</span>
+        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
+        <span>Кинотека мирового кинематографа</span>
       </div>
       <h1 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-wider uppercase mb-3 drop-shadow-2xl font-serif">
         Каталог фильмов
@@ -376,29 +591,94 @@
         Исследуйте культовые шедевры, фильмы из списка Топ-250 Кинопоиска и оскароносные картины с детальными рейтингами, кадрами и видео-трейлерами
       </p>
 
-      <!-- Быстрые экшены в баннере -->
+      <!-- Быстрые экшены в баннере (Лаконичный минимализм) -->
       <div class="flex flex-wrap items-center justify-center gap-3">
-        <button onclick="scrollToFilter('top250')" class="px-4 py-2 rounded-full text-xs font-bold text-white bg-black/50 hover:bg-black/80 backdrop-blur-md border border-amber-400/40 hover:border-amber-400 transition-all shadow-lg flex items-center gap-1.5">
-          <span class="text-amber-400">🔥</span>
+        <button onclick="scrollToFilter('top250')" class="px-4 py-2 rounded-full text-xs font-bold text-white bg-black/50 hover:bg-black/80 backdrop-blur-md border border-amber-400/40 hover:border-amber-400 transition-all shadow-lg flex items-center gap-2">
+          <svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
           <span>Топ-250 Кинопоиска</span>
         </button>
-        <button onclick="scrollToFilter('oscar')" class="px-4 py-2 rounded-full text-xs font-bold text-white bg-black/50 hover:bg-black/80 backdrop-blur-md border border-yellow-400/40 hover:border-yellow-400 transition-all shadow-lg flex items-center gap-1.5">
-          <span>🏆</span>
+        <button onclick="scrollToFilter('oscar')" class="px-4 py-2 rounded-full text-xs font-bold text-white bg-black/50 hover:bg-black/80 backdrop-blur-md border border-yellow-400/40 hover:border-yellow-400 transition-all shadow-lg flex items-center gap-2">
+          <svg class="w-3.5 h-3.5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           <span>Фильмы с Оскаром</span>
-        </button>
-        <button onclick="openRandomizerModal()" class="px-4 py-2 rounded-full text-xs font-bold text-black bg-gradient-to-r from-amber-400 to-yellow-300 hover:from-amber-300 transition-all shadow-lg flex items-center gap-1.5">
-          <span>🎲</span>
-          <span>Рандомайзер на вечер</span>
         </button>
       </div>
     </div>
   </section>
   <!-- END: CinematicHeroBanner -->
 
-  <!-- BEGIN: MainContent (Точно как в film_435.html: -mt-6 relative z-10) -->
+  <!-- BEGIN: MainContent (Letterboxd Showcase + Film Explorer) -->
   <main id="catalog-main-content" class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-10 py-6 flex-grow">
 
-    <!-- ================= 1. ПАНЕЛЬ ПОИСКА И ФИЛЬТРОВ ================= -->
+    <!-- ================= ПОДБОРКИ В СТИЛЕ LETTERBOXD (КУРИРУЕМЫЕ РЕЛЬСЫ И НАСТРАИВАЕМЫЕ ПОЛКИ) ================= -->
+    <section class="mb-12" id="curated-shelves-section" data-purpose="letterboxd-curated-shelves">
+      
+      <!-- Панель управления Letterboxd: фильтр-пилюли и кнопки добавления/настройки полок -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3.5 mb-8 pb-3 border-b border-black/[0.06] dark:border-white/[0.08]">
+        
+        <!-- Быстрые фильтры / ссылки на полки -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none" id="shelf-quick-pills">
+          <button onclick="filterShelfPill('all')" id="pill-shelf-all" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#00e054] text-black shadow-sm transition-all shrink-0">
+            Все полки
+          </button>
+          <button onclick="filterShelfPill('shelf-trending')" id="pill-shelf-trending" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-black/5 dark:bg-white/10 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-all shrink-0 flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            <span>В тренде</span>
+          </button>
+          <button onclick="filterShelfPill('shelf-top250')" id="pill-shelf-top250" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-black/5 dark:bg-white/10 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-all shrink-0 flex items-center gap-1.5">
+            <span class="text-amber-400">★</span>
+            <span>Топ-250</span>
+          </button>
+          <button onclick="filterShelfPill('shelf-oscar')" id="pill-shelf-oscar" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-black/5 dark:bg-white/10 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-all shrink-0 flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+            <span>Оскар</span>
+          </button>
+          <button onclick="filterShelfPill('shelf-scifi')" id="pill-shelf-scifi" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-black/5 dark:bg-white/10 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-all shrink-0 flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+            <span>Sci-Fi</span>
+          </button>
+        </div>
+
+        <!-- Кнопки настройки категорий в стиле Letterboxd -->
+        <div class="flex items-center gap-2.5 shrink-0 self-end md:self-auto">
+          <!-- Кнопка добавления новой полки -->
+          <button 
+            onclick="openShelfManagerModal('create')" 
+            class="px-4 py-1.5 rounded-full bg-[#00e054] hover:bg-[#00c849] text-gray-950 font-black text-xs uppercase tracking-wider shadow-lg hover:shadow-[#00e054]/30 transition-all flex items-center gap-1.5 active:scale-95"
+            title="Добавить свою категорию/подборку"
+          >
+            <span class="text-sm font-black">＋</span>
+            <span>Добавить категорию</span>
+          </button>
+
+          <!-- Кнопка настройки порядка и включения/выключения полок -->
+          <button 
+            onclick="openShelfManagerModal('manage')" 
+            class="px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-800 dark:text-gray-200 border border-black/[0.06] dark:border-white/[0.08] font-bold text-xs transition-all flex items-center gap-1.5 shadow-sm"
+            title="Настроить порядок и видимость полок"
+          >
+            <span>⚙️</span>
+            <span>Настроить полки</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Контейнер полок (Динамически генерируется в renderShelves()) -->
+      <div id="letterboxd-shelves-container" class="space-y-10">
+        <!-- Полки генерируются JS -->
+      </div>
+
+    </section>
+
+    <!-- ================= 2. ФИЛЬМОТЕКА И ПОИСК (EXPLORER) ================= -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+        <h3 class="text-sm font-bold uppercase tracking-wider text-gray-900 dark:text-white">Вся фильмотека</h3>
+      </div>
+    </div>
+
+    <!-- ================= ПАНЕЛЬ ПОИСКА И ФИЛЬТРОВ ================= -->
     <section class="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200/80 shadow-sm mb-8 transition-colors duration-300" id="filter-panel" data-purpose="search-and-filters">
       <div class="flex flex-col gap-4">
         
@@ -554,215 +834,204 @@
   <!-- ================= SECTION: ФИЛЬМ ДНЯ (1-в-1 ПО ДИЗАЙН-РЕФЕРЕНСУ) ================= -->
   <section id="filmoftheday-view" class="hidden relative min-h-[92vh] w-full overflow-hidden pt-28 pb-16 flex flex-col justify-between select-none">
     
-    <!-- 1. ФОНОВОЕ ВИДЕО (ОСТАВЛЕНО ПУСТЫМ src="" ПО ТРЕБОВАНИЮ) + КИНЕМАТОГРАФИЧНЫЙ ГРАДИЕНТ -->
-    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+    <!-- 1. ФОНОВОЕ ВИДЕО ДЛЯ «ФИЛЬМА ДНЯ» (С КИНЕМАТОГРАФИЧНОЙ МАСКОЙ И ГРАДИЕНТАМИ) -->
+    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
+      <!-- 🎬 КАК ВСТАВИТЬ СВОЕ ВИДЕО:
+           Поместите видеофайл в 'assets/filmoftheday_bg.mp4' или укажите свой src="..." в теге ниже -->
       <video 
         id="filmoftheday-bg-video" 
-        src="" 
         autoplay 
         loop 
         muted 
         playsinline 
-        class="w-full h-full object-cover opacity-25 dark:opacity-35 scale-105"
-      ></video>
-      <!-- Запасной мягкий световой градиент и виньетка -->
-      <div class="absolute inset-0 bg-gradient-to-b from-[#F8F9FA]/85 via-transparent to-[#F8F9FA] dark:from-[#07090e]/90 dark:via-[#07090e]/65 dark:to-[#07090e]"></div>
-      <!-- Неоновый спотлайт позади центрального фильма -->
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[720px] bg-emerald-500/10 dark:bg-emerald-400/15 rounded-full blur-3xl pointer-events-none"></div>
+        class="w-full h-full object-cover opacity-20 dark:opacity-25 scale-105 transition-opacity duration-1000"
+      >
+        <source src="assets/filmoftheday_bg.mp4" type="video/mp4">
+      </video>
+      <!-- Кинематографичный градиент сверху и снизу (виньетка) -->
+      <div class="absolute inset-0 bg-gradient-to-b from-[#F8F9FA]/90 via-transparent to-[#F8F9FA] dark:from-[#07090e]/95 dark:via-[#07090e]/60 dark:to-[#07090e]"></div>
+      <!-- Глубокое радиальное затемнение по краям (кинематографичный объектив) -->
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.55)_60%,rgba(7,9,14,0.98)_100%)]"></div>
+      <!-- Неоновый спотлайт позади центрального фильма (Stitch Ambient Depth) -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[750px] bg-emerald-500/10 dark:bg-emerald-400/15 rounded-full blur-3xl pointer-events-none"></div>
     </div>
 
-    <!-- 2. ГИГАНТСКАЯ ТИПОГРАФИКА СЗАДИ: 'ФИЛЬМ' СЛЕВА И 'ДНЯ' СПРАВА (КАК В РЕФЕРЕНСЕ 'HARNESS NATURE'S') -->
-    <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 z-0 flex items-center justify-between pointer-events-none select-none px-4 sm:px-10 lg:px-16 overflow-hidden">
-      <span class="text-[13vw] font-black uppercase tracking-tighter text-black/[0.04] dark:text-white/[0.07] leading-none font-serif">
-        ФИЛЬМ
-      </span>
-      <span class="text-[13vw] font-black uppercase tracking-tighter text-black/[0.04] dark:text-white/[0.07] leading-none font-serif">
-        ДНЯ
-      </span>
+    <!-- 2. ГИГАНТСКАЯ ТИПОГРАФИКА: «ФИЛЬМ» ВЫШЕ СЛЕВА, «ДНЯ» НИЖЕ СПРАВА (ВЫСОКИЙ КОНТРАСТ, ЖИРНЫЙ) -->
+    <div class="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden flex items-center justify-center">
+      <div class="relative w-full max-w-7xl h-full flex items-center justify-center">
+        <!-- СЛЕВА ВВЕРХУ: «ФИЛЬМ» -->
+        <div class="absolute right-[calc(50%+140px)] sm:right-[calc(50%+170px)] md:right-[calc(50%+195px)] top-[34%] sm:top-[36%] -translate-y-1/2 whitespace-nowrap">
+          <span class="film-day-bg-title font-black uppercase tracking-tighter text-[15vw] sm:text-[11vw] md:text-[9vw] lg:text-[7.5vw] leading-none select-none opacity-85">
+            ФИЛЬМ
+          </span>
+        </div>
+        <!-- СПРАВА ВНИЗУ: «ДНЯ» (БЛИЗКО К ЦЕНТРАЛЬНОМУ ПОСТЕРУ И СИММЕТРИЧНО) -->
+        <div class="absolute left-[calc(50%+140px)] sm:left-[calc(50%+170px)] md:left-[calc(50%+195px)] top-[58%] sm:top-[60%] -translate-y-1/2 whitespace-nowrap">
+          <span class="film-day-bg-title film-day-bg-title-accent font-black uppercase tracking-tighter text-[15vw] sm:text-[11vw] md:text-[9vw] lg:text-[7.5vw] leading-none select-none opacity-95">
+            ДНЯ
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ПЛАВАЮЩИЙ КИНЕМАТОГРАФИЧНЫЙ ЭКРАН ТРЕЙЛЕРА (СПРАВА, БОЛЬШОЙ, РОВНЫЙ, С АККУРАТНЫМ ОБОЗНАЧЕНИЕМ) -->
+    <div class="absolute top-20 sm:top-24 right-4 sm:right-6 lg:right-12 z-30">
+      <div 
+        onclick="openDayMovieTrailer()"
+        class="group cursor-pointer relative w-64 sm:w-80 md:w-96 lg:w-[420px] aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl border border-black/[0.04] dark:border-white/[0.08] hover:border-[#00e054]/60 transition-all duration-300 hover:scale-[1.01]"
+        title="Воспроизвести трейлер фильма"
+      >
+        <!-- Большой кинематографичный экранчик с постером кадра -->
+        <img 
+          id="filmoftheday-trailer-thumb" 
+          src="https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/35975f3e-11e5-483f-9895-be2689f99a0d/orig" 
+          alt="Кадр трейлера" 
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent group-hover:from-black/50 transition-colors"></div>
+        
+        <!-- Круглая кнопка Play с мягким неоновым свечением -->
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="w-12 sm:w-14 h-12 sm:h-14 rounded-full bg-white/95 text-gray-950 flex items-center justify-center text-base sm:text-lg font-bold shadow-2xl play-pulse group-hover:scale-110 group-hover:bg-[#00e054] transition-all">
+            ▶
+          </div>
+        </div>
+        
+        <!-- Аккуратное обозначение трейлера (Stitch Minimal UI) -->
+        <div class="absolute bottom-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/85 backdrop-blur-md border border-white/10 text-white text-[11px] font-semibold tracking-wide shadow">
+          <span class="text-[#00e054]">▶</span>
+          <span>Трейлер</span>
+        </div>
+      </div>
     </div>
 
     <!-- 3. ОСНОВНОЙ КОНТЕНТНЫЙ СЛОЙ (BENTO GRID В ПОЛНОЙ ГАРМОНИИ С РЕФЕРЕНСОМ) -->
-    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col flex-1 justify-between gap-8 sm:gap-12">
-      
-      <!-- ВЕРХНИЙ РЯД: Левый бейдж редакции + Правая карточка трейлера с кнопкой Play ▶ -->
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col flex-1 justify-between gap-4 sm:gap-6 pt-4">
+
+      <!-- ЦЕНТРАЛЬНЫЙ ЭЛЕМЕНТ: САМ ФИЛЬМ С ИНТЕРАКТИВНЫМ ПАРАЛЛАКСОМ -->
+      <div class="relative flex flex-col items-center justify-center my-2 sm:my-4 z-10">
         
-        <!-- Левый плавающий бейдж (как значок с листиками и SINCE-2013 в референсе) -->
-        <div class="flex items-center gap-3.5 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-gray-200/80 dark:border-white/10 shadow-lg">
-          <div class="w-10 h-10 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-lg shadow-inner">
-            🎬
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-[11px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">ВЫБОР РЕДАКЦИИ</span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-600 dark:text-amber-300">ТОП-250 #1</span>
-            </div>
-            <p class="text-xs font-semibold text-gray-800 dark:text-gray-200 mt-0.5" id="filmoftheday-quote-head">
-              Главный шедевр мирового кинематографа
-            </p>
-          </div>
-        </div>
-
-        <!-- Правая плавающая карточка трейлера с кнопкой Play ▶ (как фото в верхнем правом углу референса) -->
-        <div 
-          onclick="openDayMovieTrailer()"
-          class="group cursor-pointer relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-2 rounded-2xl border border-gray-200/80 dark:border-white/10 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] flex items-center gap-3.5 pr-5"
-          title="Смотреть трейлер фильма"
-        >
-          <!-- Миниатюра кадра с кнопкой Play ▶ -->
-          <div class="relative w-20 h-20 rounded-xl overflow-hidden bg-black shrink-0 shadow-md">
-            <img 
-              id="filmoftheday-trailer-thumb" 
-              src="https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/35975f3e-11e5-483f-9895-be2689f99a0d/orig" 
-              alt="Кадр трейлера" 
-              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-            />
-            <div class="absolute inset-0 bg-black/35 group-hover:bg-black/15 transition-colors"></div>
-            <!-- Круглая кнопка Play с пульсацией (точно как в референсе) -->
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="w-8 h-8 rounded-full bg-white text-gray-900 flex items-center justify-center text-xs shadow-lg play-pulse group-hover:scale-110 transition-transform">
-                ▶
-              </div>
-            </div>
-          </div>
-          <div>
-            <span class="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-              Официальный трейлер
-            </span>
-            <h4 class="text-xs sm:text-sm font-bold text-gray-900 dark:text-white mt-0.5 group-hover:text-emerald-600 transition-colors">
-              Смотреть в Full HD
-            </h4>
-            <span class="text-[11px] text-gray-500 dark:text-gray-400">Нажмите для запуска видео</span>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ЦЕНТРАЛЬНЫЙ ЭЛЕМЕНТ: САМ ФИЛЬМ (КАК VELORA В РЕФЕРЕНСЕ) С ХОВЕРОМ РЕЙТИНГА И ПРОСМОТРОВ -->
-      <div class="relative flex flex-col items-center justify-center my-3 sm:my-6 z-10">
-        
-        <!-- Контейнер постера с 3D перспективой и интерактивным оверлеем при наведении курсора -->
-        <div 
-          id="filmoftheday-poster-card" 
-          class="film-day-card relative w-[260px] sm:w-[320px] md:w-[360px] aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-800 bg-black cursor-pointer group"
-          onclick="openDayMovieDetails()"
-        >
-          <!-- Основной постер фильма -->
-          <img 
-            id="filmoftheday-poster-img"
-            src="https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/443e111e-f714-4954-83d0-3e0acca2a561/orig" 
-            alt="Фильм дня" 
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-          />
-
-          <!-- Базовый градиент снизу с названием (исчезает при ховере) -->
-          <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-black via-black/60 to-transparent group-hover:opacity-0 transition-opacity duration-300">
-            <span class="text-[11px] font-bold tracking-widest text-amber-400 uppercase" id="filmoftheday-base-year">1999 • Драма</span>
-            <h2 class="text-xl sm:text-2xl font-black text-white font-serif uppercase tracking-wide truncate" id="filmoftheday-base-title">
-              Зеленая миля
-            </h2>
-            <div class="flex items-center gap-2 mt-1">
-              <span class="text-amber-400 text-xs font-bold">★ 9.1 Кинопоиск</span>
-              <span class="text-gray-300 text-xs">• Наведите курсор</span>
-            </div>
-          </div>
-
-          <!-- ================= ХОВЕР-ОФЕРЛЕЙ (ТРЕБОВАНИЕ ПОЛЬЗОВАТЕЛЯ): =================
-               "чтобы когда пользователь проводил мышкой там показывался его рейтинг кол во просмотров" -->
-          <div class="film-day-overlay absolute inset-0 bg-black/85 backdrop-blur-md p-6 flex flex-col justify-between text-white transition-all duration-300">
-            
-            <!-- Верхняя часть оверлея: Бейджи и статус -->
+        <!-- Обертка с постером -->
+        <div class="relative flex items-center justify-center">
+          
+          <!-- Правый парящий 3D-чип с рейтингом (минималистичный) -->
+          <div class="floating-3d-chip-2 hidden sm:flex absolute -right-16 md:-right-24 lg:-right-28 bottom-20 z-20 items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-black/[0.04] dark:border-white/[0.06] shadow-md pointer-events-none">
+            <span class="text-[#00e054] font-black text-sm">★</span>
             <div>
-              <div class="flex items-center justify-between mb-3">
-                <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold uppercase tracking-wider">
-                  ★ Фильм дня
-                </span>
-                <span class="text-xs text-gray-300 font-semibold px-2 py-0.5 rounded bg-white/10" id="filmoftheday-hover-age">16+</span>
-              </div>
-              <h3 class="text-xl sm:text-2xl font-black font-serif uppercase tracking-wide leading-tight" id="filmoftheday-hover-title">
-                Зеленая миля
-              </h3>
-              <p class="text-xs text-emerald-400 font-semibold mt-1" id="filmoftheday-hover-director">
-                Фрэнк Дарабонт • 1999 • 189 мин
-              </p>
+              <span class="text-[9px] font-black uppercase tracking-wider text-[#00e054] block">Рейтинг КП</span>
+              <span class="text-[11px] font-bold text-gray-900 dark:text-white">9.1 Кинопоиск</span>
             </div>
-
-            <!-- Центральная часть оверлея: РЕЙТИНГ И КОЛИЧЕСТВО ПРОСМОТРОВ -->
-            <div class="space-y-3.5 my-auto py-2 border-y border-white/10">
-              
-              <!-- Рейтинги КП и KinoScore -->
-              <div class="grid grid-cols-2 gap-2 text-center">
-                <div class="p-2.5 rounded-xl bg-white/10 border border-white/10">
-                  <span class="block text-[10px] text-gray-300 uppercase font-bold tracking-wider">Кинопоиск</span>
-                  <div class="flex items-center justify-center gap-1 mt-0.5">
-                    <span class="text-amber-400 text-base">★</span>
-                    <span class="text-lg font-black text-white" id="filmoftheday-hover-rating">9.1</span>
-                  </div>
-                  <span class="text-[10px] text-emerald-400 font-medium">Топ-250: #1</span>
-                </div>
-                <div class="p-2.5 rounded-xl bg-white/10 border border-white/10">
-                  <span class="block text-[10px] text-gray-300 uppercase font-bold tracking-wider">KinoScore</span>
-                  <div class="flex items-center justify-center gap-1 mt-0.5">
-                    <span class="text-emerald-400 text-base">★</span>
-                    <span class="text-lg font-black text-white" id="filmoftheday-hover-site-rating">9.2</span>
-                  </div>
-                  <span class="text-[10px] text-gray-300 font-medium">98% свежести</span>
-                </div>
-              </div>
-
-              <!-- КОЛИЧЕСТВО ПРОСМОТРОВ И ОЦЕНОК (по референсу) -->
-              <div class="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span class="text-xl">👁️</span>
-                  <div>
-                    <span class="block text-[10px] uppercase tracking-wider text-gray-300 font-bold">Просмотров</span>
-                    <span class="text-xs font-black text-white" id="filmoftheday-hover-views">2,480,000+</span>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <span class="block text-[10px] uppercase tracking-wider text-gray-300 font-bold">Оценок КП</span>
-                  <span class="text-xs font-black text-amber-400" id="filmoftheday-hover-votes">1,120,450</span>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- Нижняя часть оверлея: Кнопка перехода к картине -->
-            <div class="pt-2">
-              <a 
-                id="filmoftheday-hover-btn"
-                href="film_435.html" 
-                class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-black text-xs uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-lg hover:shadow-emerald-500/30 transition-all"
-                onclick="event.stopPropagation();"
-              >
-                <span>Перейти к фильму</span>
-                <span>➔</span>
-              </a>
-            </div>
-
           </div>
-        </div>
 
-        <!-- Подсказка под постером -->
-        <div class="mt-4 text-center">
-          <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/10 dark:bg-white/10 text-[11px] font-semibold text-gray-700 dark:text-gray-300 backdrop-blur-sm">
-            <span>💡</span>
-            <span>Наведите курсор на постер для отображения рейтингов и статистики просмотров</span>
-          </span>
+          <!-- Контейнер постера с 3D перспективой и интерактивным оверлеем при наведении курсора -->
+          <div 
+            id="filmoftheday-poster-card" 
+            class="film-day-card relative w-[260px] sm:w-[320px] md:w-[360px] aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl border border-white/10 dark:border-white/5 bg-zinc-950 cursor-pointer group"
+            onclick="openDayMovieDetails()"
+          >
+            <!-- Основной постер фильма -->
+            <img 
+              id="filmoftheday-poster-img"
+              src="https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/443e111e-f714-4954-83d0-3e0acca2a561/orig" 
+              alt="Фильм дня" 
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+
+            <!-- Базовый градиент снизу с названием (исчезает при ховере) -->
+            <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-black via-black/60 to-transparent group-hover:opacity-0 transition-opacity duration-300">
+              <span class="text-[11px] font-bold tracking-widest text-amber-400 uppercase" id="filmoftheday-base-year">1999 • Драма</span>
+              <h2 class="text-xl sm:text-2xl font-black text-white font-serif uppercase tracking-wide truncate" id="filmoftheday-base-title">
+                Зеленая миля
+              </h2>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-amber-400 text-xs font-bold">★ 9.1 Кинопоиск</span>
+              </div>
+            </div>
+
+            <!-- ================= ХОВЕР-ОФЕРЛЕЙ ================= -->
+            <div class="film-day-overlay absolute inset-0 bg-black/85 backdrop-blur-md p-6 flex flex-col justify-between text-white transition-all duration-300">
+              
+              <!-- Верхняя часть оверлея: Бейджи и статус -->
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-[#00e054] border border-emerald-500/30 text-[11px] font-bold uppercase tracking-wider">
+                    Фильм дня
+                  </span>
+                  <span class="text-xs text-gray-300 font-semibold px-2 py-0.5 rounded bg-white/10" id="filmoftheday-hover-age">16+</span>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-black font-serif uppercase tracking-wide leading-tight" id="filmoftheday-hover-title">
+                  Зеленая миля
+                </h3>
+                <p class="text-xs text-[#00e054] font-semibold mt-1" id="filmoftheday-hover-director">
+                  Фрэнк Дарабонт • 1999 • 189 мин
+                </p>
+              </div>
+
+              <!-- Центральная часть оверлея: РЕЙТИНГ И СТАТИСТИКА -->
+              <div class="space-y-3 my-auto py-2 border-y border-white/10">
+                
+                <!-- Рейтинги КП и KinoScore -->
+                <div class="grid grid-cols-2 gap-2 text-center">
+                  <div class="p-2 rounded-xl bg-white/5 border border-white/10">
+                    <span class="block text-[10px] text-gray-300 uppercase font-bold tracking-wider">Кинопоиск</span>
+                    <div class="flex items-center justify-center gap-1 mt-0.5">
+                      <span class="text-amber-400 text-sm">★</span>
+                      <span class="text-base font-black text-white" id="filmoftheday-hover-rating">9.1</span>
+                    </div>
+                    <span class="text-[10px] text-[#00e054] font-medium">Топ-250</span>
+                  </div>
+                  <div class="p-2 rounded-xl bg-white/5 border border-white/10">
+                    <span class="block text-[10px] text-gray-300 uppercase font-bold tracking-wider">KinoScore</span>
+                    <div class="flex items-center justify-center gap-1 mt-0.5">
+                      <span class="text-[#00e054] text-sm">★</span>
+                      <span class="text-base font-black text-white" id="filmoftheday-hover-site-rating">9.2</span>
+                    </div>
+                    <span class="text-[10px] text-gray-300 font-medium">Критики</span>
+                  </div>
+                </div>
+
+                <!-- КОЛИЧЕСТВО ПРОСМОТРОВ И ОЦЕНОК -->
+                <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                  <div>
+                    <span class="block text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Просмотры</span>
+                    <span class="text-xs font-bold text-white" id="filmoftheday-hover-views">2,480,000+</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="block text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Оценок КП</span>
+                    <span class="text-xs font-bold text-amber-400" id="filmoftheday-hover-votes">1,120,450</span>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Нижняя часть оверлея: Кнопка перехода к картине -->
+              <div class="pt-2">
+                <a 
+                  id="filmoftheday-hover-btn"
+                  href="film_435.html" 
+                  class="w-full py-2.5 rounded-xl bg-[#00e054] hover:bg-[#00c849] text-gray-950 font-black text-xs uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-lg hover:shadow-[#00e054]/30 transition-all"
+                  onclick="event.stopPropagation();"
+                >
+                  <span>Перейти к фильму</span>
+                  <span>➔</span>
+                </a>
+              </div>
+
+            </div>
+          </div>
+
         </div>
 
       </div>
 
-      <!-- НИЖНИЙ РЯД: 3 БЕНТО-КАРТОЧКИ (ПОЛНОЕ СООТВЕТСТВИЕ СТРУКТУРЕ РЕФЕРЕНСА) -->
+      <!-- НИЖНИЙ РЯД: 3 БЕНТО-КАРТОЧКИ (МИНИМАЛИЗМ STITCH TASTE DESIGN) -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 pb-2">
         
-        <!-- Карточка 1 (Нижняя левая, как 'PLANT BASE ENERGY' в референсе): Награды и культовый статус -->
-        <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-5 rounded-2xl border border-gray-200/80 dark:border-white/10 shadow-lg flex flex-col justify-between">
+        <!-- Карточка 1: Награды и статус -->
+        <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-5 rounded-2xl border border-black/[0.025] dark:border-white/[0.04] shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between">
           <div>
-            <span class="text-[10px] font-black uppercase tracking-widest text-amber-500 flex items-center gap-1.5">
-              <span>🏆</span>
-              <span>ПРИЗНАНИЕ КИНЕМАТОГРАФА</span>
+            <span class="text-[10px] font-black uppercase tracking-widest text-amber-500">
+              ПРИЗНАНИЕ КИНЕМАТОГРАФА
             </span>
             <h3 class="text-base sm:text-lg font-black text-gray-900 dark:text-white uppercase font-serif mt-2 leading-tight">
               4 Номинации на Оскар
@@ -771,20 +1040,20 @@
               Лучший фильм года, Лучшая мужская роль второго плана (Майкл Кларк Дункан), Лучший звук, Лучший адаптированный сценарий.
             </p>
           </div>
-          <div class="pt-3 mt-3 border-t border-gray-100 dark:border-white/10 flex items-center justify-between text-xs font-semibold text-gray-500 dark:text-gray-400">
-            <span>3 премии «Сатурн»</span>
-            <span class="text-emerald-500 font-bold">100% Шедевр</span>
+          <div class="pt-3 mt-3 border-t border-black/[0.03] dark:border-white/[0.04] flex items-center justify-between text-xs font-semibold text-gray-500 dark:text-gray-400">
+            <span>Премии «Сатурн»</span>
+            <span class="text-[#00e054] font-bold">100% Шедевр</span>
           </div>
         </div>
 
-        <!-- Карточка 2 (Нижняя центр, как 'Support Daily Energy ↗' в референсе): Онлайн стриминг с иконкой стрелки -->
-        <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-5 rounded-2xl border border-gray-200/80 dark:border-white/10 shadow-lg flex flex-col justify-between">
+        <!-- Карточка 2: Онлайн стриминг с иконкой стрелки -->
+        <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-5 rounded-2xl border border-black/[0.025] dark:border-white/[0.04] shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between">
               <span class="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
                 ГДЕ СМОТРЕТЬ
               </span>
-              <a id="filmoftheday-watch-direct" href="film_435.html" class="text-gray-900 dark:text-white hover:text-emerald-500 font-bold text-sm">
+              <a id="filmoftheday-watch-direct" href="film_435.html" class="text-gray-900 dark:text-white hover:text-[#00e054] font-bold text-sm">
                 ↗
               </a>
             </div>
@@ -792,22 +1061,30 @@
               Смотреть онлайн
             </h3>
             <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">
-              Доступен в безупречном 4K Ultra HD качестве с официальным дубляжом.
+              Доступен на популярных видеоплатформах:
             </p>
           </div>
-          <!-- Платформы -->
-          <div class="pt-3 mt-3 border-t border-gray-100 dark:border-white/10 flex flex-wrap items-center gap-2">
-            <span class="px-2.5 py-1 rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 text-[11px] font-bold">Кинопоиск HD</span>
-            <span class="px-2.5 py-1 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 text-[11px] font-bold">Иви</span>
-            <span class="px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[11px] font-bold">Okko</span>
+          <!-- Платформы: РУТУБ, ВК ВИДЕО, КИНОПОИСК -->
+          <div class="pt-3 mt-3 border-t border-black/[0.03] dark:border-white/[0.04] flex flex-wrap items-center gap-2">
+            <a id="filmoftheday-watch-rutube" href="https://rutube.ru" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-600 dark:text-red-400 border border-red-500/15 text-[11px] font-bold flex items-center gap-1.5 transition-all">
+              <span class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_6px_#ef4444]"></span>
+              <span>Рутуб</span>
+            </a>
+            <a id="filmoftheday-watch-vk" href="https://vk.com/video" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 text-blue-600 dark:text-blue-400 border border-blue-500/15 text-[11px] font-bold flex items-center gap-1.5 transition-all">
+              <span class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_6px_#3b82f6]"></span>
+              <span>ВК Видео</span>
+            </a>
+            <a id="filmoftheday-watch-kp" href="https://www.kinopoisk.ru" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 text-orange-600 dark:text-orange-400 border border-orange-500/15 text-[11px] font-bold flex items-center gap-1.5 transition-all">
+              <span class="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_6px_#f97316]"></span>
+              <span>Кинопоиск</span>
+            </a>
           </div>
         </div>
 
-        <!-- Карточка 3 (Нижняя правая, как 'Support focus... EXPLORE MORE >' в референсе): Синопсис и переход -->
-        <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-5 rounded-2xl border border-gray-200/80 dark:border-white/10 shadow-lg flex flex-col justify-between">
+        <!-- Карточка 3: Синопсис и переход -->
+        <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-5 rounded-2xl border border-black/[0.025] dark:border-white/[0.04] shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between">
           <div>
-            <div class="flex items-center gap-1.5 text-emerald-500 text-xs font-semibold mb-1">
-              <span>🌿</span>
+            <div class="text-xs font-semibold mb-1">
               <span class="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">СИНОПСИС</span>
             </div>
             <p class="text-xs text-gray-700 dark:text-gray-200 leading-relaxed font-normal italic" id="filmoftheday-tagline">
@@ -817,11 +1094,11 @@
               Пол Эджкомб — начальник блока смертников тюрьмы «Холодная гора», каждый из узников которого однажды проходит «зеленую милю» по пути к электрическому стулу.
             </p>
           </div>
-          <div class="pt-3 mt-3 border-t border-gray-100 dark:border-white/10">
+          <div class="pt-3 mt-3 border-t border-black/[0.03] dark:border-white/[0.04]">
             <a 
               id="filmoftheday-more-link"
               href="film_435.html" 
-              class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 flex items-center gap-1 transition-colors"
+              class="text-xs font-bold uppercase tracking-wider text-[#00e054] hover:underline flex items-center gap-1 transition-colors"
             >
               <span>Подробнее о картине</span>
               <span>➔</span>
@@ -848,51 +1125,10 @@
         <button onclick="setTheme('light')" class="hover:text-gray-900">☀️ Светлая</button>
         <button onclick="setTheme('dark')" class="hover:text-gray-900">🌙 Тёмная</button>
         <button onclick="setTheme('cinematic')" class="hover:text-gray-900">🎬 Синематик</button>
-        <button onclick="openRandomizerModal()" class="text-amber-600 hover:text-amber-700">🎲 Рандомайзер</button>
       </div>
     </div>
   </footer>
   <!-- END: Footer -->
-
-  <!-- ================= 4. МОДАЛЬНОЕ ОКНО: РАНДОМАЙЗЕР ================= -->
-  <div id="randomizer-modal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-    <div class="modal-card bg-white rounded-2xl border border-gray-200 shadow-2xl p-6 sm:p-7 max-w-lg w-full relative overflow-hidden transition-colors">
-      <button onclick="closeRandomizerModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center text-xs font-bold transition-colors">
-        ✕
-      </button>
-
-      <div class="text-center mb-5">
-        <span class="text-3xl">🎲</span>
-        <h3 class="font-serif text-xl sm:text-2xl font-black text-gray-900 uppercase tracking-wide mt-1">Случайный фильм на вечер</h3>
-        <p class="text-xs text-gray-500 mt-1">Не знаете, что посмотреть? Наш кино-рандомайзер выберет идеальную картину!</p>
-      </div>
-
-      <!-- Карточка выбранного фильма -->
-      <div id="roulette-box" class="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-[#E9ECEF]/60 border border-gray-200 mb-5 transition-all duration-300">
-        <img id="roulette-poster" src="" alt="Постер" class="w-28 aspect-[2/3] object-cover rounded-lg shadow-md shrink-0">
-        <div class="flex flex-col justify-center text-center sm:text-left">
-          <div class="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 mb-1">
-            <span id="roulette-year-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-900 text-white">1999</span>
-            <span id="roulette-score" class="text-xs font-bold text-amber-600">★ 9.1</span>
-          </div>
-          <h4 id="roulette-title" class="font-serif font-black text-base text-gray-900 leading-tight uppercase mb-1">...</h4>
-          <p id="roulette-slogan" class="text-[11px] italic text-amber-700 mb-1.5 line-clamp-1"></p>
-          <p id="roulette-desc" class="text-xs text-gray-600 line-clamp-3 leading-relaxed"></p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <button id="roulette-spin-again" onclick="spinRandomizer()" class="flex-1 py-2.5 rounded-xl border border-gray-300 hover:bg-gray-100 text-gray-800 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors">
-          <span>🎲</span>
-          <span>Крутить ещё раз</span>
-        </button>
-        <a id="roulette-open-btn" href="#" class="flex-1 py-2.5 rounded-xl bg-gray-900 hover:bg-black text-white font-bold text-xs text-center shadow-lg transition-all flex items-center justify-center gap-1">
-          <span>Смотреть фильм</span>
-          <span>➔</span>
-        </a>
-      </div>
-    </div>
-  </div>
 
   <!-- ================= 5. МОДАЛЬНОЕ ОКНО: АВТОРИЗАЦИЯ ================= -->
   <div id="auth-modal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
@@ -963,8 +1199,158 @@
         </button>
       </div>
       <div class="aspect-video w-full bg-black flex items-center justify-center relative">
-        <video id="trailer-modal-video" controls class="w-full h-full object-contain" src="trailers/film_435.mp4" poster="https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/35975f3e-11e5-483f-9895-be2689f99a0d/orig"></video>
+        <video id="trailer-modal-video" controls class="w-full h-full object-contain" src="" poster=""></video>
       </div>
+    </div>
+  </div>
+
+  <!-- ================= МОДАЛЬНОЕ ОКНО: НАСТРОЙКА КАТЕГОРИЙ (LETTERBOXD SHELVES MANAGER) ================= -->
+  <div id="shelf-manager-modal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md">
+    <div class="modal-card bg-[#14181c] border border-white/10 rounded-2xl shadow-2xl p-5 sm:p-7 max-w-2xl w-full relative overflow-hidden transition-all text-white">
+      
+      <!-- Верхняя плашка модалки: заголовок и кнопка закрытия -->
+      <div class="flex items-center justify-between pb-3.5 mb-4 border-b border-white/10">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-[#00e054] text-black flex items-center justify-center shadow-lg font-black text-xs">
+            LB
+          </div>
+          <div>
+            <h3 class="font-sans text-base sm:text-lg font-black text-white uppercase tracking-wider flex items-center gap-2">
+              <span>Категории и полки Letterboxd</span>
+            </h3>
+            <p class="text-[11px] text-gray-400">Настройте отображение полок или создайте свою персональную подборку</p>
+          </div>
+        </div>
+        <button onclick="closeShelfManagerModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs font-bold transition-colors">
+          ✕
+        </button>
+      </div>
+
+      <!-- Вкладки: Создать категорию / Управление полками -->
+      <div class="flex rounded-xl bg-black/40 border border-white/10 p-1 mb-5">
+        <button id="shelf-tab-btn-create" onclick="switchShelfModalTab('create')" class="flex-1 py-1.5 rounded-lg text-xs font-bold bg-[#00e054] text-black shadow-sm transition-all">
+          ＋ Создать категорию
+        </button>
+        <button id="shelf-tab-btn-manage" onclick="switchShelfModalTab('manage')" class="flex-1 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition-all">
+          ⚙️ Управление активными полками
+        </button>
+      </div>
+
+      <!-- ВКЛАДКА 1: ФОРМА СОЗДАНИЯ КАТЕГОРИИ -->
+      <div id="shelf-modal-tab-create" class="space-y-4">
+        <form onsubmit="handleCreateShelf(event)" class="space-y-3.5">
+          
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Название категории / полки</label>
+            <input 
+              type="text" 
+              id="new-shelf-title" 
+              required 
+              placeholder="Например: Мои любимые шедевры, Фильмы Нолана, Культовые драмы..." 
+              class="w-full px-3.5 py-2.5 bg-black/50 border border-white/15 rounded-xl text-xs sm:text-sm font-medium outline-none focus:border-[#00e054] text-white transition-colors"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 mb-1">Краткое описание (подзаголовок)</label>
+              <input 
+                type="text" 
+                id="new-shelf-subtitle" 
+                placeholder="Подборка лучших картин для вечернего просмотра" 
+                class="w-full px-3.5 py-2 bg-black/50 border border-white/15 rounded-xl text-xs font-medium outline-none focus:border-[#00e054] text-white transition-colors"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 mb-1">Бейдж / иконка</label>
+              <select id="new-shelf-badge" class="w-full px-3.5 py-2 bg-black/50 border border-white/15 rounded-xl text-xs font-medium outline-none focus:border-[#00e054] text-white transition-colors">
+                <option value="🔥 Тренды">🔥 Тренды</option>
+                <option value="★ Шедевры">★ Шедевры</option>
+                <option value="🚀 Sci-Fi">🚀 Sci-Fi</option>
+                <option value="🎭 Драма">🎭 Драма</option>
+                <option value="🏆 Награды">🏆 Награды</option>
+                <option value="🍿 Попкорн">🍿 Попкорн</option>
+                <option value="👁️ Артхаус">👁️ Артхаус</option>
+                <option value="✨ Избранное">✨ Избранное</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Способ наполнения категории</label>
+            <div class="grid grid-cols-3 gap-2">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-[#00e054] transition-colors">
+                <input type="radio" name="shelf-mode" value="genre" checked onchange="toggleShelfModeInputs()" class="text-[#00e054] focus:ring-0">
+                <span class="text-xs font-medium">По жанру</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-[#00e054] transition-colors">
+                <input type="radio" name="shelf-mode" value="rating" onchange="toggleShelfModeInputs()" class="text-[#00e054] focus:ring-0">
+                <span class="text-xs font-medium">По рейтингу</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-[#00e054] transition-colors">
+                <input type="radio" name="shelf-mode" value="manual" onchange="toggleShelfModeInputs()" class="text-[#00e054] focus:ring-0">
+                <span class="text-xs font-medium">Вручную</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Поле для жанра -->
+          <div id="shelf-input-genre-wrap">
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Выберите жанр фильмов</label>
+            <select id="new-shelf-genre" class="w-full px-3.5 py-2 bg-black/50 border border-white/15 rounded-xl text-xs font-medium outline-none focus:border-[#00e054] text-white">
+              <option value="драма">Драма</option>
+              <option value="фантастика">Фантастика</option>
+              <option value="криминал">Криминал</option>
+              <option value="приключения">Приключения</option>
+              <option value="триллер">Триллер</option>
+              <option value="детектив">Детектив</option>
+            </select>
+          </div>
+
+          <!-- Поле для рейтинга -->
+          <div id="shelf-input-rating-wrap" class="hidden">
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Минимальный рейтинг фильма</label>
+            <select id="new-shelf-min-rating" class="w-full px-3.5 py-2 bg-black/50 border border-white/15 rounded-xl text-xs font-medium outline-none focus:border-[#00e054] text-white">
+              <option value="9.0">★ 9.0+ (Культовые шедевры)</option>
+              <option value="8.8">★ 8.8+ (Высочайший класс)</option>
+              <option value="8.5">★ 8.5+ (Золотой фонд)</option>
+              <option value="8.0">★ 8.0+ (Рекомендуемые)</option>
+            </select>
+          </div>
+
+          <!-- Поле для ручного выбора фильмов (чекбоксы с постерами) -->
+          <div id="shelf-input-manual-wrap" class="hidden">
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Отметьте фильмы для добавления на полку</label>
+            <div id="manual-movies-checklist" class="max-h-44 overflow-y-auto space-y-1.5 p-2 bg-black/50 border border-white/10 rounded-xl custom-scroll">
+              <!-- Чекбоксы фильмов генерируются динамически -->
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-[#00e054] hover:bg-[#00c849] text-gray-950 font-black text-xs uppercase tracking-wider shadow-lg transition-all active:scale-95">
+              Сохранить и добавить полку на главную
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ВКЛАДКА 2: УПРАВЛЕНИЕ АКТИВНЫМИ ПОЛКАМИ -->
+      <div id="shelf-modal-tab-manage" class="hidden space-y-3">
+        <p class="text-xs text-gray-400">Включайте или отключайте полки, меняйте их порядок или удаляйте созданные:</p>
+        <div id="active-shelves-list" class="max-h-60 overflow-y-auto space-y-2 pr-1 custom-scroll">
+          <!-- Список полок генерируется JS -->
+        </div>
+
+        <div class="pt-3 border-t border-white/10 flex items-center justify-between">
+          <button onclick="resetDefaultShelves()" class="text-xs font-bold text-red-400 hover:text-red-300 transition-colors">
+            ↺ Сбросить к исходным полкам Letterboxd
+          </button>
+          <button onclick="closeShelfManagerModal()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors">
+            Готово
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1299,49 +1685,480 @@
       renderCatalog();
     }
 
-    // ================= РАНДОМАЙЗЕР =================
-    function openRandomizerModal() {
-      document.getElementById('randomizer-modal').classList.add('active');
-      spinRandomizer();
-    }
+    // =========================================================================
+    // 🎬 КАТЕГОРИИ В СТИЛЕ LETTERBOXD (КОНФИГУРАЦИЯ ПОЛОК)
+    // Вы можете легко настроить или добавить свои категории прямо здесь в коде!
+    // Каждая полка превращается в кинематографичную горизонтальную ленту (rail).
+    // Поля:
+    //   id: уникальный идентификатор
+    //   title: заголовок полки
+    //   subtitle: поясняющий подзаголовок
+    //   badge: бейдж/иконка
+    //   filterType: 'trending' | 'top250' | 'oscar' | 'genre' | 'rating' | 'manual'
+    //   genre: название жанра (если filterType === 'genre')
+    //   minRating: минимальный балл Кинопоиска (если filterType === 'rating')
+    //   movieIds: массив ID фильмов (если filterType === 'manual')
+    //   enabled: true / false
+    // =========================================================================
+    const DEFAULT_LETTERBOXD_SHELVES = [
+      {
+        id: 'shelf-trending',
+        title: 'Популярное на этой неделе',
+        subtitle: 'Фильмы с высоким зрительским интересом',
+        badge: '🔥 В тренде',
+        filterType: 'trending',
+        enabled: true
+      },
+      {
+        id: 'shelf-top250',
+        title: 'Золотая классика • Топ-250 Кинопоиска',
+        subtitle: 'Высокооцененные шедевры мирового кино (8.5+)',
+        badge: '★ Топ-250',
+        filterType: 'top250',
+        enabled: true
+      },
+      {
+        id: 'shelf-oscar',
+        title: 'Триумфаторы премии Оскар',
+        subtitle: 'Лауреаты и номинанты Американской киноакадемии',
+        badge: '🏆 Oscar',
+        filterType: 'oscar',
+        enabled: true
+      },
+      {
+        id: 'shelf-scifi',
+        title: 'Научная фантастика и космос',
+        subtitle: 'Путешествия во времени, червоточины и неизведанные миры',
+        badge: '🚀 Sci-Fi',
+        filterType: 'genre',
+        genre: 'фантастика',
+        enabled: true
+      },
+      {
+        id: 'shelf-drama',
+        title: 'Культовые драмы и криминал',
+        subtitle: 'Глубокие психологические сюжеты и легендарные истории',
+        badge: '🎭 Драма',
+        filterType: 'genre',
+        genre: 'драма',
+        enabled: true
+      }
+    ];
 
-    function closeRandomizerModal() {
-      document.getElementById('randomizer-modal').classList.remove('active');
-    }
-
-    let isSpinningRoulette = false;
-    function spinRandomizer() {
-      if (isSpinningRoulette || !MOVIES_DATABASE.length) return;
-      isSpinningRoulette = true;
-
-      const box = document.getElementById('roulette-box');
-      box.classList.add('roulette-anim');
-
-      let tick = 0;
-      const interval = setInterval(() => {
-        const randM = MOVIES_DATABASE[Math.floor(Math.random() * MOVIES_DATABASE.length)];
-        const cleanT = (randM.title || '').replace(/\s*\(\d{4}\)\s*$/, '');
-        document.getElementById('roulette-title').textContent = cleanT;
-        document.getElementById('roulette-poster').src = randM.poster || '';
-        tick++;
-
-        if (tick >= 10) {
-          clearInterval(interval);
-          box.classList.remove('roulette-anim');
-          isSpinningRoulette = false;
-
-          const chosen = MOVIES_DATABASE[Math.floor(Math.random() * MOVIES_DATABASE.length)];
-          const chosenClean = (chosen.title || '').replace(/\s*\(\d{4}\)\s*$/, '');
-          document.getElementById('roulette-title').textContent = chosenClean;
-          document.getElementById('roulette-poster').src = chosen.poster || '';
-          document.getElementById('roulette-score').textContent = `★ ${chosen.ratingKP}`;
-          document.getElementById('roulette-year-badge').textContent = chosen.year;
-          document.getElementById('roulette-slogan').textContent = chosen.slogan ? `«${chosen.slogan}»` : '';
-          document.getElementById('roulette-desc').textContent = chosen.description || '';
-          document.getElementById('roulette-open-btn').href = `film_${chosen.id}.html`;
+    function getStoredShelves() {
+      try {
+        const saved = localStorage.getItem('letterboxd_user_shelves');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
         }
-      }, 85);
+      } catch (err) {
+        console.warn('Ошибка чтения пользовательских полок:', err);
+      }
+      return JSON.parse(JSON.stringify(DEFAULT_LETTERBOXD_SHELVES));
     }
+
+    function saveStoredShelves(shelves) {
+      try {
+        localStorage.setItem('letterboxd_user_shelves', JSON.stringify(shelves));
+      } catch (err) {
+        console.warn('Ошибка сохранения полок:', err);
+      }
+    }
+
+    function scrollShelf(shelfId, dir) {
+      const el = document.getElementById(shelfId);
+      if (el) {
+        el.scrollBy({ left: dir * 460, behavior: 'smooth' });
+      }
+    }
+
+    function filterShelfPill(targetShelfId) {
+      const pillsContainer = document.getElementById('shelf-quick-pills');
+      if (pillsContainer) {
+        pillsContainer.querySelectorAll('button').forEach(btn => {
+          btn.className = "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-black/5 dark:bg-white/10 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-all shrink-0 flex items-center gap-1.5";
+        });
+        const activeBtn = document.getElementById(targetShelfId === 'all' ? 'pill-shelf-all' : `pill-${targetShelfId}`);
+        if (activeBtn) {
+          activeBtn.className = "px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#00e054] text-black shadow-sm transition-all shrink-0 flex items-center gap-1.5";
+        }
+      }
+
+      if (targetShelfId === 'all') {
+        document.querySelectorAll('.letterboxd-shelf-row').forEach(row => row.classList.remove('hidden'));
+        document.getElementById('curated-shelves-section')?.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        document.querySelectorAll('.letterboxd-shelf-row').forEach(row => {
+          if (row.id === `row-${targetShelfId}`) {
+            row.classList.remove('hidden');
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else {
+            row.classList.add('hidden');
+          }
+        });
+      }
+    }
+
+    function getMoviesForShelf(shelf) {
+      if (!MOVIES_DATABASE.length) return [];
+      let list = [];
+
+      if (shelf.filterType === 'trending') {
+        list = [...MOVIES_DATABASE].sort((a, b) => {
+          const rA = parseFloat(String(a.ratingKP || '0').replace(',', '.')) || 0;
+          const rB = parseFloat(String(b.ratingKP || '0').replace(',', '.')) || 0;
+          return rB - rA;
+        });
+      } else if (shelf.filterType === 'top250') {
+        list = MOVIES_DATABASE.filter(m => checkTop250(m));
+      } else if (shelf.filterType === 'oscar') {
+        list = MOVIES_DATABASE.filter(m => checkOscar(m));
+      } else if (shelf.filterType === 'genre') {
+        const gQuery = (shelf.genre || '').toLowerCase();
+        list = MOVIES_DATABASE.filter(m => (m.genre || '').toLowerCase().includes(gQuery));
+      } else if (shelf.filterType === 'rating') {
+        const min = shelf.minRating || 8.5;
+        list = MOVIES_DATABASE.filter(m => {
+          const r = parseFloat(String(m.ratingKP || '0').replace(',', '.')) || 0;
+          return r >= min;
+        });
+      } else if (shelf.filterType === 'manual' && Array.isArray(shelf.movieIds)) {
+        list = MOVIES_DATABASE.filter(m => shelf.movieIds.includes(String(m.id)));
+      }
+
+      // Если в категории мало фильмов, не оставляем ее пустой
+      if (list.length === 0) {
+        list = MOVIES_DATABASE.slice(0, 10);
+      }
+      return list;
+    }
+
+    function createLetterboxdCardHtml(m) {
+      const cleanTitle = (m.title || '').replace(/\s*\(\d{4}\)\s*$/, '').trim();
+      const kp = String(m.ratingKP || '9.0');
+      const kpFloat = parseFloat(kp.replace(',', '.')) || 9.0;
+      const starsCount = Math.min(5, Math.max(1, Math.round(kpFloat / 2)));
+      const greenStars = '★'.repeat(starsCount) + '☆'.repeat(5 - starsCount);
+
+      return `
+        <div onclick="window.location.href='film_${m.id}.html'" class="lb-card flex-shrink-0 w-32 sm:w-40 md:w-44 cursor-pointer select-none">
+          <div class="lb-poster-box aspect-[2/3] w-full">
+            <img 
+              src="${m.poster}" 
+              alt="${cleanTitle}" 
+              loading="lazy" 
+              class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+              onerror="this.src='https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d645e7f1-bc93-4a0b-93aa-7e3f8469ad5f/orig';"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity flex flex-col justify-end p-2.5">
+              <span class="text-[10px] font-bold text-[#00e054] line-clamp-1">${m.genre ? m.genre.split(',')[0].trim() : ''}</span>
+              <span class="text-xs font-black text-white line-clamp-2 leading-tight">${cleanTitle}</span>
+            </div>
+            <div class="absolute top-2 right-2 bg-black/80 backdrop-blur-md text-[#00e054] text-[10px] font-black px-2 py-0.5 rounded-full border border-white/10 flex items-center gap-0.5 shadow">
+              <span>★</span>
+              <span class="text-white">${kp}</span>
+            </div>
+          </div>
+          <div class="mt-2 text-left">
+            <h4 class="text-xs font-bold text-gray-900 dark:text-white truncate hover:text-[#00e054] transition-colors leading-snug font-sans">${cleanTitle}</h4>
+            <div class="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+              <span>${m.year}</span>
+              <span class="lb-stars font-bold text-[10px]" title="Рейтинг: ${kp}">${greenStars}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderShelves() {
+      const container = document.getElementById('letterboxd-shelves-container');
+      if (!container || !MOVIES_DATABASE.length) return;
+
+      const shelves = getStoredShelves();
+      const activeShelves = shelves.filter(s => s.enabled !== false);
+
+      container.innerHTML = activeShelves.map((shelf) => {
+        const movies = getMoviesForShelf(shelf);
+        const isCustom = !DEFAULT_LETTERBOXD_SHELVES.some(d => d.id === shelf.id);
+
+        return `
+          <div id="row-${shelf.id}" class="letterboxd-shelf-row">
+            <div class="flex items-center justify-between mb-3 pb-2 border-b border-black/[0.05] dark:border-white/[0.06]">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#00e054] shadow-[0_0_8px_#00e054]"></span>
+                <h2 class="text-xs sm:text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider font-sans flex items-center gap-2">
+                  <span>${shelf.title}</span>
+                  ${shelf.badge ? `<span class="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-[10px] font-semibold text-gray-600 dark:text-gray-300">${shelf.badge}</span>` : ''}
+                </h2>
+                <span class="text-[11px] text-gray-500 font-medium hidden sm:inline">• ${movies.length} фильмов</span>
+              </div>
+              <div class="flex items-center gap-2">
+                ${isCustom ? `
+                  <button onclick="deleteCustomShelf('${shelf.id}')" class="text-[11px] font-semibold text-red-400 hover:text-red-300 px-2 py-0.5 rounded bg-red-500/10 transition-colors" title="Удалить полку">
+                    ✕ Удалить
+                  </button>
+                ` : ''}
+                <button onclick="scrollShelf('${shelf.id}', -1)" class="w-7 h-7 rounded-full bg-white dark:bg-zinc-800 border border-black/[0.05] dark:border-white/[0.08] hover:border-[#00e054] flex items-center justify-center text-gray-700 dark:text-gray-200 shadow-sm transition-all" title="Влево">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button onclick="scrollShelf('${shelf.id}', 1)" class="w-7 h-7 rounded-full bg-white dark:bg-zinc-800 border border-black/[0.05] dark:border-white/[0.08] hover:border-[#00e054] flex items-center justify-center text-gray-700 dark:text-gray-200 shadow-sm transition-all" title="Вправо">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                </button>
+              </div>
+            </div>
+            ${shelf.subtitle ? `<p class="text-xs text-gray-500 dark:text-gray-400 -mt-2 mb-3.5">${shelf.subtitle}</p>` : ''}
+            <div id="${shelf.id}" class="flex gap-4 sm:gap-5 overflow-x-auto pb-4 custom-scroll scroll-smooth snap-x snap-mandatory">
+              ${movies.map(m => createLetterboxdCardHtml(m)).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ================= МОДАЛКА УПРАВЛЕНИЯ ПОЛКАМИ =================
+    function openShelfManagerModal(tab = 'create') {
+      const modal = document.getElementById('shelf-manager-modal');
+      if (modal) {
+        modal.classList.add('active');
+        switchShelfModalTab(tab);
+        renderShelfManagerList();
+        renderManualMoviesChecklist();
+      }
+    }
+
+    function closeShelfManagerModal() {
+      const modal = document.getElementById('shelf-manager-modal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function switchShelfModalTab(tab) {
+      const btnCreate = document.getElementById('shelf-tab-btn-create');
+      const btnManage = document.getElementById('shelf-tab-btn-manage');
+      const tabCreate = document.getElementById('shelf-modal-tab-create');
+      const tabManage = document.getElementById('shelf-modal-tab-manage');
+
+      if (tab === 'manage') {
+        btnManage.className = "flex-1 py-1.5 rounded-lg text-xs font-bold bg-[#00e054] text-black shadow-sm transition-all";
+        btnCreate.className = "flex-1 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition-all";
+        tabCreate.classList.add('hidden');
+        tabManage.classList.remove('hidden');
+        renderShelfManagerList();
+      } else {
+        btnCreate.className = "flex-1 py-1.5 rounded-lg text-xs font-bold bg-[#00e054] text-black shadow-sm transition-all";
+        btnManage.className = "flex-1 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition-all";
+        tabManage.classList.add('hidden');
+        tabCreate.classList.remove('hidden');
+      }
+    }
+
+    function toggleShelfModeInputs() {
+      const mode = document.querySelector('input[name="shelf-mode"]:checked')?.value || 'genre';
+      const gWrap = document.getElementById('shelf-input-genre-wrap');
+      const rWrap = document.getElementById('shelf-input-rating-wrap');
+      const mWrap = document.getElementById('shelf-input-manual-wrap');
+
+      if (gWrap) gWrap.classList.toggle('hidden', mode !== 'genre');
+      if (rWrap) rWrap.classList.toggle('hidden', mode !== 'rating');
+      if (mWrap) mWrap.classList.toggle('hidden', mode !== 'manual');
+    }
+
+    function renderManualMoviesChecklist() {
+      const wrap = document.getElementById('manual-movies-checklist');
+      if (!wrap || !MOVIES_DATABASE.length) return;
+      wrap.innerHTML = MOVIES_DATABASE.map(m => {
+        const cleanTitle = (m.title || '').replace(/\s*\(\d{4}\)\s*$/, '').trim();
+        return `
+          <label class="flex items-center gap-3 p-2 rounded-lg bg-black/40 hover:bg-black/70 cursor-pointer border border-white/5 transition-colors">
+            <input type="checkbox" name="manual-movie-checkbox" value="${m.id}" class="rounded text-[#00e054] focus:ring-0">
+            <img src="${m.poster}" alt="${cleanTitle}" class="w-8 aspect-[2/3] object-cover rounded shadow shrink-0" onerror="this.src='https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d645e7f1-bc93-4a0b-93aa-7e3f8469ad5f/orig';"/>
+            <div class="flex-1 truncate">
+              <span class="text-xs font-bold text-white block truncate">${cleanTitle}</span>
+              <span class="text-[10px] text-gray-400">${m.year} • ★ ${m.ratingKP}</span>
+            </div>
+          </label>
+        `;
+      }).join('');
+    }
+
+    function handleCreateShelf(e) {
+      e.preventDefault();
+      const title = document.getElementById('new-shelf-title').value.trim();
+      const subtitle = document.getElementById('new-shelf-subtitle').value.trim();
+      const badge = document.getElementById('new-shelf-badge').value;
+      const mode = document.querySelector('input[name="shelf-mode"]:checked')?.value || 'genre';
+
+      if (!title) return;
+
+      const newShelf = {
+        id: 'shelf-custom-' + Date.now(),
+        title: title,
+        subtitle: subtitle,
+        badge: badge,
+        filterType: mode,
+        enabled: true
+      };
+
+      if (mode === 'genre') {
+        newShelf.genre = document.getElementById('new-shelf-genre').value;
+      } else if (mode === 'rating') {
+        newShelf.minRating = parseFloat(document.getElementById('new-shelf-min-rating').value) || 8.5;
+      } else if (mode === 'manual') {
+        const checked = Array.from(document.querySelectorAll('input[name="manual-movie-checkbox"]:checked')).map(el => el.value);
+        newShelf.movieIds = checked.length > 0 ? checked : MOVIES_DATABASE.slice(0, 5).map(m => String(m.id));
+      }
+
+      const shelves = getStoredShelves();
+      shelves.push(newShelf);
+      saveStoredShelves(shelves);
+
+      renderShelves();
+      closeShelfManagerModal();
+
+      // Плавный скролл к созданной полке
+      setTimeout(() => {
+        const el = document.getElementById(`row-${newShelf.id}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 200);
+    }
+
+    function renderShelfManagerList() {
+      const container = document.getElementById('active-shelves-list');
+      if (!container) return;
+      const shelves = getStoredShelves();
+
+      container.innerHTML = shelves.map((shelf, idx) => {
+        const isCustom = !DEFAULT_LETTERBOXD_SHELVES.some(d => d.id === shelf.id);
+        const isEnabled = shelf.enabled !== false;
+        return `
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-black/40 border border-white/10 text-xs">
+            <div class="flex items-center gap-2.5 flex-1 min-w-0 pr-2">
+              <input 
+                type="checkbox" 
+                ${isEnabled ? 'checked' : ''} 
+                onchange="toggleShelfEnabled('${shelf.id}', this.checked)"
+                class="rounded text-[#00e054] focus:ring-0" 
+                title="Показать / скрыть полку"
+              />
+              <span class="font-bold text-white truncate">${shelf.title}</span>
+              ${shelf.badge ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-gray-300 shrink-0">${shelf.badge}</span>` : ''}
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button onclick="moveShelfOrder('${shelf.id}', -1)" ${idx === 0 ? 'disabled class="opacity-25"' : 'class="hover:text-[#00e054]"'} title="Вверх" class="px-1.5 py-1">▲</button>
+              <button onclick="moveShelfOrder('${shelf.id}', 1)" ${idx === shelves.length - 1 ? 'disabled class="opacity-25"' : 'class="hover:text-[#00e054]"'} title="Вниз" class="px-1.5 py-1">▼</button>
+              ${isCustom ? `
+                <button onclick="deleteCustomShelf('${shelf.id}')" class="text-red-400 hover:text-red-300 px-1.5 py-1 font-bold ml-1" title="Удалить">✕</button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleShelfEnabled(shelfId, isEnabled) {
+      const shelves = getStoredShelves();
+      const target = shelves.find(s => s.id === shelfId);
+      if (target) {
+        target.enabled = isEnabled;
+        saveStoredShelves(shelves);
+        renderShelves();
+      }
+    }
+
+    function moveShelfOrder(shelfId, dir) {
+      const shelves = getStoredShelves();
+      const idx = shelves.findIndex(s => s.id === shelfId);
+      if (idx < 0) return;
+      const targetIdx = idx + dir;
+      if (targetIdx < 0 || targetIdx >= shelves.length) return;
+      const [item] = shelves.splice(idx, 1);
+      shelves.splice(targetIdx, 0, item);
+      saveStoredShelves(shelves);
+      renderShelfManagerList();
+      renderShelves();
+    }
+
+    function deleteCustomShelf(shelfId) {
+      let shelves = getStoredShelves();
+      shelves = shelves.filter(s => s.id !== shelfId);
+      saveStoredShelves(shelves);
+      renderShelfManagerList();
+      renderShelves();
+    }
+
+    function resetDefaultShelves() {
+      localStorage.removeItem('letterboxd_user_shelves');
+      renderShelfManagerList();
+      renderShelves();
+    }
+
+    // ================= CS:GO КЕЙС-РУЛЕТКА =================
+    let csgoSpinning = false;
+    let csgoAudioCtx = null;
+    let lastCsgoWinningMovie = null;
+    let csgoContextMode = 'random'; // 'random' | 'daymovie'
+
+    function playCsgoTickSound() {
+      try {
+        if (!csgoAudioCtx) {
+          csgoAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (csgoAudioCtx.state === 'suspended') {
+          csgoAudioCtx.resume();
+        }
+        const osc = csgoAudioCtx.createOscillator();
+        const gain = csgoAudioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(850 + Math.random() * 150, csgoAudioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(140, csgoAudioCtx.currentTime + 0.025);
+        gain.gain.setValueAtTime(0.12, csgoAudioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, csgoAudioCtx.currentTime + 0.025);
+        osc.connect(gain);
+        gain.connect(csgoAudioCtx.destination);
+        osc.start();
+        osc.stop(csgoAudioCtx.currentTime + 0.03);
+      } catch (_) {}
+    }
+
+    function playCsgoWinSound() {
+      try {
+        if (!csgoAudioCtx) {
+          csgoAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const notes = [440, 554, 659, 880];
+        notes.forEach((freq, idx) => {
+          const osc = csgoAudioCtx.createOscillator();
+          const gain = csgoAudioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, csgoAudioCtx.currentTime + idx * 0.07);
+          gain.gain.setValueAtTime(0.18, csgoAudioCtx.currentTime + idx * 0.07);
+          gain.gain.exponentialRampToValueAtTime(0.001, csgoAudioCtx.currentTime + idx * 0.07 + 0.35);
+          osc.connect(gain);
+          gain.connect(csgoAudioCtx.destination);
+          osc.start(csgoAudioCtx.currentTime + idx * 0.07);
+          osc.stop(csgoAudioCtx.currentTime + idx * 0.07 + 0.4);
+        });
+      } catch (_) {}
+    }
+
+    // ================= СЛУЧАЙНЫЙ ФИЛЬМ (ЧИСТЫЙ МИНИМАЛИЗМ БЕЗ РУЛЕТОК) =================
+    function pickRandomMovieDirect() {
+      if (Array.isArray(MOVIES_DATABASE) && MOVIES_DATABASE.length > 0) {
+        const rand = MOVIES_DATABASE[Math.floor(Math.random() * MOVIES_DATABASE.length)];
+        if (rand && rand.id) {
+          window.location.href = `film_${rand.id}.html`;
+        }
+      }
+    }
+    function openCsgoRoulette(mode = 'random') {
+      pickRandomMovieDirect();
+    }
+    function openRandomizerModal() {
+      pickRandomMovieDirect();
+    }
+    function closeRandomizerModal() {}
+    function startCsgoRouletteSpin() {}
+    function applyCurrentRouletteAsDayMovie() {}
 
     // ================= АВТОРИЗАЦИЯ =================
     function openAuthModal() {
@@ -1486,6 +2303,7 @@
         closeRandomizerModal();
         closeAuthModal();
         closeTrailerModal();
+        closeShelfManagerModal();
       }
     });
 
@@ -1557,8 +2375,10 @@
       const hero = document.getElementById('catalog-hero');
       const catalogMain = document.getElementById('catalog-main-content');
       const filmDayView = document.getElementById('filmoftheday-view');
+      const headerRandomBtn = document.getElementById('header-random-btn');
 
       if (tab === 'filmoftheday') {
+        if (headerRandomBtn) headerRandomBtn.classList.add('hidden');
         if (hero) hero.classList.add('hidden');
         if (catalogMain) catalogMain.classList.add('hidden');
         if (filmDayView) {
@@ -1580,6 +2400,7 @@
         setupFilmOfTheDay();
         try { history.replaceState(null, '', '#filmoftheday'); } catch (_) {}
       } else {
+        if (headerRandomBtn) headerRandomBtn.classList.remove('hidden');
         if (hero) hero.classList.remove('hidden');
         if (catalogMain) catalogMain.classList.remove('hidden');
         if (filmDayView) {
@@ -1601,28 +2422,44 @@
       }
     }
 
-    function setupFilmOfTheDay() {
-      // Ищем фильм дня: предпочитаем '435' (Зеленая миля) или фильм с наивысшим рейтингом
-      let movie = null;
-      if (Array.isArray(MOVIES_DATABASE) && MOVIES_DATABASE.length > 0) {
-        movie = MOVIES_DATABASE.find(m => String(m.id) === '435') || MOVIES_DATABASE[0];
+    function setupFilmOfTheDay(explicitMovie = null) {
+      let movie = explicitMovie;
+      if (!movie && Array.isArray(MOVIES_DATABASE) && MOVIES_DATABASE.length > 0) {
+        // 1. Проверяем, передан ли конкретный ID в адресной строке (например, #filmoftheday?id=258687)
+        const hash = window.location.hash || '';
+        const match = hash.match(/[?&]id=(\d+)/);
+        if (match) {
+          const reqId = match[1];
+          movie = MOVIES_DATABASE.find(m => String(m.id) === String(reqId));
+        }
+
+        // 2. Если ID не задан, вычисляем фильм дня по текущей календарной дате (каждые 24 часа новый фильм!)
+        if (!movie) {
+          const now = new Date();
+          const startOfYear = new Date(now.getFullYear(), 0, 0);
+          const diff = now - startOfYear;
+          const oneDay = 1000 * 60 * 60 * 24;
+          const dayOfYear = Math.floor(diff / oneDay);
+          const dayIndex = dayOfYear % MOVIES_DATABASE.length;
+          movie = MOVIES_DATABASE[dayIndex];
+        }
       }
 
       // Дефолтные данные для фильма дня (если база пустая или оффлайн)
       if (!movie) {
         movie = {
-          id: '435',
-          title: 'Зеленая миля',
-          year: '1999',
-          director: 'Фрэнк Дарабонт',
-          duration: '3 ч 9 мин',
-          genre: 'драма, фэнтези, криминал',
+          id: '258687',
+          title: 'Интерстеллар',
+          year: '2014',
+          director: 'Кристофер Нолан',
+          duration: '2 ч 49 мин',
+          genre: 'фантастика, драма, приключения',
           ratingKP: '9.1',
-          ratingSite: '9.2',
+          ratingSite: '9.1',
           poster: 'https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/443e111e-f714-4954-83d0-3e0acca2a561/orig',
-          trailer: 'trailers/film_435.mp4',
-          description: 'Пол Эджкомб — начальник блока смертников в тюрьме «Холодная гора», каждый из узников которого однажды проходит «зеленую милю» по пути к электрическому стулу.',
-          slogan: 'Пол Эджкомб не верил в чудеса. Пока не столкнулся с одним из них'
+          trailer: 'trailers/film_258687.mp4',
+          description: 'Когда засуха, пыльные бури и вымирание растений приводят человечество к продовольственному кризису, коллектив исследователей отправляется сквозь червоточину в поисках нового дома.',
+          slogan: 'Следующий шаг человечества станет величайшим'
         };
       }
 
@@ -1646,27 +2483,87 @@
       const targetUrl = `film_${movie.id}.html`;
 
       if (baseTitle) baseTitle.textContent = cleanTitle;
-      if (baseYear) baseYear.textContent = `${movie.year || '1999'} • ${movie.genre ? movie.genre.split(',')[0] : 'Драма'}`;
+      if (baseYear) baseYear.textContent = `${movie.year || '2014'} • ${movie.genre ? movie.genre.split(',')[0] : 'Фантастика'}`;
       if (posterImg && movie.poster) posterImg.src = movie.poster;
 
       if (hoverTitle) hoverTitle.textContent = cleanTitle;
       if (hoverDirector) hoverDirector.textContent = `${movie.director || 'Режиссер'} • ${movie.year || ''} • ${movie.duration || ''}`;
       if (hoverRating) hoverRating.textContent = movie.ratingKP || '9.1';
-      if (hoverSiteRating) hoverSiteRating.textContent = movie.ratingSite || movie.ratingKP || '9.2';
+      if (hoverSiteRating) hoverSiteRating.textContent = movie.ratingSite || movie.ratingKP || '9.1';
 
       if (hoverBtn) hoverBtn.href = targetUrl;
       if (watchDirect) watchDirect.href = targetUrl;
       if (moreLink) moreLink.href = targetUrl;
 
+      const watchRutube = document.getElementById('filmoftheday-watch-rutube');
+      const watchVk = document.getElementById('filmoftheday-watch-vk');
+      const watchKp = document.getElementById('filmoftheday-watch-kp');
+      if (watchRutube && movie.watch_rutube) watchRutube.href = movie.watch_rutube;
+      if (watchVk && movie.watch_vk) watchVk.href = movie.watch_vk;
+      if (watchKp && movie.watch_kp) watchKp.href = movie.watch_kp;
+
       if (tagline && movie.slogan) tagline.textContent = `«${movie.slogan}»`;
       if (synopsis && movie.description) synopsis.textContent = movie.description;
+
+      // Динамическое фоновое видео для текущего фильма дня
+      const bgVideo = document.getElementById('filmoftheday-bg-video');
+      if (bgVideo) {
+        const candidates = [];
+        if (movie.bg_video) candidates.push(movie.bg_video);
+        candidates.push(`assets/bg_${movie.id}.mp4`);
+        if (movie.trailer) candidates.push(movie.trailer);
+        candidates.push(`trailers/film_${movie.id}.mp4`);
+        candidates.push('assets/filmoftheday_bg.mp4');
+
+        let candIdx = 0;
+        function tryPlayVideo() {
+          if (candIdx >= candidates.length) return;
+          const src = candidates[candIdx++];
+          bgVideo.src = src;
+          bgVideo.load();
+          const playPromise = bgVideo.play();
+          if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(() => {
+              tryPlayVideo();
+            });
+          }
+        }
+        tryPlayVideo();
+      }
+
+      // Обновляем обложку в окне трейлера в правом верхнем углу
+      const trailerThumb = document.getElementById('filmoftheday-trailer-thumb');
+      if (trailerThumb) {
+        if (movie.gallery && movie.gallery.length > 0) {
+          trailerThumb.src = movie.gallery[0];
+        } else if (movie.poster) {
+          trailerThumb.src = movie.poster;
+        }
+      }
+
+      // Интерактивный 3D-параллакс при движении курсора по постеру
+      const pCard = document.getElementById('filmoftheday-poster-card');
+      if (pCard && !pCard.dataset.parallaxInitialized) {
+        pCard.dataset.parallaxInitialized = 'true';
+        pCard.addEventListener('mousemove', (e) => {
+          const rect = pCard.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -12;
+          const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 12;
+          pCard.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.03, 1.03, 1.03)`;
+        });
+        pCard.addEventListener('mouseleave', () => {
+          pCard.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+        });
+      }
     }
 
     function openDayMovieDetails() {
       if (currentDayMovie && currentDayMovie.id) {
         window.location.href = `film_${currentDayMovie.id}.html`;
       } else {
-        window.location.href = `film_435.html`;
+        window.location.href = `film_258687.html`;
       }
     }
 
@@ -1675,15 +2572,18 @@
       const video = document.getElementById('trailer-modal-video');
       const title = document.getElementById('trailer-modal-title');
 
-      const trailerSrc = (currentDayMovie && currentDayMovie.trailer) ? currentDayMovie.trailer : 'trailers/film_435.mp4';
-      const cleanTitle = currentDayMovie ? (currentDayMovie.title || '').replace(/\s*\(\d{4}\)\s*$/, '').trim() : 'Зеленая миля';
+      const trailerSrc = (currentDayMovie && currentDayMovie.trailer) ? currentDayMovie.trailer : (currentDayMovie ? `trailers/film_${currentDayMovie.id}.mp4` : 'trailers/film_258687.mp4');
+      const cleanTitle = currentDayMovie ? (currentDayMovie.title || '').replace(/\s*\(\d{4}\)\s*$/, '').trim() : 'Интерстеллар';
 
       if (title) title.textContent = `Трейлер: ${cleanTitle}`;
       if (video) {
         video.src = trailerSrc;
+        video.load();
         video.play().catch(() => {});
       }
-      if (modal) modal.classList.add('active');
+      if (modal) {
+        modal.classList.add('active');
+      }
     }
 
     function closeTrailerModal() {
@@ -1697,7 +2597,7 @@
     }
 
     // Закрытие модалок по клику на оверлей
-    ['randomizer-modal', 'auth-modal', 'trailer-modal'].forEach(id => {
+    ['randomizer-modal', 'auth-modal', 'trailer-modal', 'shelf-manager-modal'].forEach(id => {
       const el = document.getElementById(id);
       el?.addEventListener('click', (e) => {
         if (e.target === el) {
@@ -1713,6 +2613,7 @@
       setTheme(savedTheme);
       updateAuthUI();
       renderCatalog();
+      renderShelves();
       setupFilmOfTheDay();
 
       // Проверка прямого хэша на вкладку #filmoftheday

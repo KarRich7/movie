@@ -1,12 +1,14 @@
 """
 User features router: Favorites system and Watch History.
+Uses db_users (users.db) to manage favorites & history,
+and db_movies (movies.db) to look up movie cards and metadata.
 """
 from datetime import datetime
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from backend.database import get_db
+from backend.database import get_movies_db, get_users_db
 from backend.models import Favorite, WatchHistory, Movie, User
 from backend.schemas import (
     FavoriteItemResponse, WatchHistoryItemResponse, WatchHistoryCreateRequest,
@@ -22,20 +24,31 @@ router = APIRouter(prefix="/api", tags=["Избранное и история п
 
 @router.get("/favorites", response_model=List[FavoriteItemResponse], summary="Список избранных фильмов пользователя")
 def get_user_favorites(
-    db: Session = Depends(get_db),
+    db_movies: Session = Depends(get_movies_db),
+    db_users: Session = Depends(get_users_db),
     current_user: User = Depends(get_current_user)
 ):
     """Возвращает все фильмы, добавленные текущим пользователем в избранное."""
-    favorites = db.query(Favorite).filter(Favorite.user_id == current_user.id).order_by(Favorite.created_at.desc()).all()
+    favorites = db_users.query(Favorite).filter(
+        Favorite.user_id == current_user.id
+    ).order_by(Favorite.created_at.desc()).all()
     
+    # Collect movie ids
+    movie_ids = [fav.movie_id for fav in favorites]
+    movies_map = {}
+    if movie_ids:
+        movies = db_movies.query(Movie).filter(Movie.id.in_(movie_ids)).all()
+        movies_map = {m.id: m for m in movies}
+
     result = []
     for fav in favorites:
-        if fav.movie:
+        movie = movies_map.get(fav.movie_id)
+        if movie:
             result.append(FavoriteItemResponse(
                 id=fav.id,
                 movie_id=fav.movie_id,
                 created_at=fav.created_at,
-                movie=_movie_to_list_item(fav.movie)
+                movie=_movie_to_list_item(movie, db_users)
             ))
     return result
 
@@ -43,18 +56,19 @@ def get_user_favorites(
 @router.post("/favorites/{movie_id}", status_code=status.HTTP_201_CREATED, summary="Добавить фильм в избранное")
 def add_to_favorites(
     movie_id: int,
-    db: Session = Depends(get_db),
+    db_movies: Session = Depends(get_movies_db),
+    db_users: Session = Depends(get_users_db),
     current_user: User = Depends(get_current_user)
 ):
     """Добавляет фильм в избранное текущего пользователя."""
-    movie = db.query(Movie).filter(Movie.id == movie_id).first()
+    movie = db_movies.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Фильм #{movie_id} не найден"
         )
 
-    existing = db.query(Favorite).filter(
+    existing = db_users.query(Favorite).filter(
         Favorite.user_id == current_user.id,
         Favorite.movie_id == movie_id
     ).first()
@@ -63,8 +77,8 @@ def add_to_favorites(
         return {"detail": "Фильм уже находится в избранном", "movie_id": movie_id, "is_favorite": True}
 
     fav = Favorite(user_id=current_user.id, movie_id=movie_id)
-    db.add(fav)
-    db.commit()
+    db_users.add(fav)
+    db_users.commit()
 
     return {"detail": "Фильм успешно добавлен в избранное", "movie_id": movie_id, "is_favorite": True}
 
@@ -72,11 +86,11 @@ def add_to_favorites(
 @router.delete("/favorites/{movie_id}", summary="Удалить фильм из избранного")
 def remove_from_favorites(
     movie_id: int,
-    db: Session = Depends(get_db),
+    db_users: Session = Depends(get_users_db),
     current_user: User = Depends(get_current_user)
 ):
     """Удаляет фильм из избранного текущего пользователя."""
-    fav = db.query(Favorite).filter(
+    fav = db_users.query(Favorite).filter(
         Favorite.user_id == current_user.id,
         Favorite.movie_id == movie_id
     ).first()
@@ -84,19 +98,19 @@ def remove_from_favorites(
     if not fav:
         return {"detail": "Фильм не был в избранном", "movie_id": movie_id, "is_favorite": False}
 
-    db.delete(fav)
-    db.commit()
+    db_users.delete(fav)
+    db_users.commit()
     return {"detail": "Фильм удален из избранного", "movie_id": movie_id, "is_favorite": False}
 
 
 @router.get("/favorites/check/{movie_id}", summary="Проверить статус избранного для фильма")
 def check_favorite_status(
     movie_id: int,
-    db: Session = Depends(get_db),
+    db_users: Session = Depends(get_users_db),
     current_user: User = Depends(get_current_user)
 ):
     """Быстрая проверка: находится ли фильм в избранном у пользователя."""
-    is_fav = db.query(Favorite).filter(
+    is_fav = db_users.query(Favorite).filter(
         Favorite.user_id == current_user.id,
         Favorite.movie_id == movie_id
     ).first() is not None
@@ -107,24 +121,32 @@ def check_favorite_status(
 
 @router.get("/history", response_model=List[WatchHistoryItemResponse], summary="История просмотров пользователя")
 def get_user_watch_history(
-    db: Session = Depends(get_db),
+    db_movies: Session = Depends(get_movies_db),
+    db_users: Session = Depends(get_users_db),
     current_user: User = Depends(get_current_user)
 ):
     """Возвращает историю просмотров пользователя, отсортированную от недавних к старым."""
-    history = db.query(WatchHistory).filter(
+    history = db_users.query(WatchHistory).filter(
         WatchHistory.user_id == current_user.id
     ).order_by(WatchHistory.watched_at.desc()).all()
 
+    movie_ids = [h.movie_id for h in history]
+    movies_map = {}
+    if movie_ids:
+        movies = db_movies.query(Movie).filter(Movie.id.in_(movie_ids)).all()
+        movies_map = {m.id: m for m in movies}
+
     result = []
     for h in history:
-        if h.movie:
+        movie = movies_map.get(h.movie_id)
+        if movie:
             result.append(WatchHistoryItemResponse(
                 id=h.id,
                 movie_id=h.movie_id,
                 watched_at=h.watched_at,
                 progress_seconds=h.progress_seconds,
                 is_completed=h.is_completed,
-                movie=_movie_to_list_item(h.movie)
+                movie=_movie_to_list_item(movie, db_users)
             ))
     return result
 
@@ -133,18 +155,19 @@ def get_user_watch_history(
 def record_movie_watch(
     movie_id: int,
     req: WatchHistoryCreateRequest,
-    db: Session = Depends(get_db),
+    db_movies: Session = Depends(get_movies_db),
+    db_users: Session = Depends(get_users_db),
     current_user: User = Depends(get_current_user)
 ):
     """Добавляет фильм в историю или обновляет время последнего просмотра и прогресс."""
-    movie = db.query(Movie).filter(Movie.id == movie_id).first()
+    movie = db_movies.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Фильм #{movie_id} не найден"
         )
 
-    history_item = db.query(WatchHistory).filter(
+    history_item = db_users.query(WatchHistory).filter(
         WatchHistory.user_id == current_user.id,
         WatchHistory.movie_id == movie_id
     ).first()
@@ -161,9 +184,9 @@ def record_movie_watch(
             progress_seconds=req.progress_seconds,
             is_completed=req.is_completed
         )
-        db.add(history_item)
+        db_users.add(history_item)
 
-    db.commit()
+    db_users.commit()
     return {
         "detail": "Просмотр зафиксирован",
         "movie_id": movie_id,
@@ -175,28 +198,28 @@ def record_movie_watch(
 @router.delete("/history/{movie_id}", summary="Удалить фильм из истории просмотров")
 def remove_from_history(
     movie_id: int,
-    db: Session = Depends(get_db),
+    db_users: Session = Depends(get_users_db),
     current_user: User = Depends(get_current_user)
 ):
     """Удаляет конкретный фильм из истории просмотров."""
-    item = db.query(WatchHistory).filter(
+    item = db_users.query(WatchHistory).filter(
         WatchHistory.user_id == current_user.id,
         WatchHistory.movie_id == movie_id
     ).first()
 
     if item:
-        db.delete(item)
-        db.commit()
+        db_users.delete(item)
+        db_users.commit()
 
     return {"detail": "Фильм удален из истории просмотров", "movie_id": movie_id}
 
 
 @router.delete("/history", summary="Полностью очистить историю просмотров")
 def clear_all_history(
-    db: Session = Depends(get_db),
+    db_users: Session = Depends(get_users_db),
     current_user: User = Depends(get_current_user)
 ):
     """Полностью очищает историю просмотров пользователя."""
-    deleted_count = db.query(WatchHistory).filter(WatchHistory.user_id == current_user.id).delete()
-    db.commit()
+    deleted_count = db_users.query(WatchHistory).filter(WatchHistory.user_id == current_user.id).delete()
+    db_users.commit()
     return {"detail": "История просмотров очищена", "deleted_count": deleted_count}

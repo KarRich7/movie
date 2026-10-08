@@ -1,5 +1,7 @@
 import json
 import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import re
 from pars import (
     clean_movie_title, make_highres_url, generate_catalog_cards_html,
@@ -7,9 +9,21 @@ from pars import (
     generate_index_html
 )
 
+import shutil
 template_html = open('template.html', encoding='utf-8').read()
 movies = json.load(open('parsed_movies/movies.json', encoding='utf-8'))
 output_dir = 'parsed_movies'
+
+# Sync assets
+if os.path.exists('assets'):
+    os.makedirs('parsed_movies/assets', exist_ok=True)
+    for root, dirs, files in os.walk('assets'):
+        rel = os.path.relpath(root, 'assets')
+        target_dir = os.path.join('parsed_movies/assets', rel) if rel != '.' else 'parsed_movies/assets'
+        os.makedirs(target_dir, exist_ok=True)
+        for f in files:
+            shutil.copy2(os.path.join(root, f), os.path.join(target_dir, f))
+
 
 for m in movies:
     movie_id = m['id']
@@ -41,8 +55,14 @@ for m in movies:
     hero_bg = make_highres_url(hero_bg)
 
     custom_star = m.get('custom_star', '')
+    custom_star_light = m.get('custom_star_light', '')
+    custom_star_dark = m.get('custom_star_dark', '')
+    custom_star_cinematic = m.get('custom_star_cinematic', '')
     if not custom_star and any(kw in clean_t.lower() for kw in ['интерстеллар', 'interstellar']):
         custom_star = 'assets/planet.png'
+        if not custom_star_light: custom_star_light = 'assets/planet_light.png'
+        if not custom_star_dark: custom_star_dark = 'assets/planet_dark.png'
+        if not custom_star_cinematic: custom_star_cinematic = 'assets/planet_cinematic.png'
 
     html = template_html
     replacements = {
@@ -67,6 +87,9 @@ for m in movies:
         '{{RATING_SITE}}': str(m['ratingKP']),
         '{{RATING_STARS}}': rating_stars,
         '{{CUSTOM_STAR_PNG}}': custom_star,
+        '{{CUSTOM_STAR_LIGHT}}': custom_star_light,
+        '{{CUSTOM_STAR_DARK}}': custom_star_dark,
+        '{{CUSTOM_STAR_CINEMATIC}}': custom_star_cinematic,
         '{{STILLS_CARDS}}': stills_html,
         '{{ACTORS_CARDS}}': actors_html,
         '{{AWARDS_CARDS}}': awards_html,

@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>Зеленая миля (1999) — Информация о фильме</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- VK Video Player API -->
+  <script src="https://vk.com/js/api/videoplayer.js"></script>
   <!-- Tailwind Configuration -->
   <script>
     tailwind.config = {
@@ -26,15 +29,15 @@
   </script>
   <!-- Early Theme Init Script -->
   <script>
-    (function() {
-      const savedTheme = localStorage.getItem('kinoscore_theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      if (savedTheme === 'light') {
-        document.documentElement.classList.remove('dark');
-      } else {
-        document.documentElement.classList.add('dark');
-      }
-    })();
+      (function () {
+        const savedTheme = localStorage.getItem('kinoscore_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        if (savedTheme === 'light') {
+          document.documentElement.classList.remove('dark');
+        } else {
+          document.documentElement.classList.add('dark');
+        }
+      })();
   </script>
   <!-- BEGIN: Custom Styles -->
   <style data-purpose="custom-scrollbar">
@@ -42,14 +45,17 @@
     .custom-scroll::-webkit-scrollbar {
       height: 6px;
     }
+
     .custom-scroll::-webkit-scrollbar-track {
       background: #e2e8f0;
       border-radius: 9999px;
     }
+
     .custom-scroll::-webkit-scrollbar-thumb {
       background: #94a3b8;
       border-radius: 9999px;
     }
+
     .custom-scroll::-webkit-scrollbar-thumb:hover {
       background: #64748b;
     }
@@ -58,6 +64,7 @@
     .modal-active {
       display: flex !important;
     }
+
     .transition-custom {
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -74,8 +81,11 @@
       overflow: hidden;
       transition: height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     }
+
     @media (min-width: 768px) {
-      .trailer-section { height: 430px; }
+      .trailer-section {
+        height: 430px;
+      }
     }
 
     .trailer-section.expanded {
@@ -92,7 +102,8 @@
       overflow: hidden;
     }
 
-    .video-container video, .video-container iframe {
+    .video-container video,
+    .video-container iframe {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -140,16 +151,19 @@
       transition: color 0.25s, transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
       user-select: none;
     }
+
     .trailer-arrow-btn:hover {
       color: #ffffff;
       transform: scale(1.15);
     }
+
     .trailer-arrow-icon {
       width: 32px;
       height: 32px;
       filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
       transition: transform 0.25s ease;
     }
+
     .trailer-arrow-btn:hover .trailer-arrow-icon {
       transform: translateY(-2px);
     }
@@ -164,6 +178,7 @@
       transition: color 0.2s;
       text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
     }
+
     .trailer-arrow-btn:hover .trailer-text {
       color: #fff;
     }
@@ -184,10 +199,12 @@
       padding: 8px;
       transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), color 0.25s;
     }
+
     .trailer-collapse-btn:hover {
       color: #ffffff;
       transform: translateX(-50%) scale(1.25);
     }
+
     .trailer-collapse-btn svg {
       width: 36px;
       height: 36px;
@@ -216,15 +233,18 @@
       transition: transform 0.2s, background-color 0.2s, opacity 0.2s;
       opacity: 0.85;
     }
+
     .carousel-nav-btn:hover {
       background: rgba(15, 23, 42, 0.95);
       border-color: rgba(255, 255, 255, 0.5);
       transform: translateY(-50%) scale(1.12);
       opacity: 1;
     }
+
     .carousel-nav-btn.prev-btn {
       left: -14px;
     }
+
     .carousel-nav-btn.next-btn {
       right: -14px;
     }
@@ -246,8 +266,13 @@
     }
 
     @keyframes marquee {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
+      0% {
+        transform: translateX(100%);
+      }
+
+      100% {
+        transform: translateX(-100%);
+      }
     }
 
     /* Блоки актеров - стильные круглые аватары без громоздких рамок */
@@ -269,6 +294,7 @@
       width: 125px;
       transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
     }
+
     .actor-card:hover {
       transform: translateY(-4px);
     }
@@ -284,6 +310,7 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       transition: transform 0.2s, box-shadow 0.2s;
     }
+
     .actor-card:hover .actor-photo {
       transform: scale(1.06);
       box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
@@ -311,6 +338,7 @@
       border: 3px solid #d4af37;
       padding: 2px;
     }
+
     .director-card .actor-role {
       color: #d4af37;
       font-weight: 700;
@@ -322,16 +350,18 @@
       grid-template-columns: repeat(1, minmax(0, 1fr));
       gap: 16px;
     }
+
     @media (min-width: 640px) {
       .watch-cards {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
+
     .watch-card {
       height: 115px;
-      background-color: #f1f3f5;
+      background-color: #111827;
       border: 1px solid #e2e8f0;
-      border-radius: 12px;
+      border-radius: 14px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -341,37 +371,278 @@
       color: #374151;
       text-decoration: none;
       transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-      padding: 16px;
-      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 0 !important;
+      overflow: hidden !important;
+      position: relative;
     }
+
     .watch-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      background-color: #fff;
-      border-color: #cbd5e1;
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+      border-color: #94a3b8;
     }
+
     .watch-card-img {
-      max-width: 85%;
-      max-height: 60px;
-      object-fit: contain;
-      display: block;
-      transition: transform 0.2s;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      object-fit: cover !important;
+      object-position: center !important;
+      display: block !important;
+      transition: transform 0.35s ease;
     }
+
     .watch-card:hover .watch-card-img {
-      transform: scale(1.08);
+      transform: scale(1.06);
     }
+
     .watch-card-fallback {
       font-size: 19px;
       font-weight: 700;
       color: #374151;
     }
+
+
+    /* ==========================================
+       СТИЛИ ТЕМ ОФОРМЛЕНИЯ (DARK / CINEMATIC / LIGHT)
+       ========================================== */
+    html[data-theme="dark"] body {
+      background-color: #0f1115 !important;
+      color: #e5e7eb !important;
+    }
+    html[data-theme="dark"] .bg-white {
+      background-color: #16181f !important;
+      color: #ffffff !important;
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    html[data-theme="dark"] .bg-\[\#F8F9FA\] {
+      background-color: #0f1115 !important;
+    }
+    html[data-theme="dark"] .bg-\[\#E9ECEF\]\/60 {
+      background-color: #242832 !important;
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    html[data-theme="dark"] .watch-card {
+      background: #1c1e24 !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    html[data-theme="dark"] .text-gray-950,
+    html[data-theme="dark"] .text-gray-900 {
+      color: #ffffff !important;
+    }
+    html[data-theme="dark"] .text-gray-800 {
+      color: #f3f4f6 !important;
+    }
+    html[data-theme="dark"] .text-gray-700 {
+      color: #e2e8f0 !important;
+    }
+    html[data-theme="dark"] .text-gray-600 {
+      color: #cbd5e1 !important;
+    }
+    html[data-theme="dark"] .text-gray-500,
+    html[data-theme="dark"] .text-gray-400 {
+      color: #94a3b8 !important;
+    }
+    html[data-theme="dark"] .text-black {
+      color: #ffffff !important;
+    }
+    html[data-theme="dark"] .border-black {
+      border-color: #00e054 !important;
+    }
+    html[data-theme="dark"] .border-gray-200,
+    html[data-theme="dark"] .border-gray-100 {
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    html[data-theme="dark"] .bg-gray-50\/80,
+    html[data-theme="dark"] .bg-gray-50 {
+      background-color: #1f232d !important;
+    }
+    html[data-theme="dark"] aside {
+      background-color: rgba(22, 24, 31, 0.8) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    html[data-theme="dark"] .actor-name {
+      color: #f8fafc !important;
+    }
+    html[data-theme="dark"] .actor-role {
+      color: #94a3b8 !important;
+    }
+    html[data-theme="dark"] .actor-photo {
+      border: 2px solid rgba(255, 255, 255, 0.15) !important;
+    }
+    html[data-theme="dark"] dt {
+      color: #9ca3af !important;
+    }
+    html[data-theme="dark"] dd {
+      color: #ffffff !important;
+    }
+    html[data-theme="dark"] .slogan {
+      color: #e2e8f0 !important;
+    }
+
+    /* Табы «Кадры с фильма», «Актеры», «Награды» для Тёмной темы */
+    html[data-theme="dark"] #tab-frames,
+    html[data-theme="dark"] #tab-actors,
+    html[data-theme="dark"] #tab-awards {
+      color: #94a3b8;
+      border-color: transparent;
+    }
+    html[data-theme="dark"] #tab-frames:hover,
+    html[data-theme="dark"] #tab-actors:hover,
+    html[data-theme="dark"] #tab-awards:hover {
+      color: #ffffff !important;
+    }
+    html[data-theme="dark"] #tab-frames.text-gray-950,
+    html[data-theme="dark"] #tab-actors.text-gray-950,
+    html[data-theme="dark"] #tab-awards.text-gray-950 {
+      color: #ffffff !important;
+      border-color: #00e054 !important;
+    }
+
+    html[data-theme="cinematic"] body {
+      background-color: #07090e !important;
+      color: #ffffff !important;
+    }
+    html[data-theme="cinematic"] .bg-white {
+      background-color: #0d121c !important;
+      color: #ffffff !important;
+      border-color: rgba(0, 242, 254, 0.22) !important;
+      box-shadow: 0 8px 24px -4px rgba(0, 242, 254, 0.12) !important;
+    }
+    html[data-theme="cinematic"] .bg-\[\#F8F9FA\] {
+      background-color: #07090e !important;
+    }
+    html[data-theme="cinematic"] .bg-\[\#E9ECEF\]\/60 {
+      background-color: #121824 !important;
+      border-color: rgba(0, 242, 254, 0.15) !important;
+    }
+    html[data-theme="cinematic"] .watch-card {
+      background: #0d121c !important;
+      border-color: rgba(0, 242, 254, 0.2) !important;
+    }
+    html[data-theme="cinematic"] .text-gray-900 {
+      color: #ffffff !important;
+    }
+    html[data-theme="cinematic"] .text-gray-800 {
+      color: #f1f5f9 !important;
+    }
+    html[data-theme="cinematic"] .text-gray-700 {
+      color: #e2e8f0 !important;
+    }
+    html[data-theme="cinematic"] .text-gray-600 {
+      color: #cbd5e1 !important;
+    }
+    html[data-theme="cinematic"] .text-gray-500 {
+      color: #94a3b8 !important;
+    }
+    html[data-theme="cinematic"] .text-gray-400 {
+      color: #94a3b8 !important;
+    }
+    html[data-theme="cinematic"] .text-gray-950 {
+      color: #00f2fe !important;
+      border-color: #00f2fe !important;
+    }
+    html[data-theme="cinematic"] .border-black {
+      border-color: #00f2fe !important;
+    }
+    html[data-theme="cinematic"] .slogan {
+      color: #e2e8f0 !important;
+    }
+
+    /* Табы «Кадры с фильма», «Актеры», «Награды» для темы Синематик */
+    html[data-theme="cinematic"] #tab-frames,
+    html[data-theme="cinematic"] #tab-actors,
+    html[data-theme="cinematic"] #tab-awards {
+      color: #94a3b8;
+      border-color: transparent;
+    }
+    html[data-theme="cinematic"] #tab-frames:hover,
+    html[data-theme="cinematic"] #tab-actors:hover,
+    html[data-theme="cinematic"] #tab-awards:hover {
+      color: #00f2fe !important;
+    }
+    html[data-theme="cinematic"] #tab-frames.text-gray-950,
+    html[data-theme="cinematic"] #tab-actors.text-gray-950,
+    html[data-theme="cinematic"] #tab-awards.text-gray-950 {
+      color: #00f2fe !important;
+      border-color: #00f2fe !important;
+    }
+    html[data-theme="cinematic"] dt {
+      color: #94a3b8 !important;
+    }
+    html[data-theme="cinematic"] dd {
+      color: #ffffff !important;
+    }
+    html[data-theme="cinematic"] .border-gray-200,
+    html[data-theme="cinematic"] .border-gray-100 {
+      border-color: rgba(0, 242, 254, 0.15) !important;
+    }
+    html[data-theme="cinematic"] .bg-gray-50\/80,
+    html[data-theme="cinematic"] .bg-gray-50 {
+      background-color: #111726 !important;
+    }
+    html[data-theme="cinematic"] aside {
+      background-color: rgba(13, 18, 28, 0.8) !important;
+      border-color: rgba(0, 242, 254, 0.2) !important;
+    }
+    /* Высококонтрастные карточки актеров в Cinematic */
+    html[data-theme="cinematic"] .actor-name {
+      color: #ffffff !important;
+      font-weight: 700 !important;
+      text-shadow: 0 0 12px rgba(0, 242, 254, 0.45) !important;
+    }
+    html[data-theme="cinematic"] .actor-role {
+      color: #38bdf8 !important;
+      font-weight: 600 !important;
+    }
+    html[data-theme="cinematic"] .actor-photo {
+      border: 2px solid rgba(0, 242, 254, 0.4) !important;
+      box-shadow: 0 4px 18px rgba(0, 242, 254, 0.3) !important;
+    }
+    html[data-theme="cinematic"] .director-card .actor-photo {
+      border-color: #00f2fe !important;
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.6) !important;
+    }
+
+    /* Автоматическое удаление белого фона у звезд и кастомных картинок */
+    .star-custom-icon {
+      object-fit: contain;
+      mix-blend-mode: multiply;
+    }
+    html[data-theme="dark"] .star-custom-icon,
+    html[data-theme="cinematic"] .star-custom-icon {
+      mix-blend-mode: normal;
+    }
+
+    /* Точная нарезка 0.5 половинки звезды/картинки (без сжатия и сплющивания) */
+    .star-fill-clip {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      overflow: hidden;
+      width: 0;
+      transition: width 0.15s ease;
+      pointer-events: none;
+    }
+    .star-fill-clip img,
+    .star-fill-clip svg {
+      width: 32px !important;
+      min-width: 32px !important;
+      max-width: none !important;
+      height: 32px !important;
+      object-fit: contain !important;
+      display: block !important;
+    }
   </style>
   <!-- END: Custom Styles -->
 </head>
 
-<body class="bg-[#F8F9FA] text-gray-900 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-gray-800 selection:text-white">
-  <!-- BEGIN: TopBarNav -->
+<body
+  class="bg-[#F8F9FA] text-gray-900 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-gray-800 selection:text-white">
+  <!-- BEGIN: TopBarNav (Лаконичная шапка: только Каталог и переключатель темы) -->
   <header class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-6 py-5">
     <div class="flex items-center gap-3">
       <a aria-label="Каталог"
@@ -382,37 +653,11 @@
         </svg>
         <span class="text-xs font-semibold uppercase tracking-wider hidden sm:inline">Каталог</span>
       </a>
-      <a
-        href="index.html"
-        class="flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold tracking-wide text-white bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full border border-white/20 transition-all shadow-lg hover:border-white/40"
-        id="open-catalog-btn" title="Открыть каталог фильмов">
-        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path d="M4 6h16M4 12h16M4 18h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-        </svg>
-        <span>Все фильмы</span>
-      </a>
-      <a
-        href="index.html#filmoftheday"
-        class="hidden sm:flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold tracking-wide text-amber-300 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full border border-amber-400/30 transition-all shadow-lg hover:border-amber-400/60"
-        title="Смотреть фильм дня">
-        <span>✨</span>
-        <span>Фильм дня</span>
-      </a>
     </div>
 
-    <!-- Right Controls: Randomizer & Theme Switcher -->
+    <!-- Right Controls: Theme Switcher -->
     <div class="flex items-center gap-2.5">
-      <button 
-        onclick="window.location.href='index.html'"
-        class="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold text-black bg-gradient-to-r from-amber-400 to-yellow-300 hover:from-amber-300 shadow-lg transition-transform active:scale-95"
-        title="Случайный фильм на вечер">
-        <span>🎲</span>
-        <span class="hidden md:inline">Случайный фильм</span>
-      </button>
-
-      <button 
-        id="theme-quick-toggle"
-        onclick="togglePageTheme()"
+      <button id="theme-quick-toggle" onclick="togglePageTheme()"
         class="p-2 px-3 rounded-full text-xs font-semibold text-white bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 transition-colors shadow-lg"
         title="Сменить тему (Тёмная / Светлая / Синематик)">
         <span id="theme-indicator-icon">🌙</span>
@@ -422,9 +667,13 @@
   <!-- END: TopBarNav -->
 
   <!-- BEGIN: CinematicHeroBanner (Раскрывается прямо в шапке на 75vh без отдельного окна) -->
-  <header class="trailer-section select-none" id="trailer-header" style="background-image: url('https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/35975f3e-11e5-483f-9895-be2689f99a0d/orig'); background-size: cover; background-position: center;">
-    <div class="video-container">
-      <video id="bg-video" src="trailers/film_435.mp4" autoplay loop muted playsinline onerror="this.style.display='none';"></video>
+  <header class="trailer-section select-none" id="trailer-header"
+    style="background-image: url('https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/35975f3e-11e5-483f-9895-be2689f99a0d/orig'); background-size: cover; background-position: center;">
+    <div class="video-container" id="video-container">
+      <iframe id="bg-video-iframe" class="w-full h-full object-cover hidden"
+        allow="autoplay; encrypted-media; fullscreen; picture-in-picture;" frameborder="0"></iframe>
+      <video id="bg-video" src="trailers/film_435.mp4" autoplay loop muted playsinline class="w-full h-full object-cover"
+        onerror="this.style.display='none';"></video>
     </div>
     <div class="trailer-overlay-bg"></div>
 
@@ -471,7 +720,8 @@
           onclick="openPostersGallery(0)" title="Нажмите, чтобы просмотреть все постеры">
           <img alt="Постер фильма Зеленая миля"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-            src="https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/443e111e-f714-4954-83d0-3e0acca2a561/orig" onerror="this.src='https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d645e7f1-bc93-4a0b-93aa-7e3f8469ad5f/orig';" />
+            src="https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/443e111e-f714-4954-83d0-3e0acca2a561/orig"
+            onerror="this.src='https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d645e7f1-bc93-4a0b-93aa-7e3f8469ad5f/orig';" />
           <div
             class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-emerald-950/40 opacity-80 flex flex-col justify-end p-4 pointer-events-none">
             <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400">1999</span>
@@ -481,39 +731,48 @@
             <p class="text-[11px] text-gray-300 line-clamp-1">Фрэнк Дарабонт</p>
           </div>
           <!-- Бейджик 'Постеры' в верхнем углу -->
-          <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white text-[11px] font-semibold px-2.5 py-1 rounded-full border border-white/20 opacity-90 group-hover:opacity-100 flex items-center gap-1.5 transition-all">
+          <div
+            class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white text-[11px] font-semibold px-2.5 py-1 rounded-full border border-white/20 opacity-90 group-hover:opacity-100 flex items-center gap-1.5 transition-all">
             <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z">
+              </path>
             </svg>
             <span>Постеры</span>
           </div>
         </div>
 
         <!-- Интерактивная плашка рейтинга: - слева (без обводки), звезды по центру, + справа (без обводки) -->
-        <div class="w-full flex items-center justify-between gap-1 mt-3.5 px-0.5 text-sm select-none" id="rating-widget-container">
+        <div class="w-full flex items-center justify-between gap-1.5 mt-4 px-1 text-sm select-none"
+          id="rating-widget-container">
           <!-- Минус слева (без обводки) -->
           <button aria-label="Уменьшить оценку"
-            class="p-1.5 text-gray-400 hover:text-gray-900 hover:scale-125 transition-all focus:outline-none"
+            class="p-2 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:scale-125 transition-all focus:outline-none"
             id="rating-decrease-btn" title="Уменьшить на 0.5">
-            <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2.5" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 stroke-current" fill="none" stroke-width="2.5" viewBox="0 0 24 24">
               <path d="M5 12h14" stroke-linecap="round"></path>
             </svg>
           </button>
 
           <!-- Центр: Звезды и оценка -->
-          <div class="flex flex-col items-center justify-center gap-1 flex-grow">
-            <div class="flex items-center space-x-1" id="star-rating" title="Поставить оценку (шаг 0.5)">
-              <!-- Генерируется в renderStarElements() -->
+          <div class="flex flex-col items-center justify-center gap-1.5 flex-grow">
+            <div class="flex items-center gap-1.5" id="star-rating"
+              data-custom-star=""
+              data-custom-star-light=""
+              data-custom-star-dark=""
+              data-custom-star-cinematic=""
+              title="Поставить оценку (шаг 0.5)">
+              <!-- Генерируется в buildStarItems() -->
             </div>
-            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full transition-colors duration-200"
+            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full transition-colors duration-200"
               id="rating-score-badge" style="background-color: rgba(34, 197, 94, 0.15); color: #16a34a;">4.5 / 5</span>
           </div>
 
           <!-- Плюс справа (без обводки) -->
           <button aria-label="Увеличить оценку"
-            class="p-1.5 text-gray-400 hover:text-gray-900 hover:scale-125 transition-all focus:outline-none"
+            class="p-2 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:scale-125 transition-all focus:outline-none"
             id="rating-increase-btn" title="Увеличить на 0.5">
-            <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2.5" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 stroke-current" fill="none" stroke-width="2.5" viewBox="0 0 24 24">
               <path d="M12 5v14M5 12h14" stroke-linecap="round"></path>
             </svg>
           </button>
@@ -791,7 +1050,8 @@
 
         <!-- Вкладка 2: Актеры (листаются слева направо) -->
         <div class="hidden bg-[#E9ECEF]/60 p-5 rounded-2xl border border-gray-200 shadow-sm" id="actors-container">
-          <div class="flex gap-4 overflow-x-auto pb-3 custom-scroll scroll-smooth snap-x snap-mandatory" id="actors-scroller">
+          <div class="flex gap-4 overflow-x-auto pb-3 custom-scroll scroll-smooth snap-x snap-mandatory"
+            id="actors-scroller">
             
           <div class="actor-card director-card">
             <img alt="Фрэнк Дарабонт" class="actor-photo"
@@ -867,7 +1127,8 @@
 
         <!-- Вкладка 3: Награды (листаются слева направо с местом под PNG иконку) -->
         <div class="hidden bg-[#E9ECEF]/60 p-5 rounded-2xl border border-gray-200 shadow-sm" id="awards-container">
-          <div class="flex gap-4 overflow-x-auto pb-3 custom-scroll scroll-smooth snap-x snap-mandatory" id="awards-scroller">
+          <div class="flex gap-4 overflow-x-auto pb-3 custom-scroll scroll-smooth snap-x snap-mandatory"
+            id="awards-scroller">
             
           <div class="flex-shrink-0 w-72 sm:w-80 bg-white p-4 rounded-xl shadow-sm border-l-4 border-amber-500 snap-start flex flex-col justify-between">
             <div class="flex items-center gap-3 mb-2.5">
@@ -943,18 +1204,24 @@
       </h2>
       <div class="watch-cards">
         <!-- 1. Рутуб -->
-        <a class="watch-card" href="https://rutube.ru/video/55798f675920950add8082a2e8174794/" rel="noopener noreferrer" target="_blank" title="Смотреть на Рутуб">
-          <img src="assets/rutube.png" alt="Рутуб" class="watch-card-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <a class="watch-card" href="https://rutube.ru/video/55798f675920950add8082a2e8174794/" rel="noopener noreferrer" target="_blank"
+          title="Смотреть на Рутуб">
+          <img src="assets/rutube.png" alt="Рутуб" class="watch-card-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
           <div class="watch-card-fallback" style="display:none;">Рутуб</div>
         </a>
         <!-- 2. ВК Видео -->
-        <a class="watch-card" href="https://vkvideo.ru/video-230698619_456239779" rel="noopener noreferrer" target="_blank" title="Смотреть на ВК Видео">
-          <img src="assets/vk.png" alt="ВК Видео" class="watch-card-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <a class="watch-card" href="https://vkvideo.ru/video-230698619_456239779" rel="noopener noreferrer" target="_blank"
+          title="Смотреть на ВК Видео">
+          <img src="assets/vk.png" alt="ВК Видео" class="watch-card-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
           <div class="watch-card-fallback" style="display:none;">ВК Видео</div>
         </a>
         <!-- 3. Кинопоиск -->
-        <a class="watch-card" href="https://www.kinopoisk.ru/film/435/" rel="noopener noreferrer" target="_blank" title="Смотреть на Кинопоиск">
-          <img src="assets/kinopoisk.png" alt="Кинопоиск" class="watch-card-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <a class="watch-card" href="https://www.kinopoisk.ru/film/435/" rel="noopener noreferrer" target="_blank"
+          title="Смотреть на Кинопоиск">
+          <img src="assets/kinopoisk.png" alt="Кинопоиск" class="watch-card-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
           <div class="watch-card-fallback" style="display:none;">Кинопоиск</div>
         </a>
       </div>
@@ -982,6 +1249,17 @@
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6" id="catalog-grid">
         
+        <a href="film_1143242.html" class="group relative rounded-xl overflow-hidden bg-gray-900 border border-gray-800 hover:border-gray-500 shadow-xl cursor-pointer transition-all block">
+          <img alt="Джентльмены"
+            class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform duration-300"
+            src="https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/34b02ab9-9ecd-4b72-b2ff-72a0875060a5/orig" onerror="this.src='https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d645e7f1-bc93-4a0b-93aa-7e3f8469ad5f/orig';" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-90 p-3.5 flex flex-col justify-end">
+            
+            <h4 class="font-bold text-sm text-white leading-tight line-clamp-1">Джентльмены</h4>
+            <div class="text-xs text-amber-400 font-semibold mt-0.5">★ 8.7 (2019)</div>
+          </div>
+        </a>
+
         <a href="film_258687.html" class="group relative rounded-xl overflow-hidden bg-gray-900 border border-gray-800 hover:border-gray-500 shadow-xl cursor-pointer transition-all block">
           <img alt="Интерстеллар"
             class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform duration-300"
@@ -1004,17 +1282,6 @@
           </div>
         </a>
 
-        <a href="film_435.html" class="group relative rounded-xl overflow-hidden bg-gray-900 border-2 border-emerald-500 shadow-xl cursor-pointer transition-all block">
-          <img alt="Зеленая миля"
-            class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform duration-300"
-            src="https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/443e111e-f714-4954-83d0-3e0acca2a561/orig" onerror="this.src='https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d645e7f1-bc93-4a0b-93aa-7e3f8469ad5f/orig';" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-90 p-3.5 flex flex-col justify-end">
-            <span class="text-[10px] bg-emerald-500 text-black font-bold px-1.5 py-0.5 rounded w-max mb-1">Сейчас открыт</span>
-            <h4 class="font-bold text-sm text-white leading-tight line-clamp-1">Зеленая миля</h4>
-            <div class="text-xs text-amber-400 font-semibold mt-0.5">★ 9.1 (1999)</div>
-          </div>
-        </a>
-
         <a href="film_3498.html" class="group relative rounded-xl overflow-hidden bg-gray-900 border border-gray-800 hover:border-gray-500 shadow-xl cursor-pointer transition-all block">
           <img alt="Властелин колец: Возвращение короля"
             class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform duration-300"
@@ -1026,14 +1293,25 @@
           </div>
         </a>
 
-        <a href="film_1143242.html" class="group relative rounded-xl overflow-hidden bg-gray-900 border border-gray-800 hover:border-gray-500 shadow-xl cursor-pointer transition-all block">
-          <img alt="Джентльмены"
+        <a href="film_435.html" class="group relative rounded-xl overflow-hidden bg-gray-900 border-2 border-emerald-500 shadow-xl cursor-pointer transition-all block">
+          <img alt="Зеленая миля"
             class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform duration-300"
-            src="https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/34b02ab9-9ecd-4b72-b2ff-72a0875060a5/orig" onerror="this.src='https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d645e7f1-bc93-4a0b-93aa-7e3f8469ad5f/orig';" />
+            src="https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/443e111e-f714-4954-83d0-3e0acca2a561/orig" onerror="this.src='https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d645e7f1-bc93-4a0b-93aa-7e3f8469ad5f/orig';" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-90 p-3.5 flex flex-col justify-end">
+            <span class="text-[10px] bg-emerald-500 text-black font-bold px-1.5 py-0.5 rounded w-max mb-1">Сейчас открыт</span>
+            <h4 class="font-bold text-sm text-white leading-tight line-clamp-1">Зеленая миля</h4>
+            <div class="text-xs text-amber-400 font-semibold mt-0.5">★ 9.1 (1999)</div>
+          </div>
+        </a>
+
+        <a href="film_47649.html" class="group relative rounded-xl overflow-hidden bg-gray-900 border border-gray-800 hover:border-gray-500 shadow-xl cursor-pointer transition-all block">
+          <img alt="Легион ночи"
+            class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform duration-300"
+            src="https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/534cddef-0824-4959-a59f-911de3279b12/orig" onerror="this.src='https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d645e7f1-bc93-4a0b-93aa-7e3f8469ad5f/orig';" />
           <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-90 p-3.5 flex flex-col justify-end">
             
-            <h4 class="font-bold text-sm text-white leading-tight line-clamp-1">Джентльмены</h4>
-            <div class="text-xs text-amber-400 font-semibold mt-0.5">★ 8.7 (2019)</div>
+            <h4 class="font-bold text-sm text-white leading-tight line-clamp-1">Легион ночи</h4>
+            <div class="text-xs text-amber-400 font-semibold mt-0.5">★ – (1995)</div>
           </div>
         </a>
       </div>
@@ -1087,22 +1365,31 @@
   <!-- END: AuthModal -->
 
   <!-- BEGIN: GalleryModal (Полноэкранная галерея с перелистыванием) -->
-  <div id="gallery-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-300">
-    <button class="absolute top-4 right-5 text-white/80 hover:text-white text-3xl font-light hover:scale-110 transition-transform cursor-pointer z-50 p-2" id="gallery-close-btn" title="Закрыть (ESC)">&times;</button>
+  <div id="gallery-modal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-300">
+    <button
+      class="absolute top-4 right-5 text-white/80 hover:text-white text-3xl font-light hover:scale-110 transition-transform cursor-pointer z-50 p-2"
+      id="gallery-close-btn" title="Закрыть (ESC)">&times;</button>
     <div class="relative w-full max-w-6xl h-full max-h-[90vh] flex items-center justify-center px-4 sm:px-16">
       <!-- Кнопка назад -->
-      <button class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 text-white text-2xl flex items-center justify-center backdrop-blur-md transition-all hover:scale-110 cursor-pointer select-none z-40" id="gallery-prev-btn" title="Предыдущее фото (←)">
+      <button
+        class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 text-white text-2xl flex items-center justify-center backdrop-blur-md transition-all hover:scale-110 cursor-pointer select-none z-40"
+        id="gallery-prev-btn" title="Предыдущее фото (←)">
         &#10094;
       </button>
-      
+
       <!-- Контейнер изображения -->
       <div class="relative max-w-full max-h-full flex flex-col items-center justify-center">
-        <img id="gallery-active-img" src="" alt="Кадр" class="max-w-full max-h-[82vh] object-contain rounded-xl shadow-2xl transition-all duration-200">
-        <div id="gallery-counter" class="mt-3 text-xs sm:text-sm font-medium text-white/70 tracking-widest uppercase"></div>
+        <img id="gallery-active-img" src="" alt="Кадр"
+          class="max-w-full max-h-[82vh] object-contain rounded-xl shadow-2xl transition-all duration-200">
+        <div id="gallery-counter" class="mt-3 text-xs sm:text-sm font-medium text-white/70 tracking-widest uppercase">
+        </div>
       </div>
 
       <!-- Кнопка вперед -->
-      <button class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 text-white text-2xl flex items-center justify-center backdrop-blur-md transition-all hover:scale-110 cursor-pointer select-none z-40" id="gallery-next-btn" title="Следующее фото (→)">
+      <button
+        class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 text-white text-2xl flex items-center justify-center backdrop-blur-md transition-all hover:scale-110 cursor-pointer select-none z-40"
+        id="gallery-next-btn" title="Следующее фото (→)">
         &#10095;
       </button>
     </div>
@@ -1110,10 +1397,16 @@
   <!-- END: GalleryModal -->
 
   <!-- BEGIN: VideoModal (Трейлер из ленты кадров) -->
-  <div id="video-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-300 p-4">
-    <button class="absolute top-4 right-5 text-white/80 hover:text-white text-3xl font-light hover:scale-110 transition-transform cursor-pointer z-50 p-2" id="video-close-btn" title="Закрыть (ESC)">&times;</button>
-    <div class="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center">
-      <video id="modal-video-player" controls autoplay class="w-full h-full object-contain rounded-2xl">
+  <div id="video-modal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-300 p-4">
+    <button
+      class="absolute top-4 right-5 text-white/80 hover:text-white text-3xl font-light hover:scale-110 transition-transform cursor-pointer z-50 p-2"
+      id="video-close-btn" title="Закрыть (ESC)">&times;</button>
+    <div
+      class="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center">
+      <iframe id="modal-video-iframe" class="w-full h-full object-contain rounded-2xl hidden"
+        allow="autoplay; encrypted-media; fullscreen; picture-in-picture;" allowfullscreen frameborder="0"></iframe>
+      <video id="modal-video-player" controls autoplay class="w-full h-full object-contain rounded-2xl hidden">
         <source id="modal-video-source" src="" type="video/mp4">
       </video>
     </div>
@@ -1121,7 +1414,7 @@
   <!-- END: VideoModal -->
 
   <!-- Хранилище списков изображений в формате JSON (валидно для редакторов кода) -->
-  <script id="posters-data" type="application/json">["https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/443e111e-f714-4954-83d0-3e0acca2a561/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/acb932eb-c7d0-42de-92df-f5f306c4c48e/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/560a8955-9c4a-46f0-a291-185b521a0e49/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/20110bfe-0324-440d-b4d9-4358773b38b9/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/5dc6cbbd-cef2-452b-bad1-4ab6a87ba10d/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/b3ada917-54d4-4150-b148-16ca4543b3fb/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/dc6fa0d7-98d6-4822-8e24-5e22be7bbf5b/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/2ac4b295-bdd0-423b-8799-4c3736dfd92e/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/8746e5d4-eb35-4cd5-b5f4-777782c9dd17/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/90d04ba1-e9c7-4835-ba43-2e70171a509c/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/3861d308-a3b4-4bd4-857d-519d26de7287/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/962a4ff3-6477-47d1-b8c3-2bad0c41cdcf/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/ed070d82-5bcf-4a8c-9268-18fbb9c12e15/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/94e71573-5d6f-4c42-a552-cab23951fce4/orig"]</script>
+  <script id="posters-data" type="application/json">["https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/443e111e-f714-4954-83d0-3e0acca2a561/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/acb932eb-c7d0-42de-92df-f5f306c4c48e/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/560a8955-9c4a-46f0-a291-185b521a0e49/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/20110bfe-0324-440d-b4d9-4358773b38b9/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/5dc6cbbd-cef2-452b-bad1-4ab6a87ba10d/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/b3ada917-54d4-4150-b148-16ca4543b3fb/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/dc6fa0d7-98d6-4822-8e24-5e22be7bbf5b/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/2ac4b295-bdd0-423b-8799-4c3736dfd92e/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/8746e5d4-eb35-4cd5-b5f4-777782c9dd17/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/90d04ba1-e9c7-4835-ba43-2e70171a509c/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/3861d308-a3b4-4bd4-857d-519d26de7287/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/962a4ff3-6477-47d1-b8c3-2bad0c41cdcf/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/ed070d82-5bcf-4a8c-9268-18fbb9c12e15/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1629390/94e71573-5d6f-4c42-a552-cab23951fce4/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1704946/8b2dad5e-655b-45f8-8c0e-4df53a594a4f/orig"]</script>
   <script id="stills-data" type="application/json">["https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/35975f3e-11e5-483f-9895-be2689f99a0d/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/c4c5ab16-01e4-416c-abbe-c512f1d45697/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/77a4eeb5-38c2-4720-b252-715c6a7e0a93/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/6c27c30c-d0fd-4601-8608-e93d83af4b78/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/1f2dd4c0-b687-45b9-8f1a-24cc61c9eb0f/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/9e954218-9173-43ee-aeeb-9e2e3527a3ae/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/b8735074-4878-48bb-a532-d8c49510a0f6/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/6e2b95c4-9ee5-48dd-9211-ca784030fbfa/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/5c020550-2e0f-495a-a2d6-fd6b70da3567/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/5ab8a6c2-888c-4bec-97d5-55e42ecb4c96/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/956908ae-b855-4ea4-ae2f-86f33ebf9955/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/caaf02e9-4473-473c-a5d6-643a51fa9d53/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/499746a9-8600-4036-828b-30c4cc2e7a7b/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/f0a45ae4-0cfd-4135-9abe-2e6823646036/orig", "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/e0f8f189-917c-429d-9f43-eab80d96bf9e/orig"]</script>
 
   <!-- BEGIN: InteractiveScripts -->
@@ -1186,23 +1479,73 @@
     // ==========================
     const trailerHeader = document.getElementById('trailer-header');
     const bgVideo = document.getElementById('bg-video');
+    const bgVideoIframe = document.getElementById('bg-video-iframe');
     const openTrailerBtn = document.getElementById('open-trailer-btn');
     const openTrailerText = document.getElementById('open-trailer-text');
     const collapseTrailerBtn = document.getElementById('collapse-trailer-btn');
     let trailerHasPlayed = false;
+    let vkPlayer = null;
+
+    function formatVkEmbedUrl(src, autoplay = 1, mute = 0) {
+      if (!src) return '';
+      let url = src;
+      const match = src.match(/video(-?\d+)_(\d+)/);
+      if (match) {
+        url = `https://vk.com/video_ext.php?oid=${match[1]}&id=${match[2]}&hd=3`;
+      }
+      if (url.includes('video_ext.php')) {
+        if (!url.includes('js_api=')) url += (url.includes('?') ? '&' : '?') + 'js_api=1';
+        if (!url.includes('autoplay=')) url += `&autoplay=${autoplay}`;
+        if (!url.includes('mute=')) url += `&mute=${mute}`;
+      }
+      return url;
+    }
+
+    const rawTrailerSrc = "trailers/film_435.mp4";
+    const isVkTrailer = rawTrailerSrc.includes('vk.com') || rawTrailerSrc.includes('vkvideo.ru') || rawTrailerSrc.includes('video_ext.php');
+
+    if (isVkTrailer && bgVideoIframe) {
+      const heroVkUrl = formatVkEmbedUrl(rawTrailerSrc, 1, 1);
+      bgVideoIframe.src = heroVkUrl;
+      bgVideoIframe.classList.remove('hidden');
+      if (bgVideo) bgVideo.classList.add('hidden');
+
+      try {
+        if (window.VK && window.VK.VideoPlayer) {
+          vkPlayer = VK.VideoPlayer(bgVideoIframe);
+          vkPlayer.on('inited', () => {
+            vkPlayer.mute();
+            vkPlayer.play();
+          });
+        }
+      } catch (err) {
+        console.warn('VK VideoPlayer initialization warning:', err);
+      }
+    } else if (bgVideo) {
+      bgVideo.classList.remove('hidden');
+    }
 
     function expandTrailer() {
       if (!trailerHeader) return;
       trailerHeader.classList.add('expanded');
       if (collapseTrailerBtn) collapseTrailerBtn.classList.remove('hidden');
-      if (bgVideo) {
+
+      if (vkPlayer) {
+        vkPlayer.unmute();
+        if (!trailerHasPlayed) {
+          // Первый раз: трейлер начинается заново с начала
+          vkPlayer.seek(0);
+          trailerHasPlayed = true;
+        }
+        vkPlayer.play();
+      } else if (bgVideo) {
         bgVideo.muted = false;
         if (!trailerHasPlayed) {
           // Первый раз: трейлер начинается заново с начала
           bgVideo.currentTime = 0;
           trailerHasPlayed = true;
         }
-        bgVideo.play().catch(() => {});
+        bgVideo.play().catch(() => { });
       }
     }
 
@@ -1210,7 +1553,12 @@
       if (!trailerHeader) return;
       trailerHeader.classList.remove('expanded');
       if (collapseTrailerBtn) collapseTrailerBtn.classList.add('hidden');
-      if (bgVideo) {
+
+      if (vkPlayer) {
+        vkPlayer.mute();
+        // В последующие разы: просто останавливаем (пауза)
+        vkPlayer.pause();
+      } else if (bgVideo) {
         bgVideo.muted = true;
         // В последующие разы: просто останавливаем (пауза)
         bgVideo.pause();
@@ -1365,23 +1713,48 @@
     const videoModal = document.getElementById('video-modal');
     const modalVideoPlayer = document.getElementById('modal-video-player');
     const modalVideoSource = document.getElementById('modal-video-source');
+    const modalVideoIframe = document.getElementById('modal-video-iframe');
     const videoCloseBtn = document.getElementById('video-close-btn');
 
     function openLightboxTrailer(videoSrc) {
       collapseTrailer();
-      if (!videoModal || !modalVideoPlayer || !modalVideoSource) return;
-      modalVideoSource.src = videoSrc;
-      modalVideoPlayer.load();
+      if (!videoModal) return;
+
+      const isVk = videoSrc && (videoSrc.includes('vk.com') || videoSrc.includes('vkvideo.ru') || videoSrc.includes('video_ext.php'));
+      if (isVk && modalVideoIframe) {
+        if (modalVideoPlayer) {
+          modalVideoPlayer.pause();
+          modalVideoPlayer.classList.add('hidden');
+        }
+        const embedUrl = formatVkEmbedUrl(videoSrc, 1, 0); // Со звуком и автоплеем
+        modalVideoIframe.src = embedUrl;
+        modalVideoIframe.classList.remove('hidden');
+      } else if (modalVideoPlayer && modalVideoSource) {
+        if (modalVideoIframe) {
+          modalVideoIframe.src = '';
+          modalVideoIframe.classList.add('hidden');
+        }
+        modalVideoSource.src = videoSrc;
+        modalVideoPlayer.load();
+        modalVideoPlayer.classList.remove('hidden');
+        modalVideoPlayer.play().catch(() => { });
+      }
+
       videoModal.classList.remove('hidden');
       videoModal.classList.add('flex');
       document.body.style.overflow = 'hidden';
-      modalVideoPlayer.play().catch(() => {});
     }
 
     function closeVideoModal() {
+      if (modalVideoIframe) {
+        modalVideoIframe.src = 'about:blank';
+        modalVideoIframe.removeAttribute('src');
+        modalVideoIframe.classList.add('hidden');
+      }
       if (modalVideoPlayer) {
         modalVideoPlayer.pause();
         modalVideoPlayer.currentTime = 0;
+        modalVideoPlayer.classList.add('hidden');
       }
       if (videoModal) {
         videoModal.classList.add('hidden');
@@ -1428,67 +1801,249 @@
     if (closeCatalogBtn && catalogModal) closeCatalogBtn.addEventListener('click', () => catalogModal.classList.add('hidden'));
 
     // ==========================================
-    // ИНТЕРАКТИВНЫЙ РЕЙТИНГ СО ЗВЕЗДАМИ / ПЛАНЕТОЙ
+    // ПЕРЕКЛЮЧЕНИЕ ТЕМ ОФОРМЛЕНИЯ (DARK / CINEMATIC / LIGHT)
+    // ==========================================
+    function getActiveTheme() {
+      return document.documentElement.getAttribute('data-theme') ||
+        (document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    function setPageTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('kinoscore_theme', theme);
+
+      const icon = document.getElementById('theme-indicator-icon');
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        if (icon) icon.textContent = '🌙';
+      } else if (theme === 'cinematic') {
+        document.documentElement.classList.add('dark');
+        if (icon) icon.textContent = '🎬';
+      } else {
+        document.documentElement.classList.remove('dark');
+        if (icon) icon.textContent = '☀️';
+      }
+
+      // При смене темы пересобираем звезды, подставляя PNG нужной темы
+      buildStarItems();
+      renderStars(currentRating);
+    }
+
+    function togglePageTheme() {
+      const cur = getActiveTheme();
+      const nextTheme = (cur === 'dark') ? 'cinematic' : (cur === 'cinematic' ? 'light' : 'dark');
+      setPageTheme(nextTheme);
+    }
+
+    // ==========================================
+    // ИНТЕРАКТИВНЫЙ РЕЙТИНГ СО ЗВЕЗДАМИ / КАСТОМНЫМИ ИКОНКАМИ
     // ==========================================
     let currentRating = parseFloat("4.5") || 4.5;
-    const customStarImg = ""; // Кастомная PNG иконка (например планета)
     const ratingBadge = document.getElementById('rating-score-badge');
     const starRatingContainer = document.getElementById('star-rating');
     const ratingDecreaseBtn = document.getElementById('rating-decrease-btn');
     const ratingIncreaseBtn = document.getElementById('rating-increase-btn');
 
-    // Генерация разметки 5 звезд (SVG или кастомная PNG)
+    // Кэш прозрачных изображений после автоматического удаления белого фона
+    const transparentImgCache = new Map();
+
+    /**
+     * Автоматически удаляет белый/светлый непрозрачный фон через Canvas,
+     * превращая любое изображение с белой подложкой в чистый прозрачный PNG.
+     */
+    function autoRemoveWhiteBg(src, callback) {
+      if (!src) return callback('');
+      if (transparentImgCache.has(src)) return callback(transparentImgCache.get(src));
+
+      const img = new Image();
+      if (src.startsWith('http://') || src.startsWith('https://')) {
+        img.crossOrigin = 'anonymous';
+      }
+      img.onload = () => {
+        try {
+          const w = img.naturalWidth || img.width;
+          const h = img.naturalHeight || img.height;
+          const c = document.createElement('canvas');
+          c.width = w;
+          c.height = h;
+          const ctx = c.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          const imgData = ctx.getImageData(0, 0, w, h);
+          const d = imgData.data;
+
+          // Проверяем наличие светлого фона по углам
+          const cornerIndices = [0, (w - 1) * 4, (h - 1) * w * 4, (w * h - 1) * 4];
+          let isWhiteCorner = false;
+          for (const idx of cornerIndices) {
+            if (d[idx] > 230 && d[idx + 1] > 230 && d[idx + 2] > 230 && d[idx + 3] > 180) {
+              isWhiteCorner = true;
+              break;
+            }
+          }
+
+          if (isWhiteCorner) {
+            for (let i = 0; i < d.length; i += 4) {
+              const r = d[i], g = d[i + 1], b = d[i + 2];
+              // Если пиксель чисто белый или очень светлый
+              if (r > 235 && g > 235 && b > 235) {
+                d[i + 3] = 0; // Полная прозрачность
+              } else if (r > 200 && g > 200 && b > 200) {
+                // Мягкое сглаживание краев контура
+                const lightness = Math.max(r, g, b);
+                d[i + 3] = Math.round(d[i + 3] * ((255 - lightness) / 55));
+              }
+            }
+            ctx.putImageData(imgData, 0, 0);
+            const transparentDataUrl = c.toDataURL('image/png');
+            transparentImgCache.set(src, transparentDataUrl);
+            return callback(transparentDataUrl);
+          }
+        } catch (e) {
+          // В случае локальных ограничений file:// в браузере, используем оригинал
+        }
+        transparentImgCache.set(src, src);
+        callback(src);
+      };
+      img.onerror = () => {
+        if (src.includes('stars/')) {
+          const fallback = src.replace('stars/', '');
+          return autoRemoveWhiteBg(fallback, callback);
+        }
+        callback(src);
+      };
+      img.src = src;
+    }
+
+    /**
+     * Получает кастомную иконку с учетом текущей темы (light, dark, cinematic)
+     */
+    function getThemeCustomStar() {
+      const theme = getActiveTheme();
+      const ratingEl = document.getElementById('star-rating');
+      let starImg = '';
+
+      if (theme === 'light') {
+        starImg = (window.CUSTOM_STAR_LIGHT || (window.CUSTOM_STARS && window.CUSTOM_STARS.light) || (ratingEl && ratingEl.getAttribute('data-custom-star-light')) || '').trim();
+      } else if (theme === 'dark') {
+        starImg = (window.CUSTOM_STAR_DARK || (window.CUSTOM_STARS && window.CUSTOM_STARS.dark) || (ratingEl && ratingEl.getAttribute('data-custom-star-dark')) || '').trim();
+      } else if (theme === 'cinematic') {
+        starImg = (window.CUSTOM_STAR_CINEMATIC || (window.CUSTOM_STARS && window.CUSTOM_STARS.cinematic) || (ratingEl && ratingEl.getAttribute('data-custom-star-cinematic')) || '').trim();
+      }
+
+      // Fallback на общую кастомную звезду
+      if (!starImg) {
+        starImg = (window.CUSTOM_STAR_IMG || (window.CUSTOM_STARS && window.CUSTOM_STARS.default) || (ratingEl && ratingEl.getAttribute('data-custom-star')) || '').trim();
+      }
+
+      return starImg;
+    }
+
+    /**
+     * Публичный метод для изменения кастомных звезд фильма:
+     * - setCustomRatingStar('assets/star.png')
+     * - setCustomRatingStar({ light: '...', dark: '...', cinematic: '...' })
+     * - setCustomRatingStar('assets/star_dark.png', 'dark')
+     */
+    window.setCustomRatingStar = function(config, specificTheme) {
+      const ratingEl = document.getElementById('star-rating');
+      if (typeof config === 'object' && config !== null) {
+        window.CUSTOM_STARS = config;
+        if (ratingEl) {
+          if (config.light) ratingEl.setAttribute('data-custom-star-light', config.light);
+          if (config.dark) ratingEl.setAttribute('data-custom-star-dark', config.dark);
+          if (config.cinematic) ratingEl.setAttribute('data-custom-star-cinematic', config.cinematic);
+          if (config.default) ratingEl.setAttribute('data-custom-star', config.default);
+        }
+      } else if (specificTheme) {
+        if (!window.CUSTOM_STARS) window.CUSTOM_STARS = {};
+        window.CUSTOM_STARS[specificTheme] = config;
+        if (ratingEl) ratingEl.setAttribute(`data-custom-star-${specificTheme}`, config);
+      } else {
+        if (ratingEl) ratingEl.setAttribute('data-custom-star', config || '');
+        window.CUSTOM_STAR_IMG = config || '';
+      }
+      buildStarItems();
+      renderStars(currentRating);
+    };
+
+    /**
+     * Разметка увеличенной стандартной золотой векторной звезды (32x32px, viewBox 24x24)
+     */
+    function getSvgStarHtml(starIdx) {
+      return `
+        <svg class="absolute inset-0 w-8 h-8 text-gray-300 dark:text-gray-600 fill-current pointer-events-none transition-colors" viewBox="0 0 24 24">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
+        </svg>
+        <div class="star-fill-clip absolute inset-0 overflow-hidden w-0 transition-all duration-150 pointer-events-none">
+          <svg class="w-8 h-8 min-w-[32px] max-w-none text-amber-400 fill-current pointer-events-none filter drop-shadow(0 0 6px rgba(251, 191, 36, 0.7))" viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
+          </svg>
+        </div>
+        <div class="absolute inset-y-0 left-0 w-1/2 z-10" data-half="left" title="${starIdx - 0.5}"></div>
+        <div class="absolute inset-y-0 right-0 w-1/2 z-10" data-half="right" title="${starIdx}"></div>
+      `;
+    }
+
+    function bindStarHalves(starEl, starIdx) {
+      const leftHalf = starEl.querySelector('[data-half="left"]');
+      const rightHalf = starEl.querySelector('[data-half="right"]');
+
+      if (leftHalf) {
+        leftHalf.addEventListener('mouseenter', () => renderStars(starIdx - 0.5));
+        leftHalf.addEventListener('click', (e) => {
+          e.stopPropagation();
+          updateRatingDisplay(starIdx - 0.5);
+        });
+      }
+      if (rightHalf) {
+        rightHalf.addEventListener('mouseenter', () => renderStars(starIdx));
+        rightHalf.addEventListener('click', (e) => {
+          e.stopPropagation();
+          updateRatingDisplay(starIdx);
+        });
+      }
+    }
+
+    // Генерация разметки 5 увеличенных звезд (SVG или кастомная PNG для текущей темы)
     function buildStarItems() {
       if (!starRatingContainer) return;
       starRatingContainer.innerHTML = '';
+
+      const starImgPath = getThemeCustomStar();
+
       for (let i = 1; i <= 5; i++) {
         const starEl = document.createElement('div');
-        starEl.className = 'relative w-5 h-5 cursor-pointer star-item group';
+        starEl.className = 'relative w-8 h-8 cursor-pointer star-item group transition-transform duration-200 hover:scale-115 flex items-center justify-center';
         starEl.setAttribute('data-star', i);
 
-        if (customStarImg && customStarImg.trim() !== "") {
-          // Кастомная картинка (планета, черная дыра и т.д.)
-          starEl.innerHTML = `
-            <img src="${customStarImg}" alt="star" class="absolute inset-0 w-5 h-5 object-contain opacity-25 grayscale pointer-events-none" />
-            <div class="star-fill-clip absolute inset-0 overflow-hidden w-0 transition-all duration-150 pointer-events-none">
-              <img src="${customStarImg}" alt="star" class="w-5 h-5 object-contain filter drop-shadow(0 0 4px rgba(251, 191, 36, 0.9)) pointer-events-none" />
-            </div>
-            <div class="absolute inset-y-0 left-0 w-1/2 z-10" data-half="left"></div>
-            <div class="absolute inset-y-0 right-0 w-1/2 z-10" data-half="right"></div>
-          `;
+        if (starImgPath && starImgPath !== "") {
+          // Если есть кастомный PNG: обрабатываем удаление фона и вставляем
+          autoRemoveWhiteBg(starImgPath, (cleanImg) => {
+            starEl.innerHTML = `
+              <img src="${cleanImg}" alt="star" class="star-custom-icon absolute inset-0 w-8 h-8 object-contain opacity-30 grayscale filter pointer-events-none transition-all duration-200" onerror="
+                if (this.src.indexOf('stars/my_star') !== -1) {
+                  this.src = 'assets/my_star.png';
+                } else if (this.src.indexOf('my_star') !== -1) {
+                  this.src = 'assets/planet.png';
+                } else {
+                  this.parentElement.innerHTML = getSvgStarHtml(${i});
+                  bindStarHalves(this.parentElement, ${i});
+                  renderStars(currentRating);
+                }
+              " />
+              <div class="star-fill-clip absolute inset-0 overflow-hidden w-0 transition-all duration-150 pointer-events-none">
+                <img src="${cleanImg}" alt="star" class="star-custom-icon w-8 h-8 min-w-[32px] max-w-none object-contain filter drop-shadow(0 0 8px rgba(251, 191, 36, 0.85)) pointer-events-none" />
+              </div>
+              <div class="absolute inset-y-0 left-0 w-1/2 z-10" data-half="left" title="${i - 0.5}"></div>
+              <div class="absolute inset-y-0 right-0 w-1/2 z-10" data-half="right" title="${i}"></div>
+            `;
+            bindStarHalves(starEl, i);
+            renderStars(currentRating);
+          });
         } else {
-          // Стандартная векторная золотая звезда
-          starEl.innerHTML = `
-            <svg class="absolute inset-0 w-5 h-5 text-gray-300 fill-current pointer-events-none" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-            </svg>
-            <div class="star-fill-clip absolute inset-0 overflow-hidden w-0 transition-all duration-150 pointer-events-none">
-              <svg class="w-5 h-5 text-amber-400 fill-current pointer-events-none" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-              </svg>
-            </div>
-            <div class="absolute inset-y-0 left-0 w-1/2 z-10" data-half="left"></div>
-            <div class="absolute inset-y-0 right-0 w-1/2 z-10" data-half="right"></div>
-          `;
-        }
-
-        // Слушатели событий клика и ховера на половинки
-        const leftHalf = starEl.querySelector('[data-half="left"]');
-        const rightHalf = starEl.querySelector('[data-half="right"]');
-
-        if (leftHalf) {
-          leftHalf.addEventListener('mouseenter', () => renderStars(i - 0.5));
-          leftHalf.addEventListener('click', (e) => {
-            e.stopPropagation();
-            updateRatingDisplay(i - 0.5);
-          });
-        }
-        if (rightHalf) {
-          rightHalf.addEventListener('mouseenter', () => renderStars(i));
-          rightHalf.addEventListener('click', (e) => {
-            e.stopPropagation();
-            updateRatingDisplay(i);
-          });
+          // Стандартная увеличенная векторная золотая звезда
+          starEl.innerHTML = getSvgStarHtml(i);
+          bindStarHalves(starEl, i);
         }
 
         starRatingContainer.appendChild(starEl);
@@ -1529,6 +2084,8 @@
       renderStars(currentRating);
     }
 
+    // Инициализация темы и рейтинга
+    setPageTheme(localStorage.getItem('kinoscore_theme') || 'dark');
     buildStarItems();
 
     if (starRatingContainer) {
@@ -1567,31 +2124,8 @@
         closeVideoModal();
       }
     });
-
-    // Theme Switcher Logic
-    function togglePageTheme() {
-      const current = localStorage.getItem('kinoscore_theme') || 'dark';
-      const nextTheme = current === 'dark' ? 'light' : (current === 'light' ? 'cinematic' : 'dark');
-      localStorage.setItem('kinoscore_theme', nextTheme);
-      document.documentElement.setAttribute('data-theme', nextTheme);
-      if (nextTheme === 'light') {
-        document.documentElement.classList.remove('dark');
-      } else {
-        document.documentElement.classList.add('dark');
-      }
-      updateThemeIndicator();
-    }
-
-    function updateThemeIndicator() {
-      const theme = localStorage.getItem('kinoscore_theme') || 'dark';
-      const icon = document.getElementById('theme-indicator-icon');
-      if (icon) {
-        icon.textContent = theme === 'light' ? '☀️' : (theme === 'cinematic' ? '🎬' : '🌙');
-      }
-    }
-
-    updateThemeIndicator();
   </script>
   <!-- END: InteractiveScripts -->
 </body>
+
 </html>

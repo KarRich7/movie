@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Test VK Player</title>
+  <script src="https://vk.com/js/api/videoplayer.js"></script>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #fff; padding: 20px; }
+    .frame-box { width: 640px; height: 360px; margin: 20px 0; border: 1px solid #444; }
+    iframe { width: 100%; height: 100%; border: none; }
+    button { padding: 8px 16px; margin-right: 10px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>VK Player Test</h2>
+  <div class="frame-box">
+    <iframe id="vk-player-frame"
+      src="https://vk.com/video_ext.php?oid=-227596514&id=456242995&hd=3&autoplay=1&js_api=1"
+      allow="autoplay; encrypted-media; fullscreen; picture-in-picture;"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <div>
+    <button id="btn-play">Play</button>
+    <button id="btn-pause">Pause</button>
+    <button id="btn-mute">Mute</button>
+    <button id="btn-unmute">Unmute</button>
+    <button id="btn-seek0">Seek 0:00</button>
+  </div>
+  <p id="status-text">Status: Initializing...</p>
+
+  <script>
+    const frame = document.getElementById('vk-player-frame');
+    const statusText = document.getElementById('status-text');
+
+    let player = null;
+    try {
+      player = VK.VideoPlayer(frame);
+      statusText.textContent = "Status: Player initialized";
+
+      player.on('inited', () => {
+        statusText.textContent = "Status: inited";
+        player.mute();
+      });
+      player.on('started', () => {
+        statusText.textContent = "Status: started";
+      });
+      player.on('paused', () => {
+        statusText.textContent = "Status: paused";
+      });
+    } catch(err) {
+      statusText.textContent = "Error: " + err.message;
+    }
+
+    document.getElementById('btn-play').onclick = () => { if (player) player.play(); };
+    document.getElementById('btn-pause').onclick = () => { if (player) player.pause(); };
+    document.getElementById('btn-mute').onclick = () => { if (player) player.mute(); };
+    document.getElementById('btn-unmute').onclick = () => { if (player) player.unmute(); };
+    document.getElementById('btn-seek0').onclick = () => { if (player) player.seek(0); };
+  </script>
+</body>
+</html>

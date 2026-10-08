@@ -9,14 +9,69 @@ from pydantic import BaseModel, Field, ConfigDict
 # ==================== User Schemas ====================
 
 class UserRegisterRequest(BaseModel):
-    username: str = Field(..., min_length=3, max_length=50, description="Имя пользователя (от 3 до 50 символов)")
-    email: str = Field(..., description="Электронная почта")
+    username: Optional[str] = Field(None, min_length=3, max_length=50, description="Имя пользователя (от 3 до 50 символов)")
+    email: str = Field(..., description="Электронная почта (Gmail или другая)")
     password: str = Field(..., min_length=6, max_length=100, description="Пароль (от 6 символов)")
+    first_name: Optional[str] = Field(None, description="Имя")
+    last_name: Optional[str] = Field(None, description="Фамилия")
     avatar_url: Optional[str] = Field(None, description="URL аватара")
 
 
+class GmailRegisterRequest(BaseModel):
+    email: str = Field(..., description="Gmail адрес (например: user@gmail.com)")
+    password: str = Field(..., min_length=6, max_length=100, description="Пароль")
+    username: Optional[str] = Field(None, description="Имя пользователя")
+    first_name: Optional[str] = None
+    avatar_url: Optional[str] = None
+
+
+class PhoneSendCodeRequest(BaseModel):
+    phone: str = Field(..., description="Номер телефона (например: +79991234567)")
+
+
+class PhoneSendCodeResponse(BaseModel):
+    status: str = "ok"
+    message: str
+    phone: str
+    dev_code: Optional[str] = None
+    expires_in_seconds: int = 600
+
+
+class PhoneVerifyRequest(BaseModel):
+    phone: str = Field(..., description="Номер телефона")
+    code: str = Field(..., min_length=4, max_length=10, description="СМС-код")
+    username: Optional[str] = Field(None, description="Желаемый логин (необязательно)")
+    password: Optional[str] = Field(None, min_length=6, description="Пароль для будущего входа (необязательно)")
+    first_name: Optional[str] = None
+
+
+class PhoneRegisterRequest(BaseModel):
+    phone: str = Field(..., description="Номер телефона (например: +79991234567)")
+    password: str = Field(..., min_length=6, max_length=100, description="Пароль")
+    username: Optional[str] = None
+    first_name: Optional[str] = None
+
+
+class VKAuthRequest(BaseModel):
+    vk_user_id: str = Field(..., description="ID пользователя ВКонтакте (например: 12345678)")
+    access_token: Optional[str] = Field(None, description="Токен доступа VK (опционально)")
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    avatar_url: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+
+
+class GoogleAuthRequest(BaseModel):
+    google_id: Optional[str] = None
+    email: Optional[str] = None
+    name: Optional[str] = None
+    avatar_url: Optional[str] = None
+    token: Optional[str] = None
+
+
 class UserLoginRequest(BaseModel):
-    username_or_email: str = Field(..., description="Логин или Email")
+    username_or_email: str = Field(..., description="Логин, Email или Номер телефона")
     password: str = Field(..., description="Пароль")
 
 
@@ -25,8 +80,16 @@ class UserResponse(BaseModel):
 
     id: int
     username: str
-    email: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    vk_id: Optional[str] = None
+    google_id: Optional[str] = None
+    auth_provider: str = "email"
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     avatar_url: Optional[str] = None
+    phone_verified: bool = False
+    email_verified: bool = False
     is_admin: bool = False
     created_at: datetime
 

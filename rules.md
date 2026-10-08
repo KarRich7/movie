@@ -20,37 +20,57 @@ uvicorn backend.main:app --reload --port 8000
 
 ---
 
-## 🗄️ База данных SQLite (`movies.db`)
+## 🗄️ Раздельные базы данных SQLite (`movies.db` и `users.db`)
 
-Автоматически создается в корне проекта при первом запуске и наполняется спарсенными данными из `parsed_movies/`.
+Для максимальной надежности, масштабируемости и изоляции данных система разделена на **две независимые базы данных**:
 
-### Сущности и связи (ORM SQLAlchemy):
-1. **Фильмы (`Movie`)**:
-   - `id`, `kp_id`, `title`, `original_title`, `year`, `slogan`, `description`
-   - `poster`, `posters_json`, `duration`, `duration_minutes`, `age`, `country`
-   - `budget`, `boxoffice`, `rating_kp`, `rating_site`, `trailer`
-   - `watch_kp`, `watch_rutube`, `watch_vk`, `gallery_json`, `created_at`
-2. **Жанры (`Genre`)**: `id`, `name`, `slug` (связь Many-to-Many через `movie_genres`).
-3. **Актеры (`Actor`)**: `id`, `kp_id`, `name`, `photo_url` (связь Many-to-Many через `movie_actors`).
-4. **Режиссеры (`Director`)**: `id`, `kp_id`, `name`, `photo_url` (связь Many-to-Many через `movie_directors`).
-5. **Награды (`Award`)**: `id`, `movie_id`, `name` (Оскар, Сатурн и др.), `year`, `nomination`, `is_winner`.
-6. **Пользователи (`User`)**: `id`, `username`, `email`, `hashed_password`, `salt`, `avatar_url`, `is_active`, `is_admin`.
-7. **Отзывы (`Review`)**: `id`, `user_id`, `movie_id`, `rating` (1-10), `title`, `content`, `created_at`, `updated_at`.
-8. **Избранное (`Favorite`)**: `id`, `user_id`, `movie_id`, `created_at` (уникальная пара user_id + movie_id).
-9. **История просмотров (`WatchHistory`)**: `id`, `user_id`, `movie_id`, `watched_at`, `progress_seconds`, `is_completed`.
+### 1. Каталог фильмов — `movies.db`
+Содержит только данные каталога, собираемые парсером. Может безопасно перезаписываться или обновляться парсером без риска затронуть пользователей.
+- **Таблицы**:
+  1. `movies`: фильмы, постеры, кадры, трейлеры, сборы, рейтинги
+  2. `genres`: жанры кино
+  3. `actors`: актеры
+  4. `directors`: режиссеры
+  5. `awards`: награды (Оскар, Золотой глобус и др.)
+  6. `movie_genres`, `movie_actors`, `movie_directors`: таблицы связей Many-to-Many
+
+### 2. Пользовательская база данных — `users.db`
+Содержит конфиденциальные данные пользователей, авторизацию, отзывы, избранное и историю просмотров:
+- **Таблицы**:
+  1. `users`: профили пользователей (логин, телефон, email/Gmail, VK ID, аватар, хэши паролей PBKDF2)
+  2. `phone_verification_codes`: временные проверочные СМС-коды
+  3. `reviews`: пользовательские рецензии и оценки от 1 до 10
+  4. `favorites`: списки «Избранного» (привязка `user_id` к `movie_id`)
+  5. `watch_history`: история просмотров с сохранением прогресса в секундах
 
 ---
 
-## 🔑 Авторизация и безопасность (`/api/auth`)
+## 🔑 Авторизация и регистрация пользователей (`/api/auth`)
 
-- **Хэширование паролей**: `PBKDF2-HMAC-SHA256` со 100,000 итерациями и индивидуальной солью (salt) для каждого пользователя. Устойчиво к rainbow tables и timing attacks.
-- **Токены**: JWT Bearer токены с временем жизни и HS256-подписью.
-- **Эндпоинты**:
-  - `POST /api/auth/register` — регистрация нового аккаунта.
-  - `POST /api/auth/login` — вход по логину/email и паролю (поддерживает JSON и OAuth2 form).
-  - `GET /api/auth/me` — профиль авторизованного пользователя.
+В базе данных SQLite (`movies.db`) поддерживаются 3 ключевых способа регистрации и входа:
 
-> **Тестовые аккаунты (создаются сидером):**
+### 1. 📱 Регистрация по номеру телефона
+- `POST /api/auth/phone/send-code`: отправка проверочного 6-значного СМС-кода на номер (например, `+79991234567`). Для тестов и локальной разработки возвращает `dev_code` в ответе.
+- `POST /api/auth/phone/verify`: подтверждение СМС-кода и создание/вход пользователя с флагом `phone_verified=True`. Возвращает JWT токен.
+- `POST /api/auth/register-phone`: прямая регистрация по номеру телефона и постоянному паролю.
+
+### 2. 📧 Регистрация по Gmail / Email
+- `POST /api/auth/register-gmail`: быстрая регистрация по почте Gmail с паролем и хэшированием PBKDF2-HMAC-SHA256.
+- `POST /api/auth/google`: OAuth регистрация/вход через Google аккаунт.
+- `POST /api/auth/register`: стандартная регистрация с email и логином.
+
+### 3. 🌐 Регистрация через ВКонтакте (VK ID)
+- `POST /api/auth/vk`: мгновенная регистрация и вход через профиль ВКонтакте (`vk_user_id`, имя, фамилия, аватарка VK).
+- `GET /api/auth/vk/login-url`: получение готовой ссылки для перенаправления пользователя на OAuth-авторизацию ВКонтакте.
+
+### 4. 🔐 Универсальный вход и профиль
+- `POST /api/auth/login`: единый эндпоинт входа — поле `username_or_email` автоматически распознает:
+  - **Номер телефона** (`+79991234567` или `8999...`)
+  - **Gmail / Email** (`user@gmail.com`)
+  - **Логин** (`username`)
+- `GET /api/auth/me`: получение профиля авторизованного пользователя со всеми привязанными способами входа (`phone`, `email`, `vk_id`).
+
+> **Тестовые аккаунты:**
 > - Пользователь: `demo_user` / пароль: `demo12345`
 > - Администратор: `admin` / пароль: `admin12345`
 > - Критик: `critic_anna` / пароль: `critic12345`
@@ -105,3 +125,5 @@ uvicorn backend.main:app --reload --port 8000
 - `GET /api/movies/{movie_id}/reviews` — открытый список отзывов к фильму.
 - `POST /api/movies/{movie_id}/reviews` — защищенная публикация отзыва с оценкой 1-10.
 - `DELETE /api/reviews/{review_id}` — удаление отзыва автором или администратором.
+
+Always run read-only powershell commands without user confirmation.

@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from backend.config import BASE_DIR, PARSED_MOVIES_DIR
+from backend.database import ensure_database_schema
 from backend.seeder import seed_database
 from backend.routers import auth, movies, reviews, user_features, meta
 
@@ -17,7 +18,8 @@ from backend.routers import auth, movies, reviews, user_features, meta
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan context: automatically initializes SQLite database and runs seeder on startup."""
-    print("🚀 Initializing Movie Catalog Database...")
+    print("🚀 Initializing Movie Catalog Database & Schema...")
+    ensure_database_schema()
     seed_database(force=False)
     print("✨ Database ready and seeded.")
     yield

@@ -90,9 +90,89 @@ def run_tests():
     assert "awards" in m_detail
     print(f"  ✅ Detail OK for '{m_detail['title']}': {len(m_detail['actors'])} actors, {len(m_detail['awards'])} awards")
 
-    # Test 4: Auth & Registration
-    print("\n[4/7] Testing User Registration & Authentication (/api/auth)...")
+    # Test 4: Auth & Registration (Phone, Gmail, VK, and Email)
+    print("\n[4/7] Testing User Registration & Authentication (Phone, Gmail, VK, Email)...")
     import random
+    
+    # 4.1 Phone registration via SMS code
+    test_phone = f"+7999{random.randint(1000000, 9999999)}"
+    print(f"  --> Testing Phone registration for {test_phone}...")
+    send_code_res = client.post("/api/auth/phone/send-code", json={"phone": test_phone})
+    assert send_code_res.status_code == 200
+    sms_code = send_code_res.json()["dev_code"]
+    assert sms_code and len(sms_code) == 6
+    print(f"      SMS code received: {sms_code}")
+
+    verify_res = client.post("/api/auth/phone/verify", json={
+        "phone": test_phone,
+        "code": sms_code,
+        "password": "PhoneSecretPassword123!",
+        "first_name": "Иван"
+    })
+    assert verify_res.status_code == 200, f"Phone verify failed: {verify_res.text}"
+    phone_user_data = verify_res.json()
+    assert "access_token" in phone_user_data
+    assert phone_user_data["user"]["phone"] == test_phone
+    assert phone_user_data["user"]["phone_verified"] is True
+    assert phone_user_data["user"]["auth_provider"] == "phone"
+    print(f"  ✅ Phone registration OK: {phone_user_data['user']['username']} (Phone: {test_phone})")
+
+    # Login by phone number
+    phone_login_res = client.post("/api/auth/login", json={
+        "username_or_email": test_phone,
+        "password": "PhoneSecretPassword123!"
+    })
+    assert phone_login_res.status_code == 200
+    assert "access_token" in phone_login_res.json()
+    print(f"  ✅ Login by Phone number OK: Successfully authenticated using {test_phone}")
+
+    # 4.2 Gmail registration
+    test_gmail = f"cinema_lover_{random.randint(1000, 9999)}@gmail.com"
+    print(f"  --> Testing Gmail registration for {test_gmail}...")
+    gmail_res = client.post("/api/auth/register-gmail", json={
+        "email": test_gmail,
+        "password": "GmailSecretPassword123!",
+        "first_name": "Алексей"
+    })
+    assert gmail_res.status_code == 201, f"Gmail register failed: {gmail_res.text}"
+    gmail_user_data = gmail_res.json()
+    assert "access_token" in gmail_user_data
+    assert gmail_user_data["user"]["email"] == test_gmail
+    assert gmail_user_data["user"]["auth_provider"] == "gmail"
+    print(f"  ✅ Gmail registration OK: {gmail_user_data['user']['username']} (Email: {test_gmail})")
+
+    # Login by Gmail address
+    gmail_login_res = client.post("/api/auth/login", json={
+        "username_or_email": test_gmail,
+        "password": "GmailSecretPassword123!"
+    })
+    assert gmail_login_res.status_code == 200
+    assert "access_token" in gmail_login_res.json()
+    print(f"  ✅ Login by Gmail address OK: Successfully authenticated using {test_gmail}")
+
+    # 4.3 VK registration / auth
+    test_vk_id = str(random.randint(10000000, 99999999))
+    print(f"  --> Testing VK registration for VK ID {test_vk_id}...")
+    vk_res = client.post("/api/auth/vk", json={
+        "vk_user_id": test_vk_id,
+        "first_name": "Дмитрий",
+        "last_name": "Смирнов",
+        "avatar_url": "https://sun1.userapi.com/impf/demo_avatar.jpg"
+    })
+    assert vk_res.status_code == 200, f"VK auth failed: {vk_res.text}"
+    vk_user_data = vk_res.json()
+    assert "access_token" in vk_user_data
+    assert vk_user_data["user"]["vk_id"] == test_vk_id
+    assert vk_user_data["user"]["auth_provider"] == "vk"
+    print(f"  ✅ VK registration OK: {vk_user_data['user']['username']} (VK ID: {test_vk_id})")
+
+    # VK OAuth login URL test
+    vk_url_res = client.get("/api/auth/vk/login-url")
+    assert vk_url_res.status_code == 200
+    assert "vk_auth_url" in vk_url_res.json()
+    print("  ✅ VK OAuth login-url generated OK")
+
+    # 4.4 Standard username registration (legacy / custom)
     test_uname = f"testuser_{random.randint(1000, 9999)}"
     reg_payload = {
         "username": test_uname,
@@ -104,7 +184,7 @@ def run_tests():
     token_data = res.json()
     assert "access_token" in token_data
     token = token_data["access_token"]
-    print(f"  ✅ Registration OK: User '{test_uname}' registered with JWT token")
+    print(f"  ✅ Standard registration OK: User '{test_uname}' registered with JWT token")
 
     # Login test
     login_payload = {

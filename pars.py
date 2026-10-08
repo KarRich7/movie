@@ -90,6 +90,54 @@ def find_vk_video(driver, title, year):
     return f"https://vk.com/video?q={urllib.parse.quote(title + ' ' + str(year))}"
 
 
+# --- ПОИСК ТРЕЙЛЕРА В ВК ВИДЕО (БЕЗ СКАЧИВАНИЯ ФАЙЛОВ) ---
+def find_vk_trailer(driver, title, year):
+    try:
+        clean_title = re.sub(r'[^\w\s]', '', title).lower().strip()
+        query = urllib.parse.quote(f"{clean_title} русский трейлер")
+        driver.get(f"https://vk.com/video?q={query}")
+        time.sleep(3.5)
+        
+        links = driver.find_elements(By.TAG_NAME, 'a')
+        for a in links:
+            href = a.get_attribute('href') or ''
+            m = re.search(r'video(-?\d+)_(\d+)', href)
+            if m:
+                oid, vid = m.group(1), m.group(2)
+                return f"https://vk.com/video_ext.php?oid={oid}&id={vid}&hd=3"
+    except Exception:
+        pass
+    return f"https://vk.com/video?q={urllib.parse.quote(title + ' трейлер')}"
+
+
+def download_trailer_480p(vk_video_url, output_path):
+    """Скачивает трейлер в компактном формате 480p MP4 (без необходимости ffmpeg)"""
+    try:
+        clean_url = vk_video_url
+        if "video_ext.php" in clean_url:
+            parsed = urllib.parse.urlparse(clean_url)
+            qs = urllib.parse.parse_qs(parsed.query)
+            oid = qs.get("oid", [""])[0]
+            vid = qs.get("id", [""])[0]
+            if oid and vid:
+                clean_url = f"https://vkvideo.ru/video{oid}_{vid}"
+
+        ydl_opts = {
+            'format': 'best[height<=480][acodec!=none][vcodec!=none]/url480/best[acodec!=none][vcodec!=none]',
+            'outtmpl': output_path,
+            'quiet': True,
+            'no_warnings': True,
+            'noplaylist': True,
+        }
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([clean_url])
+        if os.path.exists(output_path) and os.path.getsize(output_path) > 100000:
+            return True
+    except Exception as e:
+        print(f"⚠️ Ошибка скачивания трейлера 480p: {e}")
+    return False
+
+
 # --- ПОИСК НА РУТУБЕ ---
 def find_rutube_video(driver, title, year):
     try:
@@ -126,7 +174,29 @@ def generate_stills_html(gallery_urls, title, trailer_url=""):
 
     # Трейлер в самом начале галереи кадров: автоплей без звука, аккуратная полупрозрачная кнопка Play
     if trailer_url:
-        trailer_card = f'''
+        is_vk = any(k in trailer_url for k in ["vk.com", "vkvideo.ru", "video_ext.php"])
+        if is_vk:
+            preview_embed = trailer_url
+            if "video_ext.php" in preview_embed:
+                if "autoplay=" not in preview_embed: preview_embed += ("&" if "?" in preview_embed else "?") + "autoplay=1"
+                if "mute=" not in preview_embed: preview_embed += "&mute=1"
+            elif "video" in preview_embed:
+                m = re.search(r'video(-?\d+)_(\d+)', preview_embed)
+                if m: preview_embed = f"https://vk.com/video_ext.php?oid={m.group(1)}&id={m.group(2)}&hd=2&autoplay=1&mute=1"
+
+            trailer_card = f'''
+          <figure
+            class="flex-shrink-0 w-64 md:w-80 aspect-video bg-black rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all cursor-pointer group relative snap-start border border-white/10"
+            onclick="openLightboxTrailer('{trailer_url}')" title="Смотреть трейлер">
+            <iframe src="{preview_embed}" class="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-500" frameborder="0"></iframe>
+            <div class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+              <div class="w-10 h-10 rounded-full bg-black/50 border border-white/70 text-white backdrop-blur-md flex items-center justify-center shadow-xl transition-transform duration-300 group-hover:scale-115">
+                <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+          </figure>'''
+        else:
+            trailer_card = f'''
           <figure
             class="flex-shrink-0 w-64 md:w-80 aspect-video bg-black rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all cursor-pointer group relative snap-start border border-white/10"
             onclick="openLightboxTrailer('{trailer_url}')" title="Смотреть трейлер">
@@ -282,6 +352,104 @@ def generate_index_html(movies_list, template_html, output_dir):
     print(f"✨ Создана главная страница интерактивного каталога: {output_index_path}")
 
 
+def render_single_movie_html(m, all_movies, template_html, output_dir="parsed_movies"):
+    """
+    Генерирует или обновляет HTML-страницу для одного фильма по актуальному шаблону template.html.
+    Использует уже сохраненные данные фильма (постеры, актеры, кадры, трейлеры, кастомные звезды).
+    """
+    movie_id = str(m["id"])
+    clean_t = clean_movie_title(m["title"])
+    display_title = f"{clean_t} ({m.get('year', '')})"
+
+    # Список всех кадров для перелистывания в галерее кадров
+    all_gallery_urls = [make_highres_url(x) for x in m.get("gallery", [])]
+    if not all_gallery_urls:
+        all_gallery_urls = [make_highres_url(m["poster"])]
+    gallery_array_json = json.dumps(all_gallery_urls, ensure_ascii=False)
+
+    # Список всех постеров для перелистывания при клике на постер
+    posters_list = [make_highres_url(p) for p in m.get("posters", [m["poster"]])]
+    if not posters_list:
+        posters_list = [make_highres_url(m["poster"])]
+    posters_array_json = json.dumps(posters_list, ensure_ascii=False)
+
+    catalog_cards = generate_catalog_cards_html(all_movies, movie_id)
+    stills_html = generate_stills_html(m.get("gallery", []), clean_t, m.get("trailer", ""))
+    actors_html = generate_actors_html(m.get("actors", []), m.get("director", ""))
+    awards_html = generate_awards_html(m.get("awards", []))
+
+    # Вычисляем рейтинг
+    try:
+        rating_float = float(str(m.get("ratingKP", "9.0")).replace(',', '.'))
+    except Exception:
+        rating_float = 9.0
+    rating_stars = str(round(rating_float / 2.0, 1))
+
+    # Фоновое изображение (кадр из фильма или постер)
+    hero_bg = m.get("gallery", [m["poster"]])[0] if m.get("gallery") else m["poster"]
+    hero_bg = make_highres_url(hero_bg)
+
+    # Кастомная картинка звезд (например, планета для Интерстеллара или заданная пользователем)
+    custom_star = m.get("custom_star", "") or m.get("customStarImg", "")
+    custom_star_light = m.get("custom_star_light", "") or m.get("customStarLight", "")
+    custom_star_dark = m.get("custom_star_dark", "") or m.get("customStarDark", "")
+    custom_star_cinematic = m.get("custom_star_cinematic", "") or m.get("customStarCinematic", "")
+
+    if not custom_star and any(kw in clean_t.lower() for kw in ["интерстеллар", "interstellar"]):
+        custom_star = "assets/planet.png"
+        if not custom_star_light: custom_star_light = "assets/planet_light.png"
+        if not custom_star_dark: custom_star_dark = "assets/planet_dark.png"
+        if not custom_star_cinematic: custom_star_cinematic = "assets/planet_cinematic.png"
+
+    html = template_html
+    replacements = {
+        "{{TITLE}}": clean_t,
+        "{{DISPLAY_TITLE}}": display_title,
+        "{{YEAR}}": str(m.get("year", "")),
+        "{{SLOGAN}}": m.get("slogan", ""),
+        "{{SLOGAN_FORMATTED}}": f"«{m['slogan']}»" if m.get("slogan") and m["slogan"] != "Не указано" else "",
+        "{{DESCRIPTION}}": m.get("description", ""),
+        "{{POSTER_URL}}": make_highres_url(m.get("poster", "")),
+        "{{HERO_BG_URL}}": hero_bg,
+        "{{HERO_BADGE}}": f"{m.get('genre', '')} • {m.get('director', '')}",
+        "{{TRAILER_SRC}}": m.get("trailer", ""),
+        "{{DURATION}}": m.get("duration", ""),
+        "{{GENRE}}": m.get("genre", ""),
+        "{{AGE}}": m.get("age", ""),
+        "{{COUNTRY}}": m.get("country", ""),
+        "{{DIRECTOR}}": m.get("director", ""),
+        "{{BUDGET}}": m.get("budget", ""),
+        "{{BOXOFFICE}}": m.get("boxoffice", ""),
+        "{{RATING_KP}}": str(m.get("ratingKP", "–")),
+        "{{RATING_SITE}}": str(m.get("ratingSite", m.get("ratingKP", "–"))),
+        "{{RATING_STARS}}": rating_stars,
+        "{{CUSTOM_STAR_PNG}}": custom_star,
+        "{{CUSTOM_STAR_LIGHT}}": custom_star_light,
+        "{{CUSTOM_STAR_DARK}}": custom_star_dark,
+        "{{CUSTOM_STAR_CINEMATIC}}": custom_star_cinematic,
+        "{{STILLS_CARDS}}": stills_html,
+        "{{ACTORS_CARDS}}": actors_html,
+        "{{AWARDS_CARDS}}": awards_html,
+        "{{WATCH_RUTUBE}}": m.get("watch_rutube", "https://rutube.ru"),
+        "{{WATCH_VK}}": m.get("watch_vk", "https://vk.com/video"),
+        "{{WATCH_KP}}": m.get("watch_kp", "https://www.kinopoisk.ru"),
+        "{{ICON_RUTUBE}}": m.get("icon_rutube", "assets/rutube.png"),
+        "{{ICON_VK}}": m.get("icon_vk", "assets/vk.png"),
+        "{{ICON_KP}}": m.get("icon_kp", "assets/kinopoisk.png"),
+        "{{POSTERS_ARRAY_JSON}}": posters_array_json,
+        "{{GALLERY_ARRAY_JSON}}": gallery_array_json,
+        "{{CATALOG_MODAL_CARDS}}": catalog_cards
+    }
+
+    for key, val in replacements.items():
+        html = html.replace(key, str(val))
+
+    html_filepath = os.path.join(output_dir, f"film_{movie_id}.html")
+    with open(html_filepath, 'w', encoding='utf-8') as f:
+        f.write(html)
+    return html_filepath
+
+
 def get_installed_chrome_version():
     """Автоматически определяет мажорную версию установленного Chrome на Windows"""
     try:
@@ -305,7 +473,7 @@ def get_installed_chrome_version():
     return None
 
 
-def parse_top_250(movies_to_parse=3):
+def parse_top_250(movies_to_parse=3, force_reparse=False):
     template_path = 'template.html'
     if not os.path.exists(template_path):
         if os.path.exists('code.html'):
@@ -373,6 +541,23 @@ def parse_top_250(movies_to_parse=3):
 
         for index, url in enumerate(movie_links, 1):
             movie_id = url.split('/')[-2]
+            json_filename = os.path.join(output_dir, f"film_{movie_id}.json")
+
+            # ⚡ ПРОВЕРКА НА УЖЕ СПАРСЕННЫЙ ФИЛЬМ:
+            # Если фильм уже есть в кэше, пропускаем повторный скрапинг Kinopoisk/VK/Rutube
+            # и берем готовые данные, чтобы обновить только сам дизайн HTML!
+            if not force_reparse and os.path.exists(json_filename):
+                try:
+                    with open(json_filename, "r", encoding="utf-8") as jf:
+                        cached_movie = json.load(jf)
+                    if cached_movie and cached_movie.get("title") and cached_movie.get("title") != "Не найдено":
+                        print(f"\n⚡ [{index}/{len(movie_links)}] Фильм «{cached_movie.get('title')}» (ID: {movie_id}) уже есть в базе!")
+                        print(f"🎨 Данные загружены из кэша. Пропускаем скрапинг Кинопоиска/VK/Rutube: обновляется только HTML-дизайн.")
+                        parsed_movies_data.append(cached_movie)
+                        continue
+                except Exception as e:
+                    print(f"⚠️ Ошибка чтения кэша фильма {movie_id}: {e}, парсим заново...")
+
             print(f"\n🎬 [{index}/{len(movie_links)}] Парсим фильм: {url}")
             driver.get(url)
             time.sleep(3)
@@ -626,27 +811,39 @@ def parse_top_250(movies_to_parse=3):
             watch_rutube = find_rutube_video(driver, title, movie_info["year"])
             watch_kp = f"https://www.kinopoisk.ru/film/{movie_id}/"
 
-            # === 5. ТРЕЙЛЕР ===
+            # === 5. ТРЕЙЛЕР (СКАЧИВАНИЕ В КОМПАКТНОМ 480P) ===
             trailer_filename = f"film_{movie_id}.mp4"
             trailer_filepath = os.path.join(trailers_dir, trailer_filename)
             trailer_url_for_html = f"trailers/{trailer_filename}"
 
-            print(f"🎬 Ищем/скачиваем трейлер...")
-            if not os.path.exists(trailer_filepath):
+            if not os.path.exists(trailer_filepath) or os.path.getsize(trailer_filepath) < 100000:
+                print(f"🎬 Ищем трейлер в ВК Видео...")
+                raw_vk_trailer = find_vk_trailer(driver, title, movie_info["year"])
+                print(f"⬇️ Скачиваем трейлер в 480p ({trailer_filename})...")
+                ok = download_trailer_480p(raw_vk_trailer, trailer_filepath)
+                if not ok:
+                    trailer_url_for_html = raw_vk_trailer
+            else:
+                print(f"🎬 Трейлер 480p уже скачан: {trailer_filepath}")
+
+            # Проверяем наличие пользовательских кастомизаций в существующем JSON
+            json_filename = os.path.join(output_dir, f"film_{movie_id}.json")
+            existing_custom_star = ""
+            if os.path.exists(json_filename):
                 try:
-                    ydl_opts = {
-                        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
-                        'outtmpl': trailer_filepath,
-                        'ffmpeg_location': FFMPEG_PATH,
-                        'quiet': True,
-                        'no_warnings': True,
-                        'noplaylist': True,
-                        'default_search': 'ytsearch'
-                    }
-                    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                        ydl.download([f"ytsearch1:{title} {movie_info['year']} русский трейлер"])
+                    with open(json_filename, "r", encoding="utf-8") as jf:
+                        old_data = json.load(jf)
+                        existing_custom_star = old_data.get("customStarImg") or old_data.get("custom_star", "")
+                        existing_custom_star_light = old_data.get("custom_star_light") or old_data.get("customStarLight", "")
+                        existing_custom_star_dark = old_data.get("custom_star_dark") or old_data.get("customStarDark", "")
+                        existing_custom_star_cinematic = old_data.get("custom_star_cinematic") or old_data.get("customStarCinematic", "")
+                        existing_bg_video = old_data.get("bg_video", "") or old_data.get("day_video", "")
                 except Exception:
-                    trailer_url_for_html = "https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
+                    pass
+
+            if not existing_bg_video:
+                if os.path.exists(f"assets/bg_{movie_id}.mp4") or os.path.exists(f"parsed_movies/assets/bg_{movie_id}.mp4"):
+                    existing_bg_video = f"assets/bg_{movie_id}.mp4"
 
             # Формируем объект фильма со всеми данными
             movie_obj = {
@@ -667,9 +864,18 @@ def parse_top_250(movies_to_parse=3):
                 "ratingKP": rating,
                 "ratingSite": rating,
                 "trailer": trailer_url_for_html,
+                "bg_video": existing_bg_video,
                 "watch_kp": watch_kp,
                 "watch_rutube": watch_rutube,
                 "watch_vk": watch_vk,
+                "custom_star": existing_custom_star,
+                "customStarImg": existing_custom_star,
+                "custom_star_light": existing_custom_star_light,
+                "customStarLight": existing_custom_star_light,
+                "custom_star_dark": existing_custom_star_dark,
+                "customStarDark": existing_custom_star_dark,
+                "custom_star_cinematic": existing_custom_star_cinematic,
+                "customStarCinematic": existing_custom_star_cinematic,
                 "gallery": gallery_urls,
                 "actors": main_actors,
                 "awards": found_awards
@@ -677,7 +883,6 @@ def parse_top_250(movies_to_parse=3):
             parsed_movies_data.append(movie_obj)
 
             # Сохраняем индивидуальный JSON
-            json_filename = os.path.join(output_dir, f"film_{movie_id}.json")
             with open(json_filename, 'w', encoding='utf-8') as f:
                 json.dump(movie_obj, f, ensure_ascii=False, indent=4)
 
@@ -700,22 +905,29 @@ def parse_top_250(movies_to_parse=3):
 
     print("\n📦 Генерируем HTML-страницы и общий JSON...")
 
-    # Копируем пользовательские ассеты (PNG иконки) в папку вывода
+    # Копируем пользовательские ассеты (PNG иконки и папки) в папку вывода
     assets_src = os.path.abspath("assets")
     assets_dst = os.path.abspath(os.path.join(output_dir, "assets"))
     os.makedirs(assets_dst, exist_ok=True)
     if os.path.exists(assets_src):
-        for f in os.listdir(assets_src):
-            s_file = os.path.join(assets_src, f)
-            d_file = os.path.join(assets_dst, f)
-            if os.path.isfile(s_file):
-                shutil.copy2(s_file, d_file)
+        shutil.copytree(assets_src, assets_dst, dirs_exist_ok=True)
 
-    # Сохраняем общий файл movies.json
+    # Сохраняем общий файл movies.json (объединяем с ранее спарсенными фильмами)
     all_movies_json_path = os.path.join(output_dir, "movies.json")
+    existing_movies = []
+    if os.path.exists(all_movies_json_path):
+        try:
+            with open(all_movies_json_path, 'r', encoding='utf-8') as f:
+                existing_movies = json.load(f)
+        except Exception:
+            pass
+    merged_dict = {str(m.get('id')): m for m in existing_movies if isinstance(m, dict) and 'id' in m}
+    for m in parsed_movies_data:
+        merged_dict[str(m['id'])] = m
+    final_movies_list = list(merged_dict.values())
     with open(all_movies_json_path, 'w', encoding='utf-8') as f:
-        json.dump(parsed_movies_data, f, ensure_ascii=False, indent=4)
-    print(f"💾 Сохранен общий JSON: {all_movies_json_path}")
+        json.dump(final_movies_list, f, ensure_ascii=False, indent=4)
+    print(f"💾 Сохранен общий JSON ({len(final_movies_list)} фильмов): {all_movies_json_path}")
 
     # Вносим данные в базу данных SQLite (movies.db)
     try:
@@ -726,92 +938,85 @@ def parse_top_250(movies_to_parse=3):
     except Exception as e:
         print(f"⚠️ Предупреждение: ошибка синхронизации с базой данных: {e}")
 
-    # Создаем индивидуальные HTML-страницы
-    for m in parsed_movies_data:
-        movie_id = m["id"]
-        clean_t = clean_movie_title(m["title"])
-        display_title = f"{clean_t} ({m['year']})"
+    # Создаем/обновляем индивидуальные HTML-страницы для всех фильмов с актуальным дизайном
+    for m in final_movies_list:
+        html_filepath = render_single_movie_html(m, final_movies_list, template_html, output_dir)
+        print(f"📄 Создана/обновлена HTML-страница: {html_filepath}")
 
-        # Список всех кадров для перелистывания в галерее кадров
-        all_gallery_urls = [make_highres_url(x) for x in m.get("gallery", [])]
-        if not all_gallery_urls:
-            all_gallery_urls = [make_highres_url(m["poster"])]
-        gallery_array_json = json.dumps(all_gallery_urls, ensure_ascii=False)
+    # Синхронизируем assets (кастомные баннеры, звезды и т.д.)
+    if os.path.exists("assets"):
+        os.makedirs(os.path.join(output_dir, "assets"), exist_ok=True)
+        for root, dirs, files in os.walk("assets"):
+            rel = os.path.relpath(root, "assets")
+            target_sub = os.path.join(output_dir, "assets", rel) if rel != "." else os.path.join(output_dir, "assets")
+            os.makedirs(target_sub, exist_ok=True)
+            for f in files:
+                shutil.copy2(os.path.join(root, f), os.path.join(target_sub, f))
 
-        # Список всех постеров для перелистывания при клике на постер
-        posters_list = [make_highres_url(p) for p in m.get("posters", [m["poster"]])]
-        if not posters_list:
-            posters_list = [make_highres_url(m["poster"])]
-        posters_array_json = json.dumps(posters_list, ensure_ascii=False)
+    # Создаем стартовый index.html (витрину каталога со всеми фильмами)
+    generate_index_html(final_movies_list, template_html, output_dir)
+    print("\n🎉 ВСЕ ГОТОВО! Все файлы созданы и обновлены в папке 'parsed_movies/'!")
 
-        catalog_cards = generate_catalog_cards_html(parsed_movies_data, movie_id)
-        stills_html = generate_stills_html(m.get("gallery", []), clean_t, m.get("trailer", ""))
-        actors_html = generate_actors_html(m.get("actors", []), m.get("director", ""))
-        awards_html = generate_awards_html(m.get("awards", []))
 
-        # Вычисляем рейтинг
-        try: rating_float = float(str(m["ratingKP"]).replace(',', '.'))
-        except Exception: rating_float = 9.0
-        rating_stars = str(round(rating_float / 2.0, 1))
+def refresh_all_designs(output_dir="parsed_movies"):
+    """
+    ⚡ Мгновенное обновление дизайна всех уже спарсенных фильмов БЕЗ запуска браузера и скрапинга.
+    Считывает сохраненные данные из JSON и мгновенно перегенерирует HTML по актуальным template.html и catalog_template.html.
+    """
+    template_path = 'template.html'
+    if not os.path.exists(template_path):
+        print("❌ Файл template.html не найден!")
+        return
 
-        # Фоновое изображение (кадр из фильма или постер)
-        hero_bg = m.get("gallery", [m["poster"]])[0] if m.get("gallery") else m["poster"]
-        hero_bg = make_highres_url(hero_bg)
+    with open(template_path, 'r', encoding='utf-8') as f:
+        template_html = f.read()
 
-        # Кастомная картинка звезд (например, планета для Интерстеллара)
-        custom_star = m.get("custom_star", "")
-        if not custom_star and any(kw in clean_t.lower() for kw in ["интерстеллар", "interstellar"]):
-            custom_star = "assets/planet.png"
+    all_movies_json_path = os.path.join(output_dir, "movies.json")
+    movies_list = []
+    if os.path.exists(all_movies_json_path):
+        try:
+            with open(all_movies_json_path, 'r', encoding='utf-8') as f:
+                movies_list = json.load(f)
+        except Exception:
+            pass
 
-        html = template_html
-        replacements = {
-            "{{TITLE}}": clean_t,
-            "{{DISPLAY_TITLE}}": display_title,
-            "{{YEAR}}": str(m["year"]),
-            "{{SLOGAN}}": m["slogan"],
-            "{{SLOGAN_FORMATTED}}": f"«{m['slogan']}»" if m["slogan"] and m["slogan"] != "Не указано" else "",
-            "{{DESCRIPTION}}": m["description"],
-            "{{POSTER_URL}}": make_highres_url(m["poster"]),
-            "{{HERO_BG_URL}}": hero_bg,
-            "{{HERO_BADGE}}": f"{m['genre']} • {m['director']}",
-            "{{TRAILER_SRC}}": m.get("trailer", ""),
-            "{{DURATION}}": m["duration"],
-            "{{GENRE}}": m["genre"],
-            "{{AGE}}": m["age"],
-            "{{COUNTRY}}": m["country"],
-            "{{DIRECTOR}}": m["director"],
-            "{{BUDGET}}": m["budget"],
-            "{{BOXOFFICE}}": m["boxoffice"],
-            "{{RATING_KP}}": str(m["ratingKP"]),
-            "{{RATING_SITE}}": str(m["ratingKP"]),
-            "{{RATING_STARS}}": rating_stars,
-            "{{CUSTOM_STAR_PNG}}": custom_star,
-            "{{STILLS_CARDS}}": stills_html,
-            "{{ACTORS_CARDS}}": actors_html,
-            "{{AWARDS_CARDS}}": awards_html,
-            "{{WATCH_RUTUBE}}": m.get("watch_rutube", "https://rutube.ru"),
-            "{{WATCH_VK}}": m.get("watch_vk", "https://vk.com/video"),
-            "{{WATCH_KP}}": m.get("watch_kp", "https://www.kinopoisk.ru"),
-            "{{ICON_RUTUBE}}": m.get("icon_rutube", "assets/rutube.png"),
-            "{{ICON_VK}}": m.get("icon_vk", "assets/vk.png"),
-            "{{ICON_KP}}": m.get("icon_kp", "assets/kinopoisk.png"),
-            "{{POSTERS_ARRAY_JSON}}": posters_array_json,
-            "{{GALLERY_ARRAY_JSON}}": gallery_array_json,
-            "{{CATALOG_MODAL_CARDS}}": catalog_cards
-        }
+    import glob
+    merged_dict = {str(m.get('id')): m for m in movies_list if isinstance(m, dict) and 'id' in m}
+    for fpath in glob.glob(os.path.join(output_dir, "film_*.json")):
+        try:
+            with open(fpath, 'r', encoding='utf-8') as f:
+                item = json.load(f)
+                if isinstance(item, dict) and 'id' in item and str(item['id']) not in merged_dict:
+                    merged_dict[str(item['id'])] = item
+        except Exception:
+            pass
 
-        for key, val in replacements.items():
-            html = html.replace(key, str(val))
+    movies_list = list(merged_dict.values())
+    if not movies_list:
+        print("⚠️ Нет спарсенных фильмов для обновления дизайна.")
+        return
 
-        html_filepath = os.path.join(output_dir, f"film_{movie_id}.html")
-        with open(html_filepath, 'w', encoding='utf-8') as f:
-            f.write(html)
-        print(f"📄 Создана HTML-страница: {html_filepath}")
+    print(f"\n🎨 Обновляем HTML-дизайн для {len(movies_list)} фильмов (без повторного парсинга)...")
+    for m in movies_list:
+        html_filepath = render_single_movie_html(m, movies_list, template_html, output_dir)
+        print(f"📄 Обновлен дизайн: {html_filepath}")
 
-    # Создаем стартовый index.html (витрину каталога)
-    generate_index_html(parsed_movies_data, template_html, output_dir)
-    print("\n🎉 ВСЕ ГОТОВО! Все файлы созданы в папке 'parsed_movies/'!")
+    if os.path.exists("assets"):
+        os.makedirs(os.path.join(output_dir, "assets"), exist_ok=True)
+        for root, dirs, files in os.walk("assets"):
+            rel = os.path.relpath(root, "assets")
+            target_sub = os.path.join(output_dir, "assets", rel) if rel != "." else os.path.join(output_dir, "assets")
+            os.makedirs(target_sub, exist_ok=True)
+            for f in files:
+                shutil.copy2(os.path.join(root, f), os.path.join(target_sub, f))
+
+    generate_index_html(movies_list, template_html, output_dir)
+    print("✨ Все страницы фильмов и каталог index.html успешно обновлены актуальным дизайном!")
 
 
 if __name__ == "__main__":
-    parse_top_250(movies_to_parse=5)
+    import sys
+    if any(arg in sys.argv for arg in ["--design-only", "--refresh", "-d", "--update-design"]):
+        refresh_all_designs()
+    else:
+        parse_top_250(movies_to_parse=1)

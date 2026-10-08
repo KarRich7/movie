@@ -19,7 +19,8 @@
         "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/d2c029b3-5581-4297-ad99-96af01e1e6df/orig",
         "https://avatars.mds.yandex.net/get-kinopoisk-image/1600647/0d133cb8-aadf-432f-b8dd-ddc8a99b3ad4/orig",
         "https://avatars.mds.yandex.net/get-kinopoisk-image/1704946/60b1db7e-767f-45fd-a428-6d13f9f151c6/orig",
-        "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/635d7f90-a68b-4010-8825-3eb972c897ac/orig"
+        "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/635d7f90-a68b-4010-8825-3eb972c897ac/orig",
+        "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/730b45aa-f2bb-410a-b699-4e4f2c62440d/orig"
     ],
     "duration": "2 ч 49 мин",
     "genre": "фантастика, драма, приключения",
@@ -31,9 +32,18 @@
     "ratingKP": "8.7",
     "ratingSite": "8.7",
     "trailer": "trailers/film_258687.mp4",
+    "bg_video": "",
     "watch_kp": "https://www.kinopoisk.ru/film/258687/",
     "watch_rutube": "https://rutube.ru/video/854ce20ade387f87041ca1e29e002448/",
     "watch_vk": "https://vkvideo.ru/video-220018529_456243270",
+    "custom_star": "assets/stars/my_star.png",
+    "customStarImg": "assets/stars/my_star.png",
+    "custom_star_light": "assets/stars/my_star_light.png",
+    "customStarLight": "assets/stars/my_star_light.png",
+    "custom_star_dark": "assets/stars/my_star_dark.png",
+    "customStarDark": "assets/stars/my_star_dark.png",
+    "custom_star_cinematic": "assets/stars/my_star_cinematic.png",
+    "customStarCinematic": "assets/stars/my_star_cinematic.png",
     "gallery": [
         "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/2f2c287c-3018-4754-b7da-6872325421b7/orig",
         "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/fd24f0f8-c7dd-403b-ae09-be91bd702a57/orig",

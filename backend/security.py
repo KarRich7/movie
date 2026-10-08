@@ -14,7 +14,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from backend.config import SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES
-from backend.database import get_db
+from backend.database import get_users_db
 from backend.models import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
@@ -104,7 +104,7 @@ def decode_access_token(token: str) -> Optional[dict]:
 
 def get_current_user_optional(
     token: Optional[str] = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_users_db)
 ) -> Optional[User]:
     """Retrieves the current user if token is provided and valid, otherwise None."""
     if not token:

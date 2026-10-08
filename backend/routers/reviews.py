@@ -1,12 +1,13 @@
 """
 Reviews router: protected submission, viewing, updating, and deletion of reviews.
+Uses db_movies (movies.db) to check movie existence and db_users (users.db) to store reviews.
 """
 from typing import List
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from backend.database import get_db
+from backend.database import get_movies_db, get_users_db
 from backend.models import Review, Movie, User
 from backend.schemas import ReviewCreateRequest, ReviewResponse
 from backend.security import get_current_user
@@ -15,16 +16,20 @@ router = APIRouter(prefix="/api", tags=["Отзывы и рецензии"])
 
 
 @router.get("/movies/{movie_id}/reviews", response_model=List[ReviewResponse], summary="Список отзывов к фильму")
-def get_movie_reviews(movie_id: int, db: Session = Depends(get_db)):
-    """Возвращает все отзывы к фильму, отсортированные по дате добавления."""
-    movie = db.query(Movie).filter(Movie.id == movie_id).first()
+def get_movie_reviews(
+    movie_id: int,
+    db_movies: Session = Depends(get_movies_db),
+    db_users: Session = Depends(get_users_db)
+):
+    """Возвращает все отзывы к фильму из users.db, отсортированные по дате добавления."""
+    movie = db_movies.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Фильм #{movie_id} не найден"
         )
     
-    reviews = db.query(Review).filter(Review.movie_id == movie_id).order_by(Review.created_at.desc()).all()
+    reviews = db_users.query(Review).filter(Review.movie_id == movie_id).order_by(Review.created_at.desc()).all()
     return [
         ReviewResponse(
             id=r.id,
@@ -45,23 +50,24 @@ def get_movie_reviews(movie_id: int, db: Session = Depends(get_db)):
 def create_or_update_movie_review(
     movie_id: int,
     req: ReviewCreateRequest,
-    db: Session = Depends(get_db),
+    db_movies: Session = Depends(get_movies_db),
+    db_users: Session = Depends(get_users_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    Защищенный эндпоинт отправки отзыва (требует JWT Bearer токен).
+    Защищенный эндпоинт отправки отзыва (сохраняет в users.db).
     Пользователь ставит оценку от 1 до 10 и пишет текст отзыва.
     Если пользователь уже оставлял отзыв к этому фильму, его отзыв обновляется.
     """
-    movie = db.query(Movie).filter(Movie.id == movie_id).first()
+    movie = db_movies.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Фильм #{movie_id} не найден"
         )
 
-    # Check for existing review by this user
-    existing_review = db.query(Review).filter(
+    # Check for existing review by this user in users.db
+    existing_review = db_users.query(Review).filter(
         Review.movie_id == movie_id,
         Review.user_id == current_user.id
     ).first()
@@ -71,8 +77,8 @@ def create_or_update_movie_review(
         existing_review.title = req.title
         existing_review.content = req.content
         existing_review.updated_at = datetime.utcnow()
-        db.commit()
-        db.refresh(existing_review)
+        db_users.commit()
+        db_users.refresh(existing_review)
         review = existing_review
     else:
         review = Review(
@@ -82,9 +88,9 @@ def create_or_update_movie_review(
             title=req.title,
             content=req.content
         )
-        db.add(review)
-        db.commit()
-        db.refresh(review)
+        db_users.add(review)
+        db_users.commit()
+        db_users.refresh(review)
 
     return ReviewResponse(
         id=review.id,
@@ -103,13 +109,13 @@ def create_or_update_movie_review(
 @router.delete("/reviews/{review_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Удаление отзыва")
 def delete_review(
     review_id: int,
-    db: Session = Depends(get_db),
+    db_users: Session = Depends(get_users_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    Удаляет отзыв. Доступно только автору отзыва или администратору.
+    Удаляет отзыв из users.db. Доступно только автору отзыва или администратору.
     """
-    review = db.query(Review).filter(Review.id == review_id).first()
+    review = db_users.query(Review).filter(Review.id == review_id).first()
     if not review:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -122,6 +128,6 @@ def delete_review(
             detail="Вы можете удалять только собственные отзывы"
         )
 
-    db.delete(review)
-    db.commit()
+    db_users.delete(review)
+    db_users.commit()
     return None
